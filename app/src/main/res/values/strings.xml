@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">CatchTalk</string>
+    <item type="id" name="recycle" />
+    <item type="id" name="conversation" />
+    <item type="id" name="userId" />
+    <item type="id" name="nickname" />
+    <item type="id" name="profile" />
+    <item type="id" name="message" />
+    <item type="id" name="bookmarkitem"/>
+    <item type="id" name="bookmarkmode"/>
+    <item type="id" name="index" />
+    <item type="id" name="no" />
+    <item type="id" name="checkIcon" />
+    <item type="id" name="sendImage" />
+    <item type="id" name="time" />
+    <item type="id" name="position" />
+    <string name="friend">친구</string>
+    <string name="bookmark">즐겨찾기</string>
+    <string name="my_profile">내 프로필</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+    <string name="pickFromAlbum">앨범에서 선택</string>
+    <string name="takePhoto">사진 촬영</string>
+    <string name="defaultImage">기본 이미지로 변경</string>
+    <string name="passwordCorrect">비밀번호가 일치합니다</string>
+    <string name="passwordIncorrect">비밀번호가 일치하지 않습니다</string>
+    <string name="usablePassword">사용할 수 있는 비밀번호입니다</string>
+    <string name="passwordCondition">비밀번호는 숫자와 영문조합의 8~12자리여야 합니다</string>
+    <string name="idCondition">아이디는 영문,숫자 조합의 4~10글자여야 합니다 (첫글자는 영문)</string>
+    <string name="allItemCheck">모든 항목을 입력해주세요</string>
+    <string name="idLengthConditionMin">아이디는 4글자이상이어야합니다</string>
+    <string name="idLengthConditionMax">아이디는 최대 10글자까지 가능합니다</string>
+    <string name="noSpaceNickname">닉네임은 공백을 포함할 수 없습니다</string>
+    <string name="NicknameLengthMax">닉네임은 최대 6글자까지 가능합니다</string>
+    <string name="IdAlreadyExist">이미 존재하는 아이디입니다</string>
+    <string name="signUpComplete">회원가입이 완료되었습니다</string>
+    <string name="putIdPlease">아이디를 입력해주세요</string>
+    <string name="putNicknamePlease">닉네임을 입력해주세요</string>
+    <string name="usableId">사용 가능한 아이디입니다</string>
+    <string name="NicknameAlreadyExist">이미 존재하는 닉네임입니다</string>
+    <string name="usableNickname">사용 가능한 닉네임입니다"</string>
+
+
+
+
+
+
+
+
+
+</resources>
