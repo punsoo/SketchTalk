@@ -5,8 +5,8 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -245,13 +245,13 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void post_submit(String data) {
 
-        if (data.equals("성공")) {
+        if (data.equals("complete")) {
             Toast.makeText(this, R.string.signUpComplete, Toast.LENGTH_SHORT).show();
             finish();
-        } else if (data.equals(R.string.IdAlreadyExist)) {
-            Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+        } else if (data.equals("IdExist")) {
+            Toast.makeText(this, R.string.IdAlreadyExist, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.NicknameAlreadyExist, Toast.LENGTH_SHORT).show();
         }
     }
 

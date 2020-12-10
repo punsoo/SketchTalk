@@ -2,9 +2,12 @@
     <string name="app_name">CatchTalk</string>
     <item type="id" name="recycle" />
     <item type="id" name="conversation" />
+    <item type="id" name="roomId" />
     <item type="id" name="userId" />
+    <item type="id" name="friendId" />
     <item type="id" name="nickname" />
-    <item type="id" name="profile" />
+    <item type="id" name="roomname" />
+    <item type="id" name="profileImageUpdateTime" />
     <item type="id" name="message" />
     <item type="id" name="bookmarkitem"/>
     <item type="id" name="bookmarkmode"/>

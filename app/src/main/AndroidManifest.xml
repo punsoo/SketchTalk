@@ -7,7 +7,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <uses-library
+
+            android:name="org.apache.http.legacy"
+
+            android:required="false" />
+
 
         <activity android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -19,10 +27,25 @@
         </activity>
         <activity android:name=".activity.SignUpActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activity.MainActivity"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
         <activity android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" android:name=".activity.ProfileChangeActivity"/>
-        <activity android:name=".activity.ProfileActivity"
+        <activity android:name=".activity.ProfileActivity" android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".activity.EditFriendActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.AddFriendActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.SearchRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".activity.SearchFriendActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
 
     </application>
 

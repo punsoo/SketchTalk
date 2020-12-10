@@ -9,7 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -147,14 +147,15 @@ public class LoginActivity extends AppCompatActivity {
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");
                 conn.setDoInput(true);
+                conn.setDoOutput(true);
                 conn.connect();
-
+                Log.d("후후1",sUserId + sPassword);
                 /* 안드로이드 -> 서버 파라메터값 전달 */
                 OutputStream outs = conn.getOutputStream();
                 outs.write(param.getBytes("UTF-8"));
                 outs.flush();
                 outs.close();
-
+                Log.d("후후2",sUserId + sPassword);
 
                 /* 서버 -> 안드로이드 파라메터값 전달 */
 //                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
@@ -179,6 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
                 data = buff.toString().trim();
+                Log.d("힘들다",data);
                 int maxLogSize = 1000;
                 for(int i = 0; i <= data.length() / maxLogSize; i++) {
                     int start = i * maxLogSize;
@@ -217,19 +219,31 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             try {
 
+                Log.d("여기0",data);
+
                 db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
                 db.clearFriendList();
+                Log.d("여기01",data);
                 db.createFriendList();
+                Log.d("여기02",data);
                 db.createChatRoomList();
+                Log.d("여기03",data);
+                db.createChatRoomMemberList();
+                Log.d("여기04",data);
                 db.createChatMessageList(sUserId);
+                Log.d("여기05",data);
 
                 JSONArray dataArray = new JSONArray(data);
-                JSONArray friendListArray = dataArray.getJSONArray(0);
-                JSONArray chatRoomListArray = dataArray.getJSONArray(1);
+                Log.d("여기06",data);
+                JSONArray friendListArray = new JSONArray(dataArray.getString(0));
+                Log.d("여기07",data);
+                JSONArray chatRoomListArray = new JSONArray(dataArray.getString(1));
+                Log.d("여기08",data);
+                JSONArray chatRoomMemberListArray = new JSONArray(dataArray.getString(2));
+                Log.d("여기09",data);
 
-
-
+                Log.d("여기1","여기1");
 
                 for(int i=0;i<friendListArray.length();i++) {
 
@@ -240,10 +254,12 @@ public class LoginActivity extends AppCompatActivity {
                     String nickname = (String) jobject.getString("nickname");
                     String profileMessage = (String) jobject.getString("profileMessage");
                     String profileImageUpdateTime = (String) jobject.getString("profileImageUpdateTime");
-                    int bookmark = (int) jobject.getInt("bookmark");
-                    Log.d("friendListArray", friendId+" | "+nickname+" | "+profileMessage+" | "+profileImageUpdateTime+" | "+bookmark);
+                    int favorite = (int) jobject.getInt("favorite");
+                    int hiding = (int) jobject.getInt("hiding");
+                    int blocked = (int) jobject.getInt("blocked");
+                    Log.d("friendListArray", friendId+" | "+nickname+" | "+profileMessage+" | "+profileImageUpdateTime+" | "+favorite + " | " + hiding + " | " + blocked);
 
-                    db.insertFriendData(friendId,nickname,profileMessage,profileImageUpdateTime,bookmark);
+                    db.insertFriendList(friendId,nickname,profileMessage,profileImageUpdateTime,favorite,hiding, blocked);
 
                     if(i==0){
                         editor.putString("userId",friendId);
@@ -255,19 +271,35 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
 
+                Log.d("여기2","여기2");
 
                 for(int i=0;i<chatRoomListArray.length();i++) {
 
                     JSONObject jobject = new JSONObject(chatRoomListArray.get(i).toString());
 
                     String roomId = (String) jobject.getString("roomId");
+                    String roomName = (String) jobject.getString("roomName");
+                    long lastReadTime = (long) jobject.getLong("lastReadTime");
+                    int roomType = (int) jobject.getInt("roomType");
                     Log.d("chatRoomListArray", roomId);
 
-                    db.insertChatRoomData(roomId);
+                    db.insertChatRoomList(roomId,roomName,lastReadTime,roomType);
 
                 }
 
 
+                for(int i=0;i<chatRoomMemberListArray.length();i++) {
+
+                    JSONObject jobject = new JSONObject(chatRoomMemberListArray.get(i).toString());
+
+                    String roomId = (String) jobject.getString("roomId");
+                    String userId = (String) jobject.getString("userId");
+
+                    db.insertChatRoomMemberList(roomId,userId);
+
+                }
+
+                Log.d("여기3","여기3");
 
                 editor.putBoolean("autoLogin",true);
                 editor.putString("autoLoginId",sUserId);
@@ -278,9 +310,11 @@ public class LoginActivity extends AppCompatActivity {
 //                Intent serviceIntent = new Intent(getApplicationContext(),ChatService.class);
 //                startService(serviceIntent);
 
-//                Intent intent = new Intent(this, MainActivity.class);
-//                startActivity(intent);
-//                finish();
+                Log.d("여기는 왔는가?","여기는??");
+
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
 
             }catch(JSONException e){
 

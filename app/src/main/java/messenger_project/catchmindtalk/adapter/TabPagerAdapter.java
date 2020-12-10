@@ -4,6 +4,7 @@ package messenger_project.catchmindtalk.adapter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import messenger_project.catchmindtalk.fragment.ChatRoomListFragment;
@@ -17,25 +18,27 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
     private int tabCount;
     public SharedPreferences mPref;
     public Bundle bundle;
-    public FriendListFragment tf1;
-    public ChatRoomListFragment tf2;
-    public SettingFragment tf3;
+    public FriendListFragment friendListFragment;
+    public ChatRoomListFragment chatRoomListFragment;
+    public SettingFragment settingFragment;
 
 
-    public TabPagerAdapter(FragmentManager fm, int tabCount, SharedPreferences SP, FriendListFragment f1, ChatRoomListFragment f2, SettingFragment f3) {
+    public TabPagerAdapter(FragmentManager fm, int tabCount, SharedPreferences SP, FriendListFragment _friendListFragment, ChatRoomListFragment _chatRoomListFragment, SettingFragment _settingRoomFragment) {
+
         super(fm);
         this.tabCount = tabCount;
         this.mPref = SP;
         this.bundle = new Bundle();
         this.bundle.putString("userId",mPref.getString("userId","아이디없음"));
         this.bundle.putString("nickname",mPref.getString("nickname","닉없음"));
-        this.bundle.putString("profile",mPref.getString("profile","수정날짜없음"));
-        this.bundle.putString("message",mPref.getString("message","메세지없음"));
-        tf1 = f1;
-        tf2 = f2;
-        tf3 = f3;
-        tf1.setArguments(bundle);
-        tf2.setArguments(bundle);
+        this.bundle.putString("profileImageUpdateTime",mPref.getString("profileImageUpdateTime","수정날짜없음"));
+        this.bundle.putString("profileMessage",mPref.getString("profileMessage","메세지없음"));
+        friendListFragment = _friendListFragment;
+        chatRoomListFragment = _chatRoomListFragment;
+        settingFragment = _settingRoomFragment;
+        friendListFragment.setArguments(bundle);
+        chatRoomListFragment.setArguments(bundle);
+
     }
 
     @Override
@@ -44,11 +47,11 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         // Returning the current tabs
         switch (position) {
             case 0:
-                return tf1;
+                return friendListFragment;
             case 1:
-                return tf2;
+                return chatRoomListFragment;
             case 2:
-                return tf3;
+                return settingFragment;
             default:
                 return null;
         }

@@ -1,6 +1,7 @@
 package messenger_project.catchmindtalk.activity;
 
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -8,32 +9,39 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 
 
+import com.google.android.material.tabs.TabLayout;
+
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 import messenger_project.catchmindtalk.adapter.TabPagerAdapter;
+import messenger_project.catchmindtalk.fragment.ChatRoomListFragment;
 import messenger_project.catchmindtalk.fragment.FriendListFragment;
+import messenger_project.catchmindtalk.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity implements FriendListFragment.sendToActivity{
 
     private Toolbar toolbar;
-    private TabLa tabLayout;
+    private TabLayout tabLayout;
     private ViewPager viewPager;
-    private ChatService mService;
+//    private ChatService mService;
 
     public MyDatabaseOpenHelper db;
     public SharedPreferences mPref;
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     public Handler handler;
 
     public int dNo;
-    public String dFriendId;
+    public String RoomId;
 
     public NetworkChangeReceiver mNCR;
 
@@ -62,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         toolbar = (Toolbar)findViewById(R.id.toolbar_MainActivity);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -73,28 +82,29 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         userId = mPref.getString("userId","닉네임없음");
         nickname = mPref.getString("nickname","메세지없음");
 
-        db = new MyDatabaseOpenHelper(this,"catchTalk",null,1);
+        db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
+
 
         tabPosition = 0;
 
         // Initializing the TabLayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout_MainActivity);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.profile_icon_act));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chat_icon_inact));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting_icon_inact));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chat_icon_act));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting_icon_act));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // Initializing ViewPager
         viewPager = (ViewPager) findViewById(R.id.pager_MainActivity);
 
-        TabFragment1 fragment1 = new TabFragment1();
-        TabFragment2 fragment2 = new TabFragment2();
-        TabFragment3 fragment3 = new TabFragment3();
+        FriendListFragment FriendListFragment = new FriendListFragment();
+        ChatRoomListFragment ChatRoomFragment = new ChatRoomListFragment();
+        SettingFragment SettingFragment = new SettingFragment();
 
-        fragmentCommunicator = (FragmentCommunicator) fragment2;
+        fragmentCommunicator = (FragmentCommunicator) ChatRoomFragment;
 
         // Creating TabPagerAdapter adapter
-        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount(),mPref,fragment1,fragment2,fragment3);
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount(),mPref,FriendListFragment,ChatRoomFragment,SettingFragment);
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
@@ -140,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         });
 
         handler = new Handler(){
+            @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(Message msg){
 
@@ -153,12 +164,62 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             }
         };
 
-        Intent serviceIntent = new Intent(this, ChatService.class);
-        serviceIntent.putExtra("FromLogin",false);
-        bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
+//        Intent serviceIntent = new Intent(this, ChatService.class);
+//        serviceIntent.putExtra("FromLogin",false);
+//        bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
 
     }
+
+
+
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//        // Called when the connection with the service is established
+//        public void onServiceConnected(ComponentName className, IBinder service) {
+//            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
+//            mService = binder.getService(); //서비스 받아옴
+//            mService.registerCallback_2(mCallback); //콜백 등록
+//            mService.boundCheck_MainActivity = true;
+//        }
+//
+//        // Called when the connection with the service disconnects unexpectedly
+//        public void onServiceDisconnected(ComponentName className) {
+//            mService = null;
+//        }
+//    };
+//
+//    public void UpdateNetwork(String type){
+//        if(type.equals("wifi")) {
+//            Intent serviceIntent = new Intent(this, ChatService.class);
+//            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+//
+//        }else{
+//            Intent serviceIntent = new Intent(this, ChatService.class);
+//            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+//        }
+//    }
+//
+//
+//    private ChatService.ICallback_MainActivity mCallback = new ChatService.ICallback_MainActivity() {
+//
+//        public void recvData() {
+//
+//            Message message= Message.obtain();
+//            message.what = 1;
+//            handler.sendMessage(message);
+//
+//        }
+//
+//        public void changeRoomList(){
+//
+//            Message message= Message.obtain();
+//            message.what = 2;
+//            handler.sendMessage(message);
+//
+//        }
+//
+//    };
+
 
 
     public interface FragmentCommunicator {
@@ -169,31 +230,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the service is established
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
-            mService = binder.getService(); //서비스 받아옴
-            mService.registerCallback_2(mCallback); //콜백 등록
-            mService.boundCheck_MainActivity = true;
-        }
-
-        // Called when the connection with the service disconnects unexpectedly
-        public void onServiceDisconnected(ComponentName className) {
-            mService = null;
-        }
-    };
-
-    public void UpdateNetwork(String type){
-        if(type.equals("wifi")) {
-            Intent serviceIntent = new Intent(this, ChatService.class);
-            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-
-        }else{
-            Intent serviceIntent = new Intent(this, ChatService.class);
-            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-        }
-    }
 
 
     @Override
@@ -202,17 +238,16 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         fragmentCommunicator.startChatRoomActivity(0,friendId,nickname);
     }
 
-    public void sendToActivity2(int no,String friendId) {
+    public void sendToActivity2(String roomId) {
 
-        dNo = no;
-        dFriendId = friendId;
+        RoomId = roomId;
 
         DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
 
             @Override
             public void onClick(DialogInterface dialog, int which){
                 try {
-                    ExitThread et = new ExitThread(dNo, dFriendId,true);
+                    ExitThread et = new ExitThread(RoomId,true);
                     et.start();
                     et.join();
                     fragmentCommunicator.changeRoomList();
@@ -255,26 +290,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
 
 
-    private ChatService.ICallback_MainActivity mCallback = new ChatService.ICallback_MainActivity() {
-
-        public void recvData() {
-
-            Message message= Message.obtain();
-            message.what = 1;
-            handler.sendMessage(message);
-
-        }
-
-        public void changeRoomList(){
-
-            Message message= Message.obtain();
-            message.what = 2;
-            handler.sendMessage(message);
-
-        }
-
-    };
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //ActionBar 메뉴 클릭에 대한 이벤트 처리
@@ -301,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
                 Intent intentadd = new Intent(this,AddFriendActivity.class);
                 startActivity(intentadd);
                 break;
+
             case R.id.edit_friend:
 
                 Intent intent = new Intent(this,EditFriendActivity.class);
@@ -309,16 +325,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             case R.id.add_chatroom:
 
-                Intent intentMakeGroup = new Intent(this,MakeGroupActivity.class);
-                intentMakeGroup.putExtra("FCR",false);
-                startActivityForResult(intentMakeGroup,MakeGroupActivity);
+//                Intent intentMakeGroup = new Intent(this,MakeGroupActivity.class);
+//                intentMakeGroup.putExtra("FCR",false);
+//                startActivityForResult(intentMakeGroup,MakeGroupActivity);
                 break;
 
             case R.id.edit_chatroom:
 
-                Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
-                startActivityForResult(intentEdit,EditChatRoom);
-
+//                Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
+//                startActivityForResult(intentEdit,EditChatRoom);
                 break;
 
 
@@ -334,17 +349,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     public class ExitThread extends Thread{
 
 
-        int no;
         String content;
         long now;
-        String friendIdExit;
+        String roomIdExit;
         boolean deleteDB;
 
-        public ExitThread(int No,String FriendIdExit,boolean DeleteDB){
-            this.no = No;
+        public ExitThread(String FriendIdExit,boolean DeleteDB){
             this.now = System.currentTimeMillis();
             this.content = nickname + "님이 나갔습니다";
-            this.friendIdExit = FriendIdExit;
+            this.roomIdExit = FriendIdExit;
             this.deleteDB = DeleteDB;
         }
 
@@ -353,13 +366,12 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             if(deleteDB){
 
-                db.deleteRoom(no,friendIdExit);
-                db.deleteChatFriendAll(no,friendIdExit);
-                db.deleteMessageData(no,friendIdExit);
+                db.deleteChatRoomList(roomIdExit);
+                db.deleteChatMessageList(roomIdExit,userId);
 
             }
 
-            mService.sendExit(no,friendIdExit,content,now);
+//            mService.sendExit(no,friendIdExit,content,now);
         }
 
 
@@ -368,19 +380,20 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mService.boundCheck_MainActivity = false;
-        unbindService(mConnection);
 
-
-        boolean autoLogin = mPref.getBoolean("autoLogin",false);
-        Log.d("MainActivity","onDestroy"+autoLogin);
-        if(!autoLogin){
-            mService.terminateService();
-        }
-
-        unregisterReceiver(mNCR);
-        unregisterReceiver(NetworkChangeUpdater);
-        mNCR = null;
+//        mService.boundCheck_MainActivity = false;
+//        unbindService(mConnection);
+//
+//
+//        boolean autoLogin = mPref.getBoolean("autoLogin",false);
+//        Log.d("MainActivity","onDestroy"+autoLogin);
+//        if(!autoLogin){
+//            mService.terminateService();
+//        }
+//
+//        unregisterReceiver(mNCR);
+//        unregisterReceiver(NetworkChangeUpdater);
+//        mNCR = null;
 
     }
 
