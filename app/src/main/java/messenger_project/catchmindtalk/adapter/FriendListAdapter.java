@@ -2,6 +2,7 @@ package messenger_project.catchmindtalk.adapter;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,9 +139,9 @@ public class FriendListAdapter extends BaseAdapter {
                     .into(viewHolder.icon);
 
         }else{
-
+            Log.d("fla 테스트","1");
             if (this.FlistSize > 0) {
-
+                Log.d("fla 테스트","2");
                 if (position == 2) {
                     viewHolder.sectionTxt.setText(R.string.bookmark);
                     viewHolder.section.setVisibility(View.VISIBLE);

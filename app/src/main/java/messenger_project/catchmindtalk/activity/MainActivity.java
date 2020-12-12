@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -90,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         // Initializing the TabLayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout_MainActivity);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.profile_icon_act));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chat_icon_act));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting_icon_act));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chat_icon_inact));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting_icon_inact));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // Initializing ViewPager
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         void notifyRecvData();
         void changeRoomList();
-        void startChatRoomActivity(int no,String friendId, String nickname);
+        void startChatRoomActivity(String friendId, String nickname);
 
     }
 
@@ -235,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     @Override
     public void sendToActivity(String friendId,String nickname) {
         viewPager.setCurrentItem(1);
-        fragmentCommunicator.startChatRoomActivity(0,friendId,nickname);
+        fragmentCommunicator.startChatRoomActivity(friendId,nickname);
     }
 
     public void sendToActivity2(String roomId) {
@@ -288,7 +289,16 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
     }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if(tabPosition == 0) {
+            getMenuInflater().inflate(R.menu.friend_menu, menu);
+        }else if(tabPosition ==1){
+            getMenuInflater().inflate(R.menu.chatroom_menu, menu);
+        }
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

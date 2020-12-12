@@ -101,8 +101,8 @@ public class AddFriendActivity extends AppCompatActivity {
         noDataId = getLayoutInflater().inflate(R.layout.nodata,null);
         noDataNickname = getLayoutInflater().inflate(R.layout.nodata,null);
 
-        noDataTVId = (TextView)noDataTVId.findViewById(R.id.nodatatxt);
-        noDataTVNickname = (TextView)noDataTVNickname.findViewById(R.id.nodatatxt);
+        noDataTVId = (TextView)noDataId.findViewById(R.id.nodatatxt);
+        noDataTVNickname = (TextView)noDataNickname.findViewById(R.id.nodatatxt);
 
         friendViewId = getLayoutInflater().inflate(R.layout.friendlist_item,null);
         friendViewNickname = getLayoutInflater().inflate(R.layout.friendlist_item,null);

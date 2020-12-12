@@ -49,7 +49,7 @@ public class FriendListFragment extends Fragment {
 
         String myId = mPref.getString("userId","아이디없음");
         String myNickname = mPref.getString("nickname","닉네임없음");
-        String myProfileImageUpdateTime = mPref.getString("profileImageUpdateTime","프로필없음");
+        String myProfileImageUpdateTime = mPref.getString("profileImageUpdateTime","none");
         String myProfileMessage = mPref.getString("profileMessage","");
 
         FriendListItem myItem = new FriendListItem(myId,myNickname,myProfileImageUpdateTime,myProfileMessage,0,0,0);
@@ -65,7 +65,7 @@ public class FriendListFragment extends Fragment {
                 FListData.add(addItem);
             }
 
-            Log.d("커서 내용물", cursor.getString(0)+"#####"+cursor.getString(1) + "" +cursor.getString(2));
+            Log.d("커서", cursor.getString(0)+"#####"+cursor.getString(1) + "" +cursor.getString(2));
         }
 
 
@@ -105,13 +105,13 @@ public class FriendListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        String myId = getArguments().getString("userId");
-        String myNickname = mPref.getString("nickname","노닉네임");
-        String myProfile = getArguments().getString("profile");
-        String myMessage = mPref.getString("message","노메세지");
+        String myId = mPref.getString("userId","아이디없음");
+        String myNickname = mPref.getString("nickname","닉네임없음");
+        String myProfileImageUpdateTime = mPref.getString("profileImageUpdateTime","none");
+        String myProfileMessage = mPref.getString("profileMessage","");
 
 
-        FriendListItem myItem= new FriendListItem(myId,myNickname,myProfile,myMessage,0,0,0);
+        FriendListItem myItem= new FriendListItem(myId,myNickname,myProfileImageUpdateTime,myProfileMessage,0,0,0);
 
         myListAdapter.changeMyItem(myItem);
 
@@ -124,6 +124,7 @@ public class FriendListFragment extends Fragment {
         while(cursor.moveToNext()) {
 
             FriendListItem addItem = new FriendListItem(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getInt(4),cursor.getInt(5),cursor.getInt(6));
+            Log.d("프프",cursor.getString(0)+""+cursor.getString(1));
             ListData.add(addItem);
             if(cursor.getInt(4) == 1){
                 FListData.add(addItem);

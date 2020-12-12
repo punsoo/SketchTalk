@@ -57,7 +57,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
         Log.d("db.insertIFD",friendId+" | "+nickname+" | "+profileMessage+" | "+profileImageUpdateTime+" | "+ favorite+" | "+ hiding+" | "+ blocked);
         dbWriter.beginTransaction();
-        String sql="INSERT INTO friendList VALUES('"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+favorite+"','"+hiding+"','"+ blocked+ ");";
+        String sql="INSERT INTO friendList VALUES('"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+favorite+"','"+hiding+"','"+ blocked+ "')";
         try
         {
             dbWriter.execSQL(sql);
@@ -117,7 +117,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     public void createChatRoomList(){
 
         String sql_del="DROP TABLE IF EXISTS chatRoomList;";
-        String sql = "CREATE TABLE IF NOT EXISTS chatRoomList(roomId TEXT NOT NULL, roomName TEXT NOT NULL,lastReadTime Integer, roomType Integer, PRIMARY KEY (roomId));";
+        String sql = "CREATE TABLE IF NOT EXISTS chatRoomList(roomId Integer NOT NULL, roomName TEXT NOT NULL,lastReadTime Integer, roomType Integer, PRIMARY KEY (roomId));";
         try {
             dbWriter.execSQL(sql_del);
             dbWriter.execSQL(sql);
@@ -197,7 +197,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     public void createChatRoomMemberList(){
 
         String sql_del="DROP TABLE IF EXISTS chatRoomMemberList;";
-        String sql = "CREATE TABLE IF NOT EXISTS chatRoomMemberList(roomId TEXT NOT NULL, userId TEXT NOT NULL, PRIMARY KEY (roomId, userId));";
+        String sql = "CREATE TABLE IF NOT EXISTS chatRoomMemberList(roomId Integer NOT NULL, userId TEXT NOT NULL, PRIMARY KEY (roomId, userId));";
         try {
             dbWriter.execSQL(sql_del);
             dbWriter.execSQL(sql);
@@ -271,7 +271,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
 
         String sql_del="DROP TABLE IF EXISTS chatMessageList_"+mPref.getString("userId",myId)+";";
-        String sql = "CREATE TABLE IF NOT EXISTS chatMessageList_"+mPref.getString("userId",myId)+"(roomId TEXT NOT NULL,friendId TEXT NOT NULL, messageContent TEXT,messageTime INTEGER,messageType INTEGER,PRIMARY KEY(roomId, friendId))";
+        String sql = "CREATE TABLE IF NOT EXISTS chatMessageList_"+mPref.getString("userId",myId)+"(roomId INTEGER NOT NULL,friendId TEXT NOT NULL, messageContent TEXT,messageTime INTEGER,messageType INTEGER,PRIMARY KEY(roomId, friendId))";
         try {
             dbWriter.execSQL(sql_del);
             dbWriter.execSQL(sql);

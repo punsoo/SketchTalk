@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/SketchConatiner">
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:layout_centerInParent="true">-->
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:text="낙서장"-->
+        <!--android:textSize="24sp"/>-->
+
+    <!--</FrameLayout>-->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="#ffffff">
+
+
+            <ImageButton
+                android:id="@+id/clearBtn"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="30dp"
+                android:src="@drawable/clear_btn"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:background="@android:color/transparent"
+                android:layout_centerVertical="true"
+                 />
+
+
+            <TextView
+                android:id="@+id/colorPickerBtn"
+                android:layout_width="70dp"
+                android:layout_height="60dp"
+                android:layout_toStartOf="@+id/leftArrowBtn"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"
+                android:text="색깔"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+
+                />
+
+
+            <ImageButton
+                android:id="@+id/leftArrowBtn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/left_arrow"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:background="@android:color/transparent"
+                android:layout_centerVertical="true"
+                android:onClick="minusWidth"
+                android:layout_toStartOf="@+id/widthContainer"/>
+
+            <LinearLayout
+                android:id="@+id/widthContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="50px"
+                android:orientation="horizontal"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/rightArrowBtn"
+                android:foregroundGravity="center"
+                android:gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                >
+
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/rightArrowBtn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/right_arrow"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:background="@android:color/transparent"
+                android:layout_centerVertical="true"
+                android:onClick="plusWidth" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:id="@+id/SketchBook"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="#44755b"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/drawChatContainer">
+            <ListView
+
+                android:id="@+id/drawChat"
+                android:listSelector="#00000000"
+                android:divider="#000000"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:transcriptMode="alwaysScroll"
+                android:focusable="false"
+                android:stackFromBottom="true"
+                android:layout_marginBottom="5dp"/>
+            </FrameLayout>
+
+        </RelativeLayout>
+
+
+</LinearLayout>

@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import messenger_project.catchmindtalk.Item.ChatRoomItem;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
+import messenger_project.catchmindtalk.activity.ChatRoomActivity;
 import messenger_project.catchmindtalk.activity.MainActivity;
 import messenger_project.catchmindtalk.adapter.ChatRoomListAdapter;
 import messenger_project.catchmindtalk.adapter.SearchRoomAdapter;
@@ -114,12 +115,12 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
     }
 
     @Override
-    public void startChatRoomActivity(int no,String friendId,String nickname) {
+    public void startChatRoomActivity(String friendId,String nickname) {
 
-//        Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
-//        intent.putExtra("friendId",friendId);
-//        intent.putExtra("nickname",nickname);
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
+        intent.putExtra("friendId",friendId);
+        intent.putExtra("nickname",nickname);
+        startActivity(intent);
     }
 
     @Override

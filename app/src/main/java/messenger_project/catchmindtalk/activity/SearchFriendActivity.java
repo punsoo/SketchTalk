@@ -54,7 +54,7 @@ public class SearchFriendActivity extends AppCompatActivity {
         searchFriendList = new ArrayList<>();
         allList = new ArrayList<>();
 
-        db = new MyDatabaseOpenHelper(this,"catchMind",null,1);
+        db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
 
         Cursor cursor = db.getFriendList();
 

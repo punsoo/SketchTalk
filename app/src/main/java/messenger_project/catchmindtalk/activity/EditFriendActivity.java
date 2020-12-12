@@ -45,7 +45,7 @@ public class EditFriendActivity extends AppCompatActivity {
         ArrayList<String> BookmarkList = new ArrayList<String>();
 
 
-        db = new MyDatabaseOpenHelper(this,"catchMind",null,1);
+        db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
         Cursor cursor = db.getFriendList();
 
         while(cursor.moveToNext()) {

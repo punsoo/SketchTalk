@@ -46,7 +46,12 @@
         <activity android:name=".activity.SearchFriendActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".activity.ChatRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" >
+        </activity>
 
+        <activity android:theme="@android:style/Theme.DeviceDefault.Light.Dialog" android:screenOrientation="portrait" android:name=".activity.ColorPickerActivity"/>
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
