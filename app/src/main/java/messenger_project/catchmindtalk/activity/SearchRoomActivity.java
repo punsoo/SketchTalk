@@ -72,20 +72,10 @@ public class SearchRoomActivity extends AppCompatActivity {
 
         while(CRC.moveToNext()) {
 
-            int UnreadNum = db.getUnReadNum(myId,CRC.getString(0),CRC.getLong(2));
-            Cursor CRMC = db.getChatRoomMemberJoinOnFriendList(CRC.getString(0));
-            Vector<String[]> ChatRoomMemberList = new Vector<>();
-            while(CRMC.moveToNext()){
-                String[] ChatRoomMemberData = new String[3];
-                ChatRoomMemberData[0] = CRMC.getString(0);
-                ChatRoomMemberData[1] = CRMC.getString(1);
-                ChatRoomMemberData[2] = CRMC.getString(2);
-                ChatRoomMemberList.add(ChatRoomMemberData);
-            }
+            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
 
-            ChatRoomItem addItem = new ChatRoomItem(CRC.getString(0),CRC.getString(1),CRC.getLong(2),CRC.getInt(3),CRC.getString(4),CRC.getLong(5),CRC.getInt(6),ChatRoomMemberList, UnreadNum);
-
-
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             searchRoomList.add(addItem);
             allList.add(addItem);
 
@@ -119,7 +109,7 @@ public class SearchRoomActivity extends AppCompatActivity {
                 for(int i=0; i<allList.size();i++){
 
 
-                    if (allList.get(i).getRoomId().contains(editContent)) {
+                    if (allList.get(i).getRoomName().contains(editContent)) {
 
                         searchRoomAdapter.addCRItem(allList.get(i));
 

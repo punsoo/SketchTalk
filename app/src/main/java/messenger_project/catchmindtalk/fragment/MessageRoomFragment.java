@@ -42,7 +42,7 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
 
         ListData = new ArrayList<ChatMessageItem>();
 
-        db = new MyDatabaseOpenHelper(getContext(),"catchMind",null,1);
+        db = new MyDatabaseOpenHelper(getContext(),"catchMindTalk",null,1);
 //        Cursor cursor = db.getMessageListJoinChatFriendList(userId,friendId,no);
 //
 //        while(cursor.moveToNext()) {

@@ -48,15 +48,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     public SharedPreferences mPref;
     public SharedPreferences.Editor editor;
 
-    public String userId;
-    public String nickname;
+    public String myUserId;
+    public String myNickname;
 
     public FragmentCommunicator fragmentCommunicator;
     public int tabPosition; // 선택한 탭 위치
     public Handler handler;
 
-    public int dNo;
-    public String RoomId;
+    public int RoomId;
+    public String FriendId;
 
     public NetworkChangeReceiver mNCR;
 
@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         mPref = getSharedPreferences("login",MODE_PRIVATE);
         editor = mPref.edit();
-        userId = mPref.getString("userId","닉네임없음");
-        nickname = mPref.getString("nickname","메세지없음");
+        myUserId = mPref.getString("userId","닉네임없음");
+        myNickname = mPref.getString("nickname","메세지없음");
 
         db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
@@ -239,16 +239,17 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         fragmentCommunicator.startChatRoomActivity(friendId,nickname);
     }
 
-    public void sendToActivity2(String roomId) {
+    public void sendToActivityExit(int roomId, String friendId) {
 
         RoomId = roomId;
+        FriendId = friendId;
 
         DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
 
             @Override
             public void onClick(DialogInterface dialog, int which){
                 try {
-                    ExitThread et = new ExitThread(RoomId,true);
+                    ExitThread et = new ExitThread(RoomId,FriendId);
                     et.start();
                     et.join();
                     fragmentCommunicator.changeRoomList();
@@ -359,16 +360,17 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     public class ExitThread extends Thread{
 
 
-        String content;
+        String msgContent;
         long now;
-        String roomIdExit;
+        int roomIdExit;
+        String friendIdExit;
         boolean deleteDB;
 
-        public ExitThread(String FriendIdExit,boolean DeleteDB){
+        public ExitThread(int RoomIdExit, String FriendIdExit){
             this.now = System.currentTimeMillis();
-            this.content = nickname + "님이 나갔습니다";
-            this.roomIdExit = FriendIdExit;
-            this.deleteDB = DeleteDB;
+            this.msgContent = myNickname + "님이 나갔습니다";
+            this.roomIdExit = RoomIdExit;
+
         }
 
         @Override
@@ -376,8 +378,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             if(deleteDB){
 
-                db.deleteChatRoomList(roomIdExit);
-                db.deleteChatMessageList(roomIdExit,userId);
+                db.deleteChatRoomList(roomIdExit,friendIdExit);
+                db.deleteChatMessageList(myUserId,roomIdExit,friendIdExit);
 
             }
 

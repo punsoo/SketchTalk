@@ -71,7 +71,8 @@ public class ChatRoomListAdapter extends BaseAdapter {
             convertView = this.inflater.inflate(R.layout.chatroom_item, parent, false);
 
             viewHolder = new ChatRoomViewHolder();
-            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomContent);
+            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomName);
+            viewHolder.chatRoomContent = (TextView) convertView.findViewById(R.id.chatRoomContent);
             viewHolder.memberNum = (TextView) convertView.findViewById(R.id.chatRoomMemberNum);
             viewHolder.chatRoomDate = (TextView) convertView.findViewById(R.id.chatRoomDate);
             viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.chatRoomImage);
@@ -124,13 +125,9 @@ public class ChatRoomListAdapter extends BaseAdapter {
         String RoomName = chatRoomList.get(position).getRoomName();
 
         if(RoomName == null || RoomName.equals("")){
-            RoomName = "";
-            for(int i=0;i<ChatRoomMemberList.size();i++){
-                if(!ChatRoomMemberList.get(i)[0].equals(userId)) {
-                    if(!RoomName.equals("")) {
-                        RoomName += ", " + ChatRoomMemberList.get(i)[1];
-                    }
-                }
+            RoomName = ChatRoomMemberList.get(0)[1];
+            for(int i=1;i<ChatRoomMemberList.size();i++){
+                RoomName += ", " +  ChatRoomMemberList.get(i)[1];
             }
         }
 
@@ -144,10 +141,10 @@ public class ChatRoomListAdapter extends BaseAdapter {
             String ProfileImageUpdateTime;
             if(ChatRoomMemberList.get(0)[0].equals(userId)){
                 FriendId = ChatRoomMemberList.get(1)[0];
-                ProfileImageUpdateTime = ChatRoomMemberList.get(1)[2];
+                ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
             }else{
                 FriendId = ChatRoomMemberList.get(0)[0];
-                ProfileImageUpdateTime = ChatRoomMemberList.get(0)[2];
+                ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
             }
 
             Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
@@ -159,7 +156,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
-        convertView.setTag(R.id.roomname, chatRoomList.get(position).getRoomId());
+        convertView.setTag(R.id.roomname, chatRoomList.get(position).getRoomName());
 
 
 

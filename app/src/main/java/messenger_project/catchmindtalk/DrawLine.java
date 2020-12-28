@@ -139,13 +139,11 @@ public class DrawLine extends View
         float x = event.getX();
         float y = event.getY();
 
-        Log.d("담배",x+"###"+y);
 
         switch (event.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
             {
-                Log.d("담배다운",x+"###"+y);
                 //최초 마우스를 눌렀을때(손가락을 댓을때) 경로를 초기화 시킨다.
                 path.reset();
 
@@ -162,7 +160,6 @@ public class DrawLine extends View
             }
             case MotionEvent.ACTION_MOVE:
             {
-                Log.d("담배무브",x+"###"+y);
                 //포인트가 이동될때 마다 두 좌표(이전에눌렀던 좌표와 현재 이동한 좌료)간의 간격을 구한다.
                 float dx = Math.abs(x - oldX);
                 float dy = Math.abs(y - oldY);
@@ -292,7 +289,6 @@ public class DrawLine extends View
             pathList.add(tmpCD);
 
 
-            Log.d("되냐비율",rate_width+"");
 
             if(Resized) {
                 receivePaint.setStrokeWidth(SW * rate_width);
@@ -305,7 +301,6 @@ public class DrawLine extends View
                 Rpath.quadTo(NOldx,NOldy,Nx,Ny);
                 canvas.drawPath(Rpath, receivePaint);
             }else {
-                Log.d("되냐", Oldx + "####" + Oldy + "####" + x + "####" + y);
                 receivePaint.setStrokeWidth(SW);
                 receivePaint.setColor(Color);
                 Rpath.moveTo(Oldx, Oldy);
@@ -352,14 +347,12 @@ public class DrawLine extends View
                 restorePaint.setStrokeWidth(SW*rate_width);
                 restorePaint.setColor(Color);
 
-                Log.d("비트맵1",Oldx+"###"+Oldy+"###"+x+"###"+y+"###");
 
                 float NOldx = Oldx*rate_width;
                 float NOldy = Oldy*rate_height;
                 float Nx = x*rate_width;
                 float Ny = y*rate_height;
 
-                Log.d("비트맵2",NOldx+"###"+NOldy+"###"+Nx+"###"+Ny+"###");
 
                 path.reset();
                 path.moveTo(NOldx,NOldy);
@@ -368,7 +361,6 @@ public class DrawLine extends View
 
             }
             invalidate();
-            Log.d("디버깅스몰",width+"###"+HalfOW+"###"+HalfWidth);
 
 
         }else{
@@ -378,7 +370,6 @@ public class DrawLine extends View
                     Bitmap.Config.ARGB_8888);
             canvas = new Canvas(bitmap);
             canvas.drawColor(originalColor);
-            Log.d("디버깅오리지널",height+"###");
 
             for(int i=0;i<pathList.size();i++){
 
@@ -392,8 +383,6 @@ public class DrawLine extends View
                 restorePaint.setStrokeWidth(SW);
                 restorePaint.setColor(Color);
 
-
-                Log.d("비트맵O",Oldx+"###"+Oldy+"###"+x+"###"+y);
 
                 path.reset();
                 path.moveTo(Oldx,Oldy);

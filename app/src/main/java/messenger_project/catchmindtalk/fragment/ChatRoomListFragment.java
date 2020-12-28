@@ -51,8 +51,16 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
         db = new MyDatabaseOpenHelper(getContext(),"catchMindTalk",null,1);
 
 
-        getChatRoomList();
+        Cursor CRC = db.getChatRoomListJoinOnMessageList(myId); //ChatRoomCursor
 
+        while(CRC.moveToNext()) {
+
+            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
+            chatRoomListData.add(addItem);
+
+        }
 
 
         chatRoomListAdapter = new ChatRoomListAdapter(getActivity().getApplicationContext(),chatRoomListData,myId);
@@ -108,8 +116,20 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
         if(db ==null){
             return;
         }
+        ArrayList<ChatRoomItem> changeList = new ArrayList<>();
 
-        getChatRoomList();
+        Cursor CRC = db.getChatRoomListJoinOnMessageList(myId); //ChatRoomCursor
+
+        while(CRC.moveToNext()) {
+
+            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
+            changeList.add(addItem);
+
+        }
+
+        chatRoomListAdapter.ChangeList(changeList);
         chatRoomListAdapter.notifyDataSetChanged();
 
     }
@@ -127,35 +147,7 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
     public void onResume() {
         super.onResume();
         changeRoomList();
-//        myListAdapter.notifyDataSetChanged();
     }
-
-
-    public void getChatRoomList(){
-
-        Cursor CRC = db.getChatRoomListJoinOnMessageList(myId); //ChatRoomCursor
-
-        while(CRC.moveToNext()) {
-
-            int UnreadNum = db.getUnReadNum(myId,CRC.getString(0),CRC.getLong(2));
-            Cursor CRMC = db.getChatRoomMemberJoinOnFriendList(CRC.getString(0));
-            Vector<String[]> ChatRoomMemberList = new Vector<>();
-
-            while(CRMC.moveToNext()){
-                String[] ChatRoomMemberData = new String[3];
-                ChatRoomMemberData[0] = CRMC.getString(0);
-                ChatRoomMemberData[1] = CRMC.getString(1);
-                ChatRoomMemberData[2] = CRMC.getString(2);
-                ChatRoomMemberList.add(ChatRoomMemberData);
-            }
-
-            ChatRoomItem addItem = new ChatRoomItem(CRC.getString(0),CRC.getString(1),CRC.getLong(2),CRC.getInt(3),CRC.getString(4),CRC.getLong(5),CRC.getInt(6),ChatRoomMemberList, UnreadNum);
-            chatRoomListData.add(addItem);
-
-        }
-
-    }
-
 
 
 

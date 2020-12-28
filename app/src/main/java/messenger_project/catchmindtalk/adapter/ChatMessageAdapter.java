@@ -141,7 +141,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                 String day = sdfDate.format(when);
 
                 if(!day.equals(preTime)) {
-                    Log.d("뭐시발?",preWhen+"###"+when);
+                    Log.d("chatMessageAdapter",preWhen+"###"+when);
                     viewHolder.dayLayout.setVisibility(View.VISIBLE);
                     viewHolder.dayText.setText(day);
                 }else{
@@ -171,7 +171,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                         .signature(new ObjectKey(profile))
                         .into(viewHolder.profileImage);
             }catch (NullPointerException e){
-                Log.d("널널",friendId);
+                Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
             }
 //            int tmpUnread = db.getUnReadWithRight(myId,friendId,no,now) ;
             int tmpUnread = 1;
@@ -202,7 +202,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                 String day = sdfDate.format(when);
 
                 if(!day.equals(preTime)) {
-                    Log.d("뭐시발?",preWhen+"###"+when);
+                    Log.d("chatMessageAdapter",preWhen+"###"+when);
                     viewHolder.dayLayout.setVisibility(View.VISIBLE);
                     viewHolder.dayText.setText(day);
                 }else{
@@ -431,9 +431,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 
             viewHolder.sendImage.setTag(R.id.sendImage,position);
             viewHolder.sendImage.setTag(R.id.userId,friendId);
-
-
-
             viewHolder.sendImage.setTag(R.id.time,msgTime);
 
 

@@ -16,6 +16,9 @@
 
             android:required="false" />
 
+        <service android:name=".ChatService">
+
+        </service>
 
         <activity android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">

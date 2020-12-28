@@ -5,7 +5,8 @@ import java.util.Vector;
 public class ChatRoomItem {
 
 
-    public String RoomId;
+    public int RoomId;
+    public String FriendId;
     public String RoomName;
     public long LastReadTime;
     public int RoomType;
@@ -21,12 +22,13 @@ public class ChatRoomItem {
 
 
 
-    public ChatRoomItem(String roomId, String roomName, long lastReadTime, int roomType, String lastMessageContent, long lastMessageTime, int lastMessageType, Vector<String[]> chatRoomMemberList, int unreadNum) {
-
+    public ChatRoomItem(int roomId, String friendId, long lastReadTime, String roomName, int roomType, String lastMessageContent, long lastMessageTime, int lastMessageType, Vector<String[]> chatRoomMemberList, int unreadNum) {
+        // roomId friendId lastReadTime(chatRoom) roomName roomType cm1roomId cm1friendId maxTime roomId friendId messageContent messageTime messageType
 
         this.RoomId = roomId;
-        this.RoomName = roomName;
+        this.FriendId = friendId;
         this.LastReadTime = lastReadTime;
+        this.RoomName = roomName;
         this.RoomType = roomType;
         this.LastMessageContent = lastMessageContent;
         this.LastMessageTime = lastMessageTime;
@@ -40,9 +42,10 @@ public class ChatRoomItem {
 
 
 
-    public String getRoomId() {
+    public int getRoomId() {
         return this.RoomId;
     }
+    public String getFriendId() { return this.FriendId;}
     public long getLastReadTime(){
         return this.LastReadTime;
     }
@@ -70,6 +73,7 @@ public class ChatRoomItem {
     }
 
     public void setRoomId(){}
+    public void setFriendId(){}
     public void setLastReadTime(){
     }
     public void setRoomType(){

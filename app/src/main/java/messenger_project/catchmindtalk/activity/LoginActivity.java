@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import messenger_project.catchmindtalk.ChatService;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 
@@ -224,26 +225,30 @@ public class LoginActivity extends AppCompatActivity {
                 db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
                 db.clearFriendList();
-                Log.d("여기01",data);
                 db.createFriendList();
-                Log.d("여기02",data);
                 db.createChatRoomList();
-                Log.d("여기03",data);
                 db.createChatRoomMemberList();
-                Log.d("여기04",data);
                 db.createChatMessageList(sUserId);
-                Log.d("여기05",data);
 
                 JSONArray dataArray = new JSONArray(data);
-                Log.d("여기06",data);
-                JSONArray friendListArray = new JSONArray(dataArray.getString(0));
-                Log.d("여기07",data);
-                JSONArray chatRoomListArray = new JSONArray(dataArray.getString(1));
-                Log.d("여기08",data);
-                JSONArray chatRoomMemberListArray = new JSONArray(dataArray.getString(2));
-                Log.d("여기09",data);
+                JSONArray myListArray = new JSONArray(dataArray.getString(0));
+                JSONArray friendListArray = new JSONArray(dataArray.getString(1));
+                JSONArray chatRoomListArray = new JSONArray(dataArray.getString(2));
+                JSONArray chatRoomMemberListArray = new JSONArray(dataArray.getString(3));
 
-                Log.d("여기1","여기1");
+                JSONObject myobject = new JSONObject(myListArray.get(0).toString());
+
+                String myUserId = (String) myobject.getString("userId");
+                String myNickname = (String) myobject.getString("nickname");
+                String myProfileMessage = (String) myobject.getString("profileMessage");
+                String myProfileImageUpdateTime = (String) myobject.getString("profileImageUpdateTime");
+
+                editor.putString("userId",myUserId);
+                editor.putString("nickname",myNickname);
+                editor.putString("profileMessage",myProfileMessage);
+                editor.putString("profileImageUpdateTime",myProfileImageUpdateTime);
+                editor.commit();
+
 
                 for(int i=0;i<friendListArray.length();i++) {
 
@@ -259,15 +264,8 @@ public class LoginActivity extends AppCompatActivity {
                     int blocked = (int) jobject.getInt("blocked");
                     Log.d("friendListArray", friendId+" | "+nickname+" | "+profileMessage+" | "+profileImageUpdateTime+" | "+favorite + " | " + hiding + " | " + blocked);
 
-                    db.insertFriendList(friendId,nickname,profileMessage,profileImageUpdateTime,favorite,hiding, blocked);
 
-                    if(i==0){
-                        editor.putString("userId",friendId);
-                        editor.putString("nickname",nickname);
-                        editor.putString("profileMessage",profileMessage);
-                        editor.putString("profileImageUpdateTime",profileImageUpdateTime);
-                        editor.commit();
-                    }
+                    db.insertFriendList(friendId,nickname,profileMessage,profileImageUpdateTime,favorite,hiding, blocked);
 
                 }
 
@@ -277,13 +275,14 @@ public class LoginActivity extends AppCompatActivity {
 
                     JSONObject jobject = new JSONObject(chatRoomListArray.get(i).toString());
 
-                    String roomId = (String) jobject.getString("roomId");
-                    String roomName = (String) jobject.getString("roomName");
+                    int roomId = (int) jobject.getInt("roomId");
+                    String friendId = (String) jobject.getString("friendId");
                     long lastReadTime = (long) jobject.getLong("lastReadTime");
+                    String roomName = (String) jobject.getString("roomName");
                     int roomType = (int) jobject.getInt("roomType");
-                    Log.d("chatRoomListArray", roomId);
+                    Log.d("chatRoomListArray", roomId+"");
 
-                    db.insertChatRoomList(roomId,roomName,lastReadTime,roomType);
+                    db.insertChatRoomList(roomId,friendId,lastReadTime,roomName,roomType);
 
                 }
 
@@ -292,10 +291,14 @@ public class LoginActivity extends AppCompatActivity {
 
                     JSONObject jobject = new JSONObject(chatRoomMemberListArray.get(i).toString());
 
-                    String roomId = (String) jobject.getString("roomId");
-                    String userId = (String) jobject.getString("userId");
+                    int roomId = (int) jobject.getInt("roomId");
+                    String friendId = (String) jobject.getString("friendId");
+                    String nickname = (String) jobject.getString("nickname");
+                    String profileMessage = (String) jobject.getString("profileMessage");
+                    String profileImageUpdateTime = (String) jobject.getString("profileImageUpdateTime");
+                    long lastReadTime = (long) jobject.getLong("lastReadTime");
 
-                    db.insertChatRoomMemberList(roomId,userId);
+                    db.insertChatRoomMemberList(roomId,friendId,nickname,profileMessage,profileImageUpdateTime,lastReadTime);
 
                 }
 
@@ -307,8 +310,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 editor.commit();
 
-//                Intent serviceIntent = new Intent(getApplicationContext(),ChatService.class);
-//                startService(serviceIntent);
+                Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
+                startService(serviceIntent);
 
                 Log.d("여기는 왔는가?","여기는??");
 

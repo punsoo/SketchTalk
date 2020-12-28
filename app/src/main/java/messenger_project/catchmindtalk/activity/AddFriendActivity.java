@@ -162,14 +162,14 @@ public class AddFriendActivity extends AppCompatActivity {
 
                 if(friendList.contains(userId)){
                     noDataTVId.setText("이미 친구입니다");
-                    idFL.addView(noDataTVId);
+                    idFL.addView(noDataId);
                     idAddbtn.setVisibility(View.INVISIBLE);
                     return;
                 }
 
                 if(userId.equals(myId)){
                     noDataTVId.setText("본인아이디입니다");
-                    idFL.addView(noDataTVId);
+                    idFL.addView(noDataId);
                     idAddbtn.setVisibility(View.INVISIBLE);
                     return;
                 }
@@ -256,14 +256,14 @@ public class AddFriendActivity extends AppCompatActivity {
 
                 if(friendList.contains(userId)){
                     noDataTVNickname.setText("이미 친구입니다");
-                    nicknameFL.addView(noDataTVNickname);
+                    nicknameFL.addView(noDataNickname);
                     nicknameAddbtn.setVisibility(View.INVISIBLE);
                     return;
                 }
 
                 if(userId.equals(myId)){
                     noDataTVNickname.setText("본인닉네임입니다");
-                    nicknameFL.addView(noDataTVNickname);
+                    nicknameFL.addView(noDataNickname);
                     nicknameAddbtn.setVisibility(View.INVISIBLE);
                     return;
                 }
@@ -301,7 +301,7 @@ public class AddFriendActivity extends AppCompatActivity {
             if(friendList.contains(userId)){
                 nicknameFL.removeAllViewsInLayout();
                 noDataTVNickname.setText("이미 친구입니다");
-                nicknameFL.addView(noDataTVNickname);
+                nicknameFL.addView(noDataNickname);
                 nicknameAddbtn.setVisibility(View.INVISIBLE);
                 return;
             }
