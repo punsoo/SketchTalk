@@ -36,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 
 /**
@@ -81,6 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
     public SharedPreferences mPref;
     public SharedPreferences.Editor editor;
     public String myNickname;
+    public MyDatabaseOpenHelper db;
 
 
 
@@ -144,7 +146,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         myNickname = mPref.getString("nickname","메세지없음");
 
-
+        db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
 
 //
@@ -824,8 +826,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         Intent intent = new Intent();
         intent.putExtra("friendId",userId);
-        intent.putExtra("nickname",nickname);
         intent.putExtra("roomId",0);
+        String roomName = db.getChatRoomName(0,userId);
+        intent.putExtra("roomName",roomName);
         setResult(RESULT_OK, intent);
         finish();
 

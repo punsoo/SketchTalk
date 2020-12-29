@@ -156,7 +156,8 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
-        convertView.setTag(R.id.roomname, chatRoomList.get(position).getRoomName());
+        convertView.setTag(R.id.friendId, chatRoomList.get(position).getFriendId());
+        convertView.setTag(R.id.roomName, chatRoomList.get(position).getRoomName());
 
 
 

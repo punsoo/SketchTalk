@@ -6,7 +6,7 @@
     <item type="id" name="userId" />
     <item type="id" name="friendId" />
     <item type="id" name="nickname" />
-    <item type="id" name="roomname" />
+    <item type="id" name="roomName" />
     <item type="id" name="profileImageUpdateTime" />
     <item type="id" name="message" />
     <item type="id" name="bookmarkitem"/>

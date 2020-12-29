@@ -6,19 +6,19 @@ public class ChatMessageItem {
     public int Type;
     public String UserId;
     public String Nickname;
-    public String Profile;
-    public String Content;
+    public String ProfileImageUpdateTime;
+    public String MsgContent;
     public long Time;
 
 
 
-    public ChatMessageItem(int type,String userId, String nickname, String profile, String content, long time){
+    public ChatMessageItem(int type,String userId, String nickname, String profileIUT, String msgContent, long time){
 
         this.Type = type;
         this.UserId = userId;
         this.Nickname = nickname;
-        this.Profile = profile;
-        this.Content = content;
+        this.ProfileImageUpdateTime = profileIUT;
+        this.MsgContent = msgContent;
         this.Time =  time;
 
     }
@@ -30,10 +30,10 @@ public class ChatMessageItem {
 
     public void setNickname(String nickname) { this.Nickname = nickname ; }
 
-    public void setProfile(String profile) { this.Profile = profile ; }
+    public void setProfileImageUpdateTime(String profileIUT) { this.ProfileImageUpdateTime = profileIUT ; }
 
-    public void setContent(String content) {
-        this.Content = content ;
+    public void setContent(String msgContent) {
+        this.MsgContent = msgContent ;
     }
 
     public void setTime(long time) { this.Time = time ; }
@@ -46,10 +46,10 @@ public class ChatMessageItem {
 
     public String getNickname() { return this.Nickname; }
 
-    public String getProfile() { return this.Profile;}
+    public String getProfileImageUpdateTime() { return this.ProfileImageUpdateTime;}
 
-    public String getContent() {
-        return this.Content;
+    public String getMsgContent() {
+        return this.MsgContent;
     }
 
     public long getTime() {

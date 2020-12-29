@@ -15,13 +15,14 @@ public class ChatRoomPagerAdapter extends FragmentPagerAdapter {
     public SharedPreferences mPref;
     public Bundle bundle;
 
-    public ChatRoomPagerAdapter(FragmentManager fm, Fragment mf, Fragment df, SharedPreferences SP, String friendId) {
+    public ChatRoomPagerAdapter(FragmentManager fm, Fragment mf, Fragment df, SharedPreferences SP, int roomId, String friendId) {
         super(fm);
         this.mf = mf;
         this.df = df;
         mPref = SP;
         this.bundle = new Bundle();
         this.bundle.putString("userId",mPref.getString("userId","아이디없음"));
+        this.bundle.putInt("roomId",roomId);
         this.bundle.putString("friendId",friendId);
         mf.setArguments(bundle);
         df.setArguments(bundle);

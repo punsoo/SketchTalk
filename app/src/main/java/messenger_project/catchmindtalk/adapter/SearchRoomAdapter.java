@@ -184,7 +184,7 @@ public class SearchRoomAdapter extends BaseAdapter {
         }
 
         convertView.setTag(R.id.roomId, SearchRoomList.get(position).getRoomId());
-        convertView.setTag(R.id.roomname, SearchRoomList.get(position).getRoomName());
+        convertView.setTag(R.id.roomName, SearchRoomList.get(position).getRoomName());
 
 
 

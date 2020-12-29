@@ -142,19 +142,19 @@ public class ChatService extends Service {
 
         //콜백 인터페이스 선언
         public interface ICallback {
-            public void recvData(String friendId,String content,long time); //액티비티에서 선언한 콜백 함수.
-            public void changeNo(int no);
-            public void sendMessageMark(String content,long time);
-            public void sendInviteMark(String inviteId,String content,long time,boolean resetMemberList);
-            public void sendExitMark(String friendId,String content,long time);
-            public void sendImageMark(String friendId,String content, long time , int kind);
+            public void recvData(String friendId,String msgContent,long time); //액티비티에서 선언한 콜백 함수.
+            public void changeRoomId(int roomId);
+            public void sendMessageMark(String msgContent,long time);
+            public void sendInviteMark(String inviteId,String msgContent,long time,boolean resetMemberList);
+            public void sendExitMark(String friendId,String msgContent,long time);
+            public void sendImageMark(String friendId,String msgContent, long time , int kind);
             public void resetHash();
             public void recvUpdate();
             public String getFriendId();
             public void resetToolbar();
             public void receivePath(String PATH);
             public void receiveClear();
-            public void receiveDrawChat(String friendId,String content);
+            public void receiveDrawChat(String friendId,String msgContent);
 
         }
 
@@ -204,12 +204,13 @@ public class ChatService extends Service {
 
             if(st.isSuccess()){
 
-                Log.d("st.isSucess",msgContent+"####"+time);
-                if(roomId ==0) {
-
+                Log.d("st.isSucess",roomId+"#"+friendId+"#"+msgContent+"#"+time);
+                if(roomId==0) {
+                    db.insertChatMessageList(userId, roomId, friendId, msgContent, time, 1);
                 }else{
-
+                    db.insertChatMessageList(userId, roomId, userId, msgContent, time, 1);
                 }
+
 
                 mCallback.sendMessageMark(msgContent,time);
 
@@ -558,6 +559,8 @@ public class ChatService extends Service {
             public void run() {
 
                 if(sMsgType == 1){
+
+                    db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
 
                     if(sRoomId ==0 && !db.haveChatRoom(sFriendId)){
                         getFriendThread gft = new getFriendThread(sFriendId,sTime);

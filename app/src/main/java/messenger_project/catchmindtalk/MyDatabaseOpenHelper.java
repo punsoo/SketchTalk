@@ -260,7 +260,30 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
+    public String getChatRoomName(int roomId, String friendId){
 
+        String sql;
+        if(roomId==0) {
+            sql = "SELECT roomName FROM chatRoomList WHRE roomId = '" + roomId + "' AND friendId = '" + friendId + "'";
+        }else{
+            sql = "SELECT roomName FROM chatRoomList WHRE roomId = '" + roomId + "'";
+        }
+        Cursor cursor;
+        try {
+            cursor = dbReader.rawQuery(sql,null);
+            Log.d("db.gcrn", sql);
+
+        }catch (SQLException e) {
+            cursor = null;
+            Log.d("db.gcrnException", sql);
+        }
+
+        String roomName ="" ;
+        while(cursor.moveToNext()){
+            roomName = cursor.getString(0);
+        }
+        return roomName;
+    }
 
 
 
@@ -293,10 +316,10 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     public void createChatMessageList(String myId){
 
 
-        String sql_del="DROP TABLE IF EXISTS chatMessageList_"+mPref.getString("userId",myId)+";";
+//        String sql_del="DROP TABLE IF EXISTS chatMessageList_"+mPref.getString("userId",myId)+";";
         String sql = "CREATE TABLE IF NOT EXISTS chatMessageList_"+mPref.getString("userId",myId)+"(roomId INTEGER NOT NULL,friendId TEXT NOT NULL, messageContent TEXT,messageTime INTEGER,messageType INTEGER)";
         try {
-            dbWriter.execSQL(sql_del);
+//            dbWriter.execSQL(sql_del);
             dbWriter.execSQL(sql);
             Log.d("db.CML", sql);
         }catch (SQLException e) {
@@ -305,6 +328,16 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
+    public void insertChatMessageList(String myId, int roomId, String friendId, String msgContent, long msgTime, int msgType){
+        String sql = "INSERT INTO chatMessageList_"+mPref.getString("userId",myId)+" VALUES ('"+roomId+"','"+friendId+"','"+msgContent+"','"+msgTime+"','"+msgType+"')";
+        try {
+            dbWriter.execSQL(sql);
+            Log.d("db.ICML", sql);
+        }catch (SQLException e) {
+            Log.d("db.exeptionICML",sql);
+        }
+
+    }
 
     public void deleteChatMessageList(String myId,int roomId,String friendId){
 
@@ -334,6 +367,29 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
 
     }
+
+    public Cursor getChatMessageListJoinChatRoomMemberList(String myId,int roomId,String friendId){
+
+        String userId = mPref.getString("userId",myId);
+        String sql;
+            if(roomId==0) {
+                sql = "SELECT * FROM chatMessageList_" + userId + " AS cml LEFT JOIN chatRoomMemberList AS crml ON cml.roomId = crml.roomId AND cml.friendId = crml.friendId WHERE cml.roomId = '" + roomId + "' AND cml.friendId = '" + friendId + "' ORDER BY cml.messageTime";
+            }else{
+                sql = "SELECT * FROM chatMessageList_" + userId + " AS cml LEFT JOIN chatRoomMemberList AS crml ON cml.roomId = crml.roomId WHERE cml.roomId = '" + roomId + "' ORDER BY cml.messageTime";
+            }
+        Cursor cursor;
+        try {
+            cursor = dbReader.rawQuery(sql,null);
+            Log.d("db.gcmljcrml", sql);
+
+        }catch (SQLException e) {
+            cursor = null;
+            Log.d("db.gcmljcrmlException", sql);
+        }
+        return cursor;
+
+    }
+
 
     public Cursor getLastChatMessageOnChatRoom(String myId,int roomId){
         Log.d("db.getLR",roomId+"");

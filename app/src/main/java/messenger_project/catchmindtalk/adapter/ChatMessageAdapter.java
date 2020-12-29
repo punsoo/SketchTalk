@@ -36,7 +36,7 @@ public class ChatMessageAdapter extends BaseAdapter {
     public MyDatabaseOpenHelper db;
     public String myId;
     public String zeroFriendId;
-    public int no;
+    public int roomId;
     public SimpleDateFormat sdfNow ;
     public SimpleDateFormat sdfDate ;
     public int px;
@@ -46,16 +46,16 @@ public class ChatMessageAdapter extends BaseAdapter {
     public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
 
     // ListViewAdapter의 생성자
-    public ChatMessageAdapter(Context context,ArrayList<ChatMessageItem> ListData,String myId ,int no, String friendId) {
+    public ChatMessageAdapter(Context context,ArrayList<ChatMessageItem> ListData,String myId ,int roomId, String friendId) {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.chatMessageList = ListData;
         this.myId = myId;
-        this.no = no;
+        this.roomId = roomId;
         this.sdfNow = new SimpleDateFormat("HH:mm");
         this.sdfDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일");
         this.zeroFriendId = friendId;
-        db = new MyDatabaseOpenHelper(mContext,"catchMind",null,1);
+        db = new MyDatabaseOpenHelper(mContext,"catchMinTalk",null,1);
         px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,150,mContext.getResources().getDisplayMetrics());
     }
 
@@ -82,7 +82,7 @@ public class ChatMessageAdapter extends BaseAdapter {
         MessageViewHolder viewHolder;
         String friendId = "";
         String nickname = "";
-        String profile = "";
+        String profileIUT = "";
 
         long msgTime = chatMessageList.get(position).getTime();
 
@@ -152,7 +152,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 
             viewHolder.layout.setGravity(Gravity.LEFT);
             viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setText(chatMessageList.get(position).getContent());
+            viewHolder.chatContent.setText(chatMessageList.get(position).getMsgContent());
             viewHolder.chatContent.setBackgroundResource(R.drawable.inchat);
             viewHolder.nickName.setGravity(Gravity.LEFT);
             viewHolder.nickName.setText(chatMessageList.get(position).getNickname());
@@ -164,11 +164,11 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder.rightLayout.setVisibility(View.VISIBLE);
             viewHolder.sendImage.setVisibility(View.GONE);
             friendId = chatMessageList.get(position).getUserId();
-            profile = chatMessageList.get(position).getProfile();
+            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
             try {
                 Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
                         .error(R.drawable.default_profile_image)
-                        .signature(new ObjectKey(profile))
+                        .signature(new ObjectKey(profileIUT))
                         .into(viewHolder.profileImage);
             }catch (NullPointerException e){
                 Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
@@ -213,7 +213,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 
             viewHolder.layout.setGravity(Gravity.RIGHT);
             viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setText(chatMessageList.get(position).getContent());
+            viewHolder.chatContent.setText(chatMessageList.get(position).getMsgContent());
             viewHolder.chatContent.setBackgroundResource(R.drawable.outchat);
             viewHolder.nickName.setGravity(Gravity.RIGHT);
             viewHolder.leftLayout.setGravity(Gravity.RIGHT);
@@ -225,7 +225,7 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder.rightLayout.setVisibility(View.GONE);
             viewHolder.sendImage.setVisibility(View.GONE);
             friendId = chatMessageList.get(position).getUserId();
-            profile = chatMessageList.get(position).getProfile();
+            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
 
 //            int tmpUnread = db.getUnReadWithLeft(myId,zeroFriendId,no,now) ;
             int tmpUnread = 1;
@@ -237,13 +237,13 @@ public class ChatMessageAdapter extends BaseAdapter {
 
         }else if(chatMessageList.get(position).Type == 3) {
 
-            Log.d("힘드네요",chatMessageList.get(position).getContent());
+            Log.d("힘드네요",chatMessageList.get(position).getMsgContent());
 
             viewHolder.layout.setGravity(Gravity.CENTER);
             viewHolder.profileContainer.setVisibility(View.GONE);
 
             viewHolder.dayLayout.setVisibility(View.VISIBLE);
-            viewHolder.dayText.setText(chatMessageList.get(position).getContent());
+            viewHolder.dayText.setText(chatMessageList.get(position).getMsgContent());
 
             viewHolder.profileImage.setVisibility(View.GONE);
             viewHolder.nickName.setVisibility(View.GONE);
@@ -295,13 +295,13 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder.sendImage.setVisibility(View.VISIBLE);
 
             friendId = chatMessageList.get(position).getUserId();
-            profile = chatMessageList.get(position).getProfile();
+            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
 
             try {
 
-                Glide.with(mContext).load("http://vnschat.vps.phps.kr/profile_image/" + friendId + ".png")
+                Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
                         .error(R.drawable.default_profile_image)
-                        .signature(new ObjectKey(profile))
+                        .signature(new ObjectKey(profileIUT))
                         .into(viewHolder.profileImage);
 
 //                Glide.with(mContext).load("http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(position).getContent())
@@ -313,7 +313,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                 Log.d("널널",friendId);
             }
 
-            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getContent()).into(viewHolder.sendImage);
+            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getMsgContent()).into(viewHolder.sendImage);
 
 
             viewHolder.sendImage.setTag(R.id.sendImage,position);
@@ -423,10 +423,10 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder.rightLayout.setVisibility(View.GONE);
             viewHolder.sendImage.setVisibility(View.VISIBLE);
             friendId = chatMessageList.get(position).getUserId();
-            profile = chatMessageList.get(position).getProfile();
+            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
 
 
-            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getContent()).into(viewHolder.sendImage);
+            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getMsgContent()).into(viewHolder.sendImage);
 
 
             viewHolder.sendImage.setTag(R.id.sendImage,position);

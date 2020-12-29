@@ -70,15 +70,17 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                String friendId = (String) view.getTag(R.id.userId);
-//                String nickname = (String) view.getTag(R.id.nickname);
-//
-//
-//                Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
-//                intent.putExtra("friendId",friendId);
-//                intent.putExtra("nickname",nickname);
-//
-//                startActivity(intent);
+                int roomId = (int) view.getTag(R.id.roomId);
+                String friendId = (String) view.getTag(R.id.friendId);
+                String roomName = (String) view.getTag(R.id.roomName);
+
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
+                intent.putExtra("roomId",roomId);
+                intent.putExtra("friendId",friendId);
+                intent.putExtra("roomName",roomName);
+
+                startActivity(intent);
 
             }
         });
