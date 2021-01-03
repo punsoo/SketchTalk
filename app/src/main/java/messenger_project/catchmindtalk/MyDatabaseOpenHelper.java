@@ -154,6 +154,17 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
+    public int getMinRoomId(){
+
+        String sql = "SELECT * FROM chatRoomList ORDER BY roomId ASC LIMIT 1; ";
+        Cursor cursor = dbReader.rawQuery(sql,null);
+        int result = -1;
+        while(cursor.moveToNext()){
+            result = cursor.getInt(0);
+        }
+        return result;
+    }
+
     public Cursor getChatRoomList(){
 
         String sql = "SELECT * FROM chatRoomList ";

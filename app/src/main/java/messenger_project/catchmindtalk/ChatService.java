@@ -425,6 +425,8 @@ public class ChatService extends Service {
                             socket.close();
                         }catch(IOException e){
                             e.printStackTrace();
+                            Log.d("Reconnect","1");
+                            Reconnect();
                         }
                     }
                     break;
@@ -437,7 +439,8 @@ public class ChatService extends Service {
                         response = input.readUTF();
                     }catch (EOFException e){
                         e.printStackTrace();
-                        Log.d("ChatService","EOFException");
+                        Log.d("Reconnect","2");
+                        Reconnect();
                         return;
                     }
 
@@ -467,14 +470,15 @@ public class ChatService extends Service {
 
                 } catch (IOException e) {
                     Log.d("ChatServiceReceiveIOE",userId +"####"+response);
+                    Log.d("Reconnect","3");
                     Reconnect();
                     e.printStackTrace();
-
 
                     break;
                 } catch (NullPointerException e){
                     Log.d("ChatServiceReceiveNPE",userId +"####"+response);
-                    loseReceive();
+                    Log.d("Reconnect","4");
+                    Reconnect();
                     e.printStackTrace();
                     break;
                 }

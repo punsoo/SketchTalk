@@ -336,15 +336,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             case R.id.add_chatroom:
 
-//                Intent intentMakeGroup = new Intent(this,MakeGroupActivity.class);
-//                intentMakeGroup.putExtra("FCR",false);
-//                startActivityForResult(intentMakeGroup,MakeGroupActivity);
+                Intent intentMakeGroup = new Intent(this,MakeGroupActivity.class);
+                intentMakeGroup.putExtra("FCR",false);
+                startActivityForResult(intentMakeGroup,MakeGroupActivity);
                 break;
 
             case R.id.edit_chatroom:
 
-//                Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
-//                startActivityForResult(intentEdit,EditChatRoom);
+                Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
+                startActivityForResult(intentEdit,EditChatRoom);
                 break;
 
 

@@ -185,10 +185,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 roomName += ", " +  ChatRoomMemberList.get(i)[1];
             }
         }
-        getSupportActionBar().setTitle(roomName);
         ResetHash();
 
-        getSupportActionBar().setTitle(roomName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -683,6 +681,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
             NickHash.put(chatRoomMemberList.get(i)[1],chatRoomMemberList.get(i)[2]);
             ProfileIUTHash.put(chatRoomMemberList.get(i)[1],chatRoomMemberList.get(i)[3]);
+        }
+
+        if(roomId > 0){
+
+            JSONArray jarray = new JSONArray();
+            for(int i=0;i<chatRoomMemberList.size();i++) {
+                jarray.put(chatRoomMemberList.get(i)[0]);
+
+            }
+            friendId = jarray.toString();
         }
 
         getSupportActionBar().setTitle(roomName);

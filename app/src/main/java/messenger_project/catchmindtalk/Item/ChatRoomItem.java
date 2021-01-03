@@ -37,6 +37,7 @@ public class ChatRoomItem {
         this.MemberNum = chatRoomMemberList.size();
         this.UnreadNum = unreadNum;
 
+
     }
 
 
