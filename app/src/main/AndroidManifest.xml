@@ -16,8 +16,8 @@
 
             android:required="false" />
 
-        <service android:name=".ChatService">
-
+        <service android:name=".ChatService"
+                android:enabled="true">
         </service>
 
         <activity android:name=".activity.LoginActivity"
@@ -48,7 +48,10 @@
 
         <activity android:name=".activity.SearchFriendActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-
+        <activity android:name=".activity.EditChatRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.MakeGroupActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activity.ChatRoomActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" >

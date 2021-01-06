@@ -829,6 +829,7 @@ public class ProfileActivity extends AppCompatActivity {
         intent.putExtra("roomId",0);
         String roomName = db.getChatRoomName(0,userId);
         intent.putExtra("roomName",roomName);
+        intent.putExtra("nickname",nickname);
         setResult(RESULT_OK, intent);
         finish();
 

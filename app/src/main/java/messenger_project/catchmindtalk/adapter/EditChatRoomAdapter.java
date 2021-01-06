@@ -98,7 +98,8 @@ public class EditChatRoomAdapter extends BaseAdapter {
 
                         int roomId = Integer.parseInt(key);
 
-                        jsonObject.put("id",roomId);
+                        jsonObject.put("roomId",roomId);
+
 
                         Vector<String[]> chatRoomMemberList= db.getChatRoomMemberList(roomId,"group");
 
@@ -108,23 +109,15 @@ public class EditChatRoomAdapter extends BaseAdapter {
                             jsonArray.put(chatRoomMemberList.get(i)[0]);
                         }
 
-                        String FIE = jsonArray.toString();
-
-                        jsonObject.put("FIE",FIE);
-
-                        db.deleteChatRoomList(roomId,key);
-                        db.deleteChatRoomList(roomId,key);
-                        db.deleteChatMessageList(userId,roomId,key);
+                        String friendId = jsonArray.toString();
+                        jsonObject.put("friendId",friendId);
 
 
                     } else {
 
                         jsonObject.put("group", false);
-                        jsonObject.put("id",key);
-
-                        db.deleteChatRoomList(0,key);
-                        db.deleteChatRoomList(0,key);
-                        db.deleteChatMessageList(userId,0,key);
+                        jsonObject.put("roomId",0);
+                        jsonObject.put("friendId",key);
 
                     }
 
@@ -209,9 +202,12 @@ public class EditChatRoomAdapter extends BaseAdapter {
         String RoomName = chatRoomList.get(position).getRoomName();
 
         if(RoomName == null || RoomName.equals("")){
-            RoomName = ChatRoomMemberList.get(0)[1];
-            for(int i=1;i<ChatRoomMemberList.size();i++){
-                RoomName += ", " +  ChatRoomMemberList.get(i)[1];
+            for(int i=0;i<ChatRoomMemberList.size();i++){
+                if(i==0) {
+                    RoomName = ChatRoomMemberList.get(0)[1];
+                }else {
+                    RoomName += ", " + ChatRoomMemberList.get(i)[1];
+                }
             }
         }
 

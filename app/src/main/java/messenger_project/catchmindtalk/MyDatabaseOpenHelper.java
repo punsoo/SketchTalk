@@ -160,7 +160,8 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         Cursor cursor = dbReader.rawQuery(sql,null);
         int result = -1;
         while(cursor.moveToNext()){
-            result = cursor.getInt(0);
+            int tmp = cursor.getInt(0)-1;
+            result = tmp < -1 ? tmp : -1;
         }
         return result;
     }
@@ -171,6 +172,27 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         Cursor cursor = dbReader.rawQuery(sql,null);
 
         return cursor;
+    }
+
+    public void updateChatRoomLastReadTime(int roomId, String friendId, long time){
+        dbWriter.beginTransaction();
+        Log.d("확인ucrlrt",roomId+"#"+friendId+"#"+time);
+        String sql;
+        if(roomId==0){
+            sql = "UPDATE chatRoomList SET lastReadTime='" + time + "' WHERE friendId='"+friendId+"' AND roomId='"+roomId+"';";
+        }else {
+            sql = "UPDATE chatRoomList SET lastReadTime='" + time + "' WHERE roomId='"+roomId+"';";
+        }
+
+        try {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbWriter.endTransaction();
+        }
+
     }
 
     public Cursor getChatRoomListJoinOnMessageList(String myId){
@@ -194,8 +216,14 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
-    public boolean haveChatRoom(String friendId){
-        String sql = "SELECT COUNT(*) FROM chatRoomList WHERE roomId = '0' AND friendId = '"+friendId+"'";
+    public boolean haveChatRoom(int roomId, String friendId){
+
+        String sql;
+        if(roomId ==0) {
+            sql = "SELECT COUNT(*) FROM chatRoomList WHERE roomId = '0' AND friendId = '" + friendId + "'";
+        }else{
+            sql = "SELECT COUNT(*) FROM chatRoomList WHERE roomId = '"+roomId+"'";
+        }
         Cursor cursor = dbReader.rawQuery(sql,null);
         cursor.moveToNext();
         int result = cursor.getInt(0) ;
@@ -216,8 +244,10 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         String sql;
         if(roomId==0){
             sql = "DELETE FROM chatRoomList WHERE roomId = '" + roomId + "' AND friendId ='" + friendId + "'";
+            Log.d("확인DCRL",roomId+"#"+friendId);
         }else {
             sql = "DELETE FROM chatRoomList WHERE roomId = '" + roomId + "'";
+            Log.d("확인DCRL",roomId+"#");
         }
 
         try {
@@ -271,13 +301,108 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
+
+    public void insertChatRoomMemberListMultiple(String jarray) {
+
+
+        try
+        {
+            JSONArray chatArray = new JSONArray(jarray);
+
+            String sql="INSERT INTO chatRoomMemberList VALUES ";
+
+            for(int i=0;i<chatArray.length();i++){
+                if(i>0){
+                    sql = sql + ",";
+                }
+                JSONObject jobject = new JSONObject(chatArray.get(i).toString());
+                int roomId = (int) jobject.getInt("roomId");
+                String friendId = (String) jobject.getString("friendId");
+                long lastReadTime = (long) jobject.getLong("lastReadTime");
+                String nickname = (String) jobject.getString("nickname");
+                String profileMessage = (String) jobject.getString("profileMessage");
+                String profileImageUpdateTime = (String) jobject.getString("profileImageUpdateTime");
+
+                sql = sql + "('"+roomId+"','"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+lastReadTime+"')";
+            }
+            dbWriter.beginTransaction();
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            dbWriter.endTransaction();
+        }
+
+    }
+
+    public void insertChatRoomMemberListMultipleByJoin(int roomId, String friendId) {
+        try {
+            JSONArray jarray = new JSONArray(friendId);
+
+            String sql = "SELECT * FROM friendList WHERE friendId='" + jarray.getString(0) + "'";
+            for (int i = 1; i < jarray.length(); i++) {
+                sql = sql + " OR friendId='" + jarray.getString(i) + "'";
+            }
+            Cursor cursor = dbReader.rawQuery(sql, null);
+
+
+            String sql_2 = "INSERT INTO chatRoomMemberList VALUES ";
+
+            cursor.moveToNext();
+
+            sql_2 = sql_2 + "('" + roomId + "','" + cursor.getString(0) + "','" + cursor.getString(1) + "','" + cursor.getString(2) + "','" + cursor.getString(3) + "','0')";
+            while (cursor.moveToNext()) {
+                sql_2 = sql_2 + ",('" + roomId + "','" + cursor.getString(0) + "','" + cursor.getString(1) + "','" + cursor.getString(2) + "','" + cursor.getString(3) + "','0')";
+            }
+
+            try {
+                dbWriter.beginTransaction();
+                dbWriter.execSQL(sql_2);
+               // dbWriter.setTransactionSuccessful();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbWriter.endTransaction();
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void updateChatRoomMemberLastReadTime(int roomId, String friendId, long time){
+        dbWriter.beginTransaction();
+        String sql;
+
+        sql = "UPDATE chatRoomMemberList SET lastReadTime='" + time + "' WHERE friendId='"+friendId+"' AND roomId='"+roomId+"';";
+        Log.d("확인ucrmlrt",sql);
+
+        try {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbWriter.endTransaction();
+        }
+
+    }
+
+
     public String getChatRoomName(int roomId, String friendId){
 
         String sql;
         if(roomId==0) {
-            sql = "SELECT roomName FROM chatRoomList WHRE roomId = '" + roomId + "' AND friendId = '" + friendId + "'";
+            sql = "SELECT roomName FROM chatRoomList WHERE roomId = '" + roomId + "' AND friendId = '" + friendId + "'";
         }else{
-            sql = "SELECT roomName FROM chatRoomList WHRE roomId = '" + roomId + "'";
+            sql = "SELECT roomName FROM chatRoomList WHERE roomId = '" + roomId + "'";
         }
         Cursor cursor;
         try {
@@ -317,9 +442,31 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
             ChatRoomMemberData[2] = cursor.getString(2);
             ChatRoomMemberData[3] = cursor.getString(3);
             ChatRoomMemberList.add(ChatRoomMemberData);
+            Log.d("뭘까gcrm", ChatRoomMemberData[0] + "#" +ChatRoomMemberData[1] + "#" +ChatRoomMemberData[2] +"#" +ChatRoomMemberData[3]);
         }
 
         return ChatRoomMemberList;
+
+    }
+
+    public void deleteChatRoomMemberList(int roomId, String friendId) {
+
+        dbWriter.beginTransaction();
+        String sql;
+        if(roomId==0){
+            sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId ='" + friendId + "'";
+        }else {
+            sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "'";
+        }
+
+        try {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbWriter.endTransaction();
+        }
 
     }
 
@@ -426,7 +573,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     }
 
 
-    public int getUnReadNum(String myId,int roomId,String friendId, long lastReadTime){
+    public int getChatRoomUnReadNum(String myId,int roomId,String friendId, long lastReadTime){
 
 //        SQLiteDatabase db = this.getReadableDatabase();
         String sql;
@@ -434,11 +581,11 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
         // meesageType 에 관한 조건도 추가
         if(roomId == 0){
-            sql = "SELECT COUNT(*) FROM chatMessageList_" + userId + " WHERE roomId = '" + roomId + "' AND friendId = '"+ friendId + "' AND messageTime >'" + lastReadTime + "';";
+            sql = "SELECT COUNT(*) FROM chatMessageList_" + userId + " WHERE roomId = '" + roomId + "' AND friendId = '"+ friendId + "' AND (messageType ='1' OR messageType = '51')  AND messageTime >'" + lastReadTime + "';";
         }else {
-            sql = "SELECT COUNT(*) FROM chatMessageList_" + userId + " WHERE roomId = '" + roomId + "' AND messageTime >"+ lastReadTime + ";";
+            sql = "SELECT COUNT(*) FROM chatMessageList_" + userId + " WHERE roomId = '" + roomId + "' AND (messageType ='1' OR messageType = '51') AND messageTime >"+ lastReadTime + ";";
         }
-        Log.d("getUnReadNum",sql);
+        Log.d("getChatRoomUnReadNum",sql);
         Cursor cursor = dbReader.rawQuery(sql,null);
         cursor.moveToNext();
         int result = cursor.getInt(0) ;
@@ -447,7 +594,26 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
+    public int getMessageUnReadNum(String myId,int roomId,String friendId, long time){
 
+//        SQLiteDatabase db = this.getReadableDatabase();
+        String sql;
+        String userId = mPref.getString("userId",myId);
+
+        // meesageType 에 관한 조건도 추가
+        if(roomId == 0){
+            sql = "SELECT COUNT(*) FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId = '"+ friendId + "' AND lastReadTime <'" + time + "';";
+        }else {
+            sql = "SELECT COUNT(*) FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId <> '"+ userId + "' AND lastReadTime <'" + time + "';";
+        }
+        Log.d("getMessageUnReadNum",sql);
+        Cursor cursor = dbReader.rawQuery(sql,null);
+        cursor.moveToNext();
+        int result = cursor.getInt(0) ;
+
+        return result;
+
+    }
 
 
 

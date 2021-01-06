@@ -85,15 +85,15 @@ public class InviteFriendListAdapter extends BaseAdapter {
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
 
-            convertView = this.inflater.inflate(R.layout.friendlist_item, parent, false);
+            convertView = this.inflater.inflate(R.layout.friendlist_item_check, parent, false);
 
 
             viewHolder = new FriendViewHolder();
-            viewHolder.icon = (ImageView) convertView.findViewById(R.id.profileImage);
-            viewHolder.nickname = (TextView) convertView.findViewById(R.id.nickname);
-            viewHolder.section = (LinearLayout) convertView.findViewById(R.id.sectionHeader);
-            viewHolder.sectionTxt = (TextView) convertView.findViewById(R.id.sectionText);
-            viewHolder.profile_container = (RelativeLayout) convertView.findViewById(R.id.profile_container);
+            viewHolder.icon = (ImageView) convertView.findViewById(R.id.profile_image_check);
+            viewHolder.nickname = (TextView) convertView.findViewById(R.id.textView1_check);
+            viewHolder.section = (LinearLayout) convertView.findViewById(R.id.sectionHeader_check);
+            viewHolder.sectionTxt = (TextView) convertView.findViewById(R.id.sectionText_check);
+            viewHolder.profile_container = (RelativeLayout) convertView.findViewById(R.id.profile_container_check);
             viewHolder.check = (ImageView) convertView.findViewById(R.id.check_image);
             viewHolder.api_frame = (FrameLayout) convertView.findViewById(R.id.api_frame);
 

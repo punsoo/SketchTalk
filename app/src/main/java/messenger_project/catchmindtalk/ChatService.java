@@ -47,21 +47,24 @@ public class ChatService extends Service {
         String ServerAddress = "54.180.196.239";
         String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
 
+        public boolean boundCheck_ChatRoom;
+        public boolean boundCheck_Main;
+        public boolean boundStart;
+        public int boundedRoomId;
+        public String boundedFriendId;
+
         static final int PostConnect = 3333;
         static final int ConnectThread = 5555;
+        static final int UpdateRead = 2020;
 
-        public class ChatServiceBinder extends Binder {
-            public ChatService getService() {
-                return ChatService.this; //현재 서비스를 반환.
-            }
-        }
+
 
         @Override
         public void onCreate() {
 
             super.onCreate();
 
-            Log.d("ChatServiceOnCreate","크리에이트");
+            Log.d("확인ChatServiceOnCreate","크리에이트");
 
             connectable = true;
 
@@ -131,6 +134,13 @@ public class ChatService extends Service {
             Log.d("ChatServiceOnDestroy","디스트로이");
         }
 
+        public class ChatServiceBinder extends Binder {
+            public ChatService getService() {
+                return ChatService.this; //현재 서비스를 반환.
+            }
+        }
+
+
         private final IBinder mBinder = new ChatServiceBinder();
 
         @Override
@@ -141,46 +151,89 @@ public class ChatService extends Service {
         }
 
         //콜백 인터페이스 선언
-        public interface ICallback {
+        public interface ICallback_ChatRoom {
             public void recvData(String friendId,String msgContent,long time); //액티비티에서 선언한 콜백 함수.
             public void changeRoomId(int roomId);
             public void sendMessageMark(String msgContent,long time);
             public void sendInviteMark(String inviteId,String msgContent,long time,boolean resetMemberList);
             public void sendExitMark(String friendId,String msgContent,long time);
             public void sendImageMark(String friendId,String msgContent, long time , int kind);
-            public void resetHash();
+            public void reset();
             public void recvUpdate();
             public String getFriendId();
-            public void resetToolbar();
             public void receivePath(String PATH);
             public void receiveClear();
             public void receiveDrawChat(String friendId,String msgContent);
 
         }
 
-        public interface ICallback_2{
+        public interface ICallback_Main{
             public void recvData(); //액티비티에서 선언한 콜백 함수.
             public void changeRoomList();
         }
 
-        private ICallback mCallback;
-        private ICallback_2 mCallback_2;
+        private ICallback_ChatRoom mCallback_ChatRoom;
+        private ICallback_Main mCallback_Main;
 
         //액티비티에서 콜백 함수를 등록하기 위함.
-        public void registerCallback(ICallback cb) {
-            mCallback = cb;
+        public void registerCallback_ChatRoom(ICallback_ChatRoom cb) {
+            mCallback_ChatRoom = cb;
         }
 
-        public void registerCallback_2(ICallback_2 cb_2) {
-            mCallback_2 = cb_2;
+        public void registerCallback_Main(ICallback_Main cb) {
+            mCallback_Main = cb;
         }
 
 
 
         //액티비티에서 메세지 전송
-        public void sendMessage(int roomId,String friendId, String msgContent, long time){
+        public void sendMessage(int roomId, String friendId, String msgContent, long time){
 
-            if(roomId ==0 && !db.haveChatRoom(friendId)){
+            if(roomId < 0 ){
+                Log.d("위치확인",roomId+"#"+friendId+"#"+msgContent+"#"+time);
+                getRoomIdThread grt = new getRoomIdThread(roomId,friendId,time);
+                grt.start();
+                try {
+                    grt.join();
+                    roomId = grt.returnRoomId();
+                    if(roomId >0){
+                        if(boundCheck_ChatRoom) {
+                            mCallback_ChatRoom.changeRoomId(roomId);
+                            boundedRoomId = roomId;
+                        }
+                    }
+                    if(!db.haveChatRoom(roomId,friendId)) {
+                        db.insertChatRoomMemberListMultipleByJoin(roomId,friendId);
+                        db.insertChatRoomList(roomId, "group", time,"",2);
+
+                        if (boundCheck_ChatRoom) {
+                            mCallback_ChatRoom.reset();
+                            mCallback_ChatRoom.recvUpdate();
+                            mCallback_ChatRoom.changeRoomId(roomId);
+                        }
+
+                        if(boundCheck_Main == true){
+                            mCallback_Main.changeRoomList();
+                        }
+
+                    }
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            if(roomId ==0 && !db.haveChatRoom(roomId,friendId)){
+
+                Cursor cursor = db.getFriendData(friendId);
+                cursor.moveToNext();
+                String nickname = cursor.getString(1);
+                String profileMessage = cursor.getString(2);
+                String profileIUT = cursor.getString(3);
+
+                db.insertChatRoomMemberList(0,friendId,nickname,profileMessage,profileIUT,0);
+                db.insertChatRoomList(0,friendId,0,"",1);
 
                 getFriendThread gft = new getFriendThread(friendId,time);
                 gft.start();
@@ -195,24 +248,19 @@ public class ChatService extends Service {
                 e.printStackTrace();
             }
 
-            try {
-                st.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
 
             if(st.isSuccess()){
 
                 Log.d("st.isSucess",roomId+"#"+friendId+"#"+msgContent+"#"+time);
                 if(roomId==0) {
-                    db.insertChatMessageList(userId, roomId, friendId, msgContent, time, 1);
+                    db.insertChatMessageList(userId, roomId, friendId, msgContent, time, 2);
                 }else{
-                    db.insertChatMessageList(userId, roomId, userId, msgContent, time, 1);
+                    db.insertChatMessageList(userId, roomId, userId, msgContent, time, 2);
                 }
 
 
-                mCallback.sendMessageMark(msgContent,time);
+                mCallback_ChatRoom.sendMessageMark(msgContent,time);
 
             }else{
 
@@ -491,35 +539,35 @@ public class ChatService extends Service {
         }
     }
 
-    public void loseReceive(){
-
-        Log.d("ChatService","loseReceive");
-
-        if(!socket.isClosed()) {
-            Log.d("ChatService","loseReceive해제메시지");
-            SendThread st = new SendThread(socket,0,"해제자","해체",0,33 );
-            st.start();
-            try {
-                st.join();
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-
-        }
-
-        try {
-            socket.close();
-            socket = null ;
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        Message message= Message.obtain();
-        message.what = ConnectThread;
-        handler.sendMessage(message);
-    }
+//    public void loseReceive(){
+//
+//        Log.d("ChatService","loseReceive");
+//
+//        if(!socket.isClosed()) {
+//            Log.d("ChatService","loseReceive해제메시지");
+//            SendThread st = new SendThread(socket,0,"해제자","해체",0,33 );
+//            st.start();
+//            try {
+//                st.join();
+//            }catch (InterruptedException e){
+//                e.printStackTrace();
+//            }
+//
+//        }
+//
+//        try {
+//            socket.close();
+//            socket = null ;
+//        }catch (NullPointerException e){
+//            e.printStackTrace();
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+//
+//        Message message= Message.obtain();
+//        message.what = ConnectThread;
+//        handler.sendMessage(message);
+//    }
 
     public void Reconnect(){
 
@@ -566,12 +614,86 @@ public class ChatService extends Service {
 
                     db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
 
-                    if(sRoomId ==0 && !db.haveChatRoom(sFriendId)){
-                        getFriendThread gft = new getFriendThread(sFriendId,sTime);
-                        gft.start();
+                    if(boundStart) {
+                        if(sRoomId == 0 ) {
+                            if(boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                                db.updateChatRoomLastReadTime(sRoomId, sFriendId, sTime);
+                                sendRead(sRoomId,mCallback_ChatRoom.getFriendId(),sTime);
+                            }
+                        }else{
+                            if(boundedRoomId == sRoomId) {
+                                db.updateChatRoomLastReadTime(sRoomId, sFriendId, sTime);
+                                sendRead(sRoomId,mCallback_ChatRoom.getFriendId(),sTime);
+                            }
+                        }
                     }
-                    mCallback.recvData(sFriendId,sMsgContent,sTime);
+
+
+                    if(sRoomId ==0 && !db.haveChatRoom(sRoomId,sFriendId)){
+                        try {
+                            getFriendThread gft = new getFriendThread(sFriendId, sTime);
+                            gft.start();
+                            gft.join();
+                        }catch(InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }else if(sRoomId > 0 && !db.haveChatRoom(sRoomId,sFriendId)){
+                        try {
+                            getGroupThread ggt = new getGroupThread(sRoomId, sFriendId, sMsgContent, sTime, 1);
+                            ggt.start();
+                            ggt.join();
+                        }catch(InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }else{
+                        if(boundCheck_ChatRoom) {
+                            if (sRoomId == 0) {
+
+                                if (boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                                }
+
+
+                            } else {
+                                if (boundedRoomId == sRoomId) {
+                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                                }
+                            }
+                        }
+                    }
+
+                    if(boundCheck_Main) {
+                        mCallback_Main.changeRoomList();
+                    }
+
+                }else if(sMsgType == UpdateRead){
+
+                    db.updateChatRoomMemberLastReadTime(sRoomId,sFriendId,sTime);
+                    if(boundStart){
+                        if(sRoomId == 0){
+                            if(boundedRoomId ==0 && boundedFriendId.equals(sFriendId)){
+                                mCallback_ChatRoom.recvUpdate();
+                            }
+                        }else{
+                            if(boundedRoomId == sRoomId){
+                                mCallback_ChatRoom.recvUpdate();
+                            }
+                        }
+
+
+                    }
+
+                }else if(sMsgType == 4){
+
+                    db.deleteChatRoomMemberList(sRoomId,sFriendId);
+                    db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
+                    if(boundCheck_ChatRoom){
+                        if(boundedRoomId == sRoomId){
+                            mCallback_ChatRoom.sendExitMark(sFriendId,sMsgContent,sTime);
+                        }
+                    }
                 }
+
 
             }
     }
@@ -583,7 +705,6 @@ public class ChatService extends Service {
         public String sFriendId;
         public long sTime;
 
-//        public long sTime;
 
         public getFriendThread(String friendId, long time){
 
@@ -634,8 +755,8 @@ public class ChatService extends Service {
                     String profileMessage = jobj.getString("profileMessage");
                     String profileImageUpdateTime = jobj.getString("profileImageUpdateTime");
 
-                    db.insertChatRoomMemberList(0,friendId,nickname,profileMessage,profileImageUpdateTime,0);
-                    db.insertChatRoomList(0,friendId,sTime,"",1);
+                    db.insertChatRoomMemberList(0,friendId,nickname,profileMessage,profileImageUpdateTime,sTime);
+                    db.insertChatRoomList(0,friendId,0,"",1);
 
 //                    if(boundCheck_2 == true){
 //                        mCallback_2.changeRoomList();
@@ -658,5 +779,203 @@ public class ChatService extends Service {
             }
         }
     }
+
+    public class getGroupThread extends Thread{
+
+        public int sRoomId;
+        public String sFriendId;
+        public String sMsgContent;
+        public long sTime;
+        public int sMsgType;
+
+        public getGroupThread(int roomId,String friendId,String msgContent,long time,int msgType){
+
+            this.sRoomId = roomId;
+            this.sFriendId = friendId;
+            this.sMsgContent = msgContent;
+            this.sTime = time;
+            this.sMsgType = msgType;
+
+        }
+
+        @Override
+        public void run() {
+
+            String data="";
+
+            /* 인풋 파라메터값 생성 */
+            String param = "userId="+userId+"&roomId="+this.sRoomId;
+
+            try {
+                /* 서버연결 */
+                URL url = new URL(ServerURL+"/getGroup.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+                Log.d("getGroupThread.data",data);
+                db.insertChatRoomMemberListMultiple(data);
+                db.insertChatRoomList(sRoomId,"group",0,"",1);
+                if(boundCheck_Main == true){
+                    mCallback_Main.changeRoomList();
+                    mCallback_Main.recvData();
+                }
+
+
+                if(boundCheck_ChatRoom == true) {
+                    if(boundedRoomId == sRoomId ) {
+                        mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                    }else{
+//                        if(sMsgType == 55) {
+//                            NotificationAlarm(sFriendId, 0, "#없음", "<사진>");
+//                        }else{
+//                            NotificationAlarm(sFriendId, 0, "#없음", sContent);
+//                        }
+                    }
+                }else{
+//                    if(sKind == 55) {
+////                        NotificationAlarm(sFriendId, 0, "#없음", "<사진>");
+////                    }else{
+////                        NotificationAlarm(sFriendId, 0, "#없음", sContent);
+////                    }
+                }
+
+
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("getGroup","MalformedURLException");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("getGroup","IOException");
+            }
+        }
+
+
+        public int returnRoomId(){
+            return this.sRoomId;
+        }
+
+
+    }
+
+    public class getRoomIdThread extends Thread{
+
+        public String sFriendId;
+        public int sRoomId;
+        public long sTime;
+
+        public getRoomIdThread(int roomId,String friendId,long time){
+
+            this.sRoomId = roomId;
+            this.sFriendId = friendId;
+            this.sTime = time;
+
+        }
+
+        @Override
+        public void run() {
+
+            String data="";
+
+            /* 인풋 파라메터값 생성 */
+            String param = "userId="+userId+"&friendId="+this.sFriendId+"&time="+this.sTime;
+            Log.d("위치확인2",sRoomId+"#"+sFriendId+"#"+sTime);
+
+            try {
+                /* 서버연결 */
+                URL url = new URL(ServerURL+"/getRoomId.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+                Log.d("위치확인3",sRoomId+"#"+sFriendId+"#"+sTime);
+                Log.d("getRoomIdThread.data",data);
+                this.sRoomId = Integer.parseInt(data);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        public int returnRoomId(){
+            return this.sRoomId;
+        }
+
+
+    }
+
+
+
+    public void sendRead(int roomId, String friendId, long time){
+        Log.d("확인sendRead",roomId+"#"+friendId+"#"+time);
+        if (roomId < 0){
+            return;
+        }
+
+        SendThread st = new SendThread(socket, roomId, friendId, "justUpdateTime", time , UpdateRead);
+        st.start();
+
+    }
+
+
+    public void sendExit(int roomId,String friendId, String msgContent, long time){
+        if (roomId < 0){
+            return;
+        }
+
+        SendThread st = new SendThread(socket, roomId, friendId, msgContent, time, 4);
+        st.start();
+
+    }
+
 
 }

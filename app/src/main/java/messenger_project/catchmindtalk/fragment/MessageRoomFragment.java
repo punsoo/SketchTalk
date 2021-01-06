@@ -121,7 +121,7 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
     }
 
     @Override
-    public void changeNo(int sRoomId) {
+    public void changeRoomId(int sRoomId) {
         this.roomId = sRoomId ;
         chatListAdapter.roomId = sRoomId;
     }

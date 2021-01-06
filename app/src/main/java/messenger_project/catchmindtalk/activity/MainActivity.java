@@ -30,6 +30,11 @@ import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import messenger_project.catchmindtalk.ChatService;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 import messenger_project.catchmindtalk.adapter.TabPagerAdapter;
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-//    private ChatService mService;
+    private ChatService mService;
 
     public MyDatabaseOpenHelper db;
     public SharedPreferences mPref;
@@ -158,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
                 if(msg.what == 1) {
                     fragmentCommunicator.notifyRecvData();
                 }else if(msg.what ==2){
+                    Log.d("확인5","55555");
                     fragmentCommunicator.changeRoomList();
                 }
 
@@ -165,61 +171,70 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             }
         };
 
-//        Intent serviceIntent = new Intent(this, ChatService.class);
-//        serviceIntent.putExtra("FromLogin",false);
-//        bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
+        Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
+        serviceIntent.putExtra("FromLogin",false);
+        getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
+        intent.putExtra("friendId","poon");
+        intent.putExtra("nickname","데빌클로");
+        intent.putExtra("roomId",0);
+        startActivity(intent);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d("확인Main","");
+            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
+            mService = binder.getService(); //서비스 받아옴
+            mService.registerCallback_Main(mCallback); //콜백 등록
+            mService.boundCheck_Main = true;
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+        }
+    };
+
+    public void UpdateNetwork(String type){
+        if(type.equals("wifi")) {
+            Intent serviceIntent = new Intent(this, ChatService.class);
+            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+
+        }else{
+            Intent serviceIntent = new Intent(this, ChatService.class);
+            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+        }
+    }
 
 
-//    private ServiceConnection mConnection = new ServiceConnection() {
-//        // Called when the connection with the service is established
-//        public void onServiceConnected(ComponentName className, IBinder service) {
-//            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
-//            mService = binder.getService(); //서비스 받아옴
-//            mService.registerCallback_2(mCallback); //콜백 등록
-//            mService.boundCheck_MainActivity = true;
-//        }
-//
-//        // Called when the connection with the service disconnects unexpectedly
-//        public void onServiceDisconnected(ComponentName className) {
-//            mService = null;
-//        }
-//    };
-//
-//    public void UpdateNetwork(String type){
-//        if(type.equals("wifi")) {
-//            Intent serviceIntent = new Intent(this, ChatService.class);
-//            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-//
-//        }else{
-//            Intent serviceIntent = new Intent(this, ChatService.class);
-//            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-//        }
-//    }
-//
-//
-//    private ChatService.ICallback_MainActivity mCallback = new ChatService.ICallback_MainActivity() {
-//
-//        public void recvData() {
-//
-//            Message message= Message.obtain();
-//            message.what = 1;
-//            handler.sendMessage(message);
-//
-//        }
-//
-//        public void changeRoomList(){
-//
-//            Message message= Message.obtain();
-//            message.what = 2;
-//            handler.sendMessage(message);
-//
-//        }
-//
-//    };
+    private ChatService.ICallback_Main mCallback = new ChatService.ICallback_Main() {
+
+        public void recvData() {
+
+            Message message= Message.obtain();
+            message.what = 1;
+            handler.sendMessage(message);
+
+        }
+
+        public void changeRoomList(){
+
+            Message message= Message.obtain();
+            message.what = 2;
+            handler.sendMessage(message);
+
+        }
+
+    };
 
 
 
@@ -227,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         void notifyRecvData();
         void changeRoomList();
-        void startChatRoomActivity(String friendId, String nickname);
+        void startChatRoomActivity(int roomId, String friendId, String nickname);
 
     }
 
@@ -236,14 +251,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     @Override
     public void sendToActivity(String friendId,String nickname) {
         viewPager.setCurrentItem(1);
-        fragmentCommunicator.startChatRoomActivity(friendId,nickname);
+        fragmentCommunicator.startChatRoomActivity(0,friendId,nickname);
     }
+
 
     public void sendToActivityExit(int roomId, String friendId) {
 
         RoomId = roomId;
         FriendId = friendId;
-
+        Log.d("확인Exit",roomId +"#"+FriendId);
         DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
 
             @Override
@@ -370,32 +386,74 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             this.now = System.currentTimeMillis();
             this.msgContent = myNickname + "님이 나갔습니다";
             this.roomIdExit = RoomIdExit;
+            this.friendIdExit = FriendIdExit;
 
         }
 
         @Override
         public void run() {
+            Log.d("확인ExitThread",now+"#"+msgContent+"#"+roomIdExit);
+            db.deleteChatRoomList(roomIdExit,friendIdExit);
+            db.deleteChatRoomMemberList(roomIdExit,friendIdExit);
+            db.deleteChatMessageList(myUserId,roomIdExit,friendIdExit);
 
-            if(deleteDB){
-
-                db.deleteChatRoomList(roomIdExit,friendIdExit);
-                db.deleteChatMessageList(myUserId,roomIdExit,friendIdExit);
-
-            }
-
-//            mService.sendExit(no,friendIdExit,content,now);
+            mService.sendExit(roomIdExit,friendIdExit,msgContent,now);
         }
 
 
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == MakeGroupActivity){
+            if(resultCode == RESULT_OK){
+                int roomId = data.getExtras().getInt("roomId");
+                String fId = data.getExtras().getString("inviteId");
+                Log.d("Main.onactresult",fId);
+                String nick = data.getExtras().getString("nickname");
+                fragmentCommunicator.startChatRoomActivity(roomId,fId,nick);
+            }
+        }else if(requestCode == EditChatRoom){
+            if(resultCode == RESULT_OK){
+                try {
+                    String roomSet = data.getExtras().getString("roomSet");
+
+                    JSONArray jarray = new JSONArray(roomSet);
+
+                    String content =  myNickname + "님이 나갔습니다";
+                    long now = System.currentTimeMillis();
+
+                    for(int i=0;i<jarray.length();i++){
+
+                        JSONObject jsonObject = new JSONObject(jarray.get(i).toString());
+
+                        int roomId = jsonObject.getInt("roomId");
+
+                        String friendId = jsonObject.getString("friendId");
+
+                        ExitThread et = new ExitThread(roomId,friendId);
+                        et.start();
+
+                    }
+
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
-//        mService.boundCheck_MainActivity = false;
-//        unbindService(mConnection);
-//
+        mService.boundCheck_Main = false;
+        unbindService(mConnection);
+
 //
 //        boolean autoLogin = mPref.getBoolean("autoLogin",false);
 //        Log.d("MainActivity","onDestroy"+autoLogin);

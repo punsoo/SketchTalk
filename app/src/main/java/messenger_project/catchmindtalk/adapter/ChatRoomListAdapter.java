@@ -125,10 +125,14 @@ public class ChatRoomListAdapter extends BaseAdapter {
         String RoomName = chatRoomList.get(position).getRoomName();
 
         if(RoomName == null || RoomName.equals("")){
-            RoomName = ChatRoomMemberList.get(0)[1];
-            for(int i=1;i<ChatRoomMemberList.size();i++){
-                RoomName += ", " +  ChatRoomMemberList.get(i)[1];
+            for (int i = 0; i < ChatRoomMemberList.size(); i++) {
+                if(i==0){
+                    RoomName = ChatRoomMemberList.get(0)[1];
+                }else {
+                    RoomName += ", " + ChatRoomMemberList.get(i)[1];
+                }
             }
+
         }
 
         viewHolder.chatRoomName.setText(RoomName);
@@ -137,8 +141,8 @@ public class ChatRoomListAdapter extends BaseAdapter {
         viewHolder.memberNum.setText("" + chatRoomList.get(position).getMemberNum());
 
         if( chatRoomList.get(position).getRoomType() == 1) {
-            String FriendId;
-            String ProfileImageUpdateTime;
+            String FriendId="";
+            String ProfileImageUpdateTime="none";
             if(ChatRoomMemberList.get(0)[0].equals(userId)){
                 FriendId = ChatRoomMemberList.get(1)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
@@ -146,6 +150,10 @@ public class ChatRoomListAdapter extends BaseAdapter {
                 FriendId = ChatRoomMemberList.get(0)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
             }
+//            if(ChatRoomMemberList.size()>0){
+//                FriendId = ChatRoomMemberList.get(0)[0];
+//                ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
+//            }
 
             Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
                     .error(R.drawable.default_profile_image)
@@ -157,6 +165,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
         convertView.setTag(R.id.friendId, chatRoomList.get(position).getFriendId());
+        Log.d("확인CRLA",chatRoomList.get(position).getFriendId()+"#");
         convertView.setTag(R.id.roomName, chatRoomList.get(position).getRoomName());
 
 

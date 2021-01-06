@@ -74,7 +74,7 @@ public class EditChatRoomActivity extends AppCompatActivity {
 
         while(CRC.moveToNext()) {
 
-            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            int UnreadNum = db.getChatRoomUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
             Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
             ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             chatRoomListData.add(addItem);

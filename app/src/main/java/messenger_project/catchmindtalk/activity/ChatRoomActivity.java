@@ -94,7 +94,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     Socket socket;
     EditText sendcontent;
     final private static String LOG = "ChatRoomActivity";
-    public Handler handler;
+    public static Handler handler;
     MessageRoomFragment mf;
     DrawRoomFragment df;
     FragmentCommunicator fragmentCommunicator;
@@ -123,6 +123,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public static final int DeleteImage = 3102;
 
     public static final int DeleteMessage = 2013;
+    public static final int UpdateRead = 2020;
 
 
 
@@ -143,6 +144,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom_nav);
 
+        Intent serviceIntent = new Intent(this, ChatService.class);
+        getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
         sendcontent = (EditText)findViewById(R.id.messageContent);
 
@@ -172,20 +175,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         Intent GI = getIntent();
 
         friendId = GI.getStringExtra("friendId");
+        friendNickname = GI.getStringExtra("nickname");
+
+        Log.d("확인chatRoom",friendId+"#"+friendNickname);
         roomId = GI.getIntExtra("roomId",0);
         roomName = GI.getStringExtra("roomName");
 //        if(friendId.equals("noti")){
 //            getFriendId(no);
 //        }
 
-        if(roomName == null || roomName.equals("")){
-            Vector<String []> ChatRoomMemberList = db.getChatRoomMemberList(roomId,friendId);
-            roomName = ChatRoomMemberList.get(0)[1];
-            for(int i=1;i<ChatRoomMemberList.size();i++){
-                roomName += ", " +  ChatRoomMemberList.get(i)[1];
-            }
-        }
-        ResetHash();
+
+        Reset();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -251,8 +251,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             }
         });
 
-        Intent serviceIntent = new Intent(this, ChatService.class);
-        bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
+
+
 
 
         handler = new Handler(){
@@ -266,16 +266,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
                     fragmentCommunicator.passData(friendId, NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 1);
+                    Log.d("확인pass",NickHash.get(friendId)+"#");
 
                 }else if(msg.what ==2){
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
                     fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", msgContent, time, 2);
                 }else if(msg.what ==3){
-                    String content = msg.getData().getString("content");
+                    String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", content, time, 3);
-                }else if(msg.what==77){
+                    fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", msgContent, time, 3);
+                }else if(msg.what==UpdateRead){
                     fragmentCommunicator.alertChange();
                 }else if(msg.what==10){
                     String path = msg.getData().getString("path");
@@ -379,6 +380,51 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
+            mService = binder.getService(); //서비스 받아옴
+            mService.registerCallback_ChatRoom(mCallback); //콜백 등록
+            mService.boundCheck_ChatRoom = true;
+            mService.boundStart = true;
+            mService.boundedRoomId = roomId;
+            mService.boundedFriendId = friendId;
+            long now = System.currentTimeMillis();
+            mService.sendRead(roomId, friendId, now);
+
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+                db.updateChatRoomLastReadTime(roomId,friendId,System.currentTimeMillis());
+        if(mService != null) {
+            Log.d("확인onStart","mService");
+            mService.boundStart = true;
+            long now = System.currentTimeMillis();
+            mService.sendRead(roomId, friendId, now);
+        }
+        if(mService == null){
+            Log.d("확인onStart","mServiceNull");
+        }
+        fragmentCommunicator.alertChange();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mService.boundStart = false;
+    }
+
 
     public void activeAlarm(View v){
 
@@ -663,24 +709,28 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 //        }
     }
 
-    public void ResetHash(){
+    public void Reset(){
 
 
         NickHash = new HashMap<>();
         ProfileIUTHash = new HashMap<>();
         Vector<String[]> chatRoomMemberList = db.getChatRoomMemberList(roomId,friendId);
+        String setRoomName ="";
+        if(chatRoomMemberList.size()>0) {
+            for(int i=0;i<chatRoomMemberList.size();i++) {
 
-        for(int i=0;i<chatRoomMemberList.size();i++) {
-            if(roomName == null || roomName.equals("")){
-                if(i==0) {
-                    roomName = chatRoomMemberList.get(0)[1];
-                }else {
-                    roomName += ", " + chatRoomMemberList.get(i)[1];
+                if (i == 0) {
+                    setRoomName = chatRoomMemberList.get(0)[1];
+                } else {
+                    setRoomName += ", " + chatRoomMemberList.get(i)[1];
                 }
+
+                NickHash.put(chatRoomMemberList.get(i)[0],chatRoomMemberList.get(i)[1]);
+                ProfileIUTHash.put(chatRoomMemberList.get(i)[0],chatRoomMemberList.get(i)[1]);
             }
 
-            NickHash.put(chatRoomMemberList.get(i)[1],chatRoomMemberList.get(i)[2]);
-            ProfileIUTHash.put(chatRoomMemberList.get(i)[1],chatRoomMemberList.get(i)[3]);
+        }else{
+            setRoomName = friendNickname;
         }
 
         if(roomId > 0){
@@ -693,35 +743,22 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             friendId = jarray.toString();
         }
 
-        getSupportActionBar().setTitle(roomName);
-
+        if(roomName == null || roomName.equals("")) {
+            getSupportActionBar().setTitle(setRoomName);
+        }else{
+            getSupportActionBar().setTitle(roomName);
+        }
 
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        db.updateChatRoomData(no,friendId,System.currentTimeMillis());
-//        if(mService != null) {
-//            mService.boundStart = true;
-//            long now = System.currentTimeMillis();
-//            mService.sendRead(no, friendId, now);
-//        }
-//        fragmentCommunicator.alertChange();
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        mService.boundStart = false;
-    }
 
     public interface FragmentCommunicator {
 
         void passData(String friendId, String nickname, String profileIUT, String msgContent, long time,int type);
         void alertChange();
-        void changeNo(int sNo);
+        void changeRoomId(int sRoomId);
         void deleteMessage(int position);
         void bottomSelect();
 
@@ -740,29 +777,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the service is established
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
-            mService = binder.getService(); //서비스 받아옴
-            mService.registerCallback(mCallback); //콜백 등록
-//            mService.boundCheck = true;
-//            mService.boundStart = true;
-//            mService.boundedNo = no;
-//            mService.boundedFriendId = friendId;
-            long now = System.currentTimeMillis();
-//            mService.sendRead(no, friendId, now);
-
-        }
-
-        // Called when the connection with the service disconnects unexpectedly
-        public void onServiceDisconnected(ComponentName className) {
-            mService = null;
-        }
-    };
-
-
-    private ChatService.ICallback mCallback = new ChatService.ICallback() {
+    private ChatService.ICallback_ChatRoom mCallback = new ChatService.ICallback_ChatRoom() {
 
         public void recvData(String friendId,String msgContent,long time) {
 
@@ -778,10 +793,13 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
 
         public void recvUpdate(){
-
+            Message message= Message.obtain();
+            message.what =2020;
+            handler.sendMessage(message);
         }
         public void changeRoomId(int passRoomId){
-
+                roomId = passRoomId;
+                fragmentCommunicator.changeRoomId(passRoomId);
         }
 
         public void sendMessageMark(String msgContent,long time){
@@ -802,8 +820,19 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
 
         @Override
-        public void sendExitMark(String sFriendId, String content, long time) {
+        public void sendExitMark(String sFriendId, String msgContent, long time) {
+            ResetMemberList();
+            Reset();
+            Message message= Message.obtain();
+            message.what = 3;
 
+            Bundle bundle = new Bundle();
+            bundle.putString("msgContent",msgContent);
+            bundle.putLong("time",time);
+
+            message.setData(bundle);
+
+            handler.sendMessage(message);
 
         }
 
@@ -812,16 +841,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         }
 
-        public void resetHash(){
-            ResetHash();
+        public void reset(){
+            Reset();
             ResetMemberList();
         }
 
         public String getFriendId(){
             return friendId;
         }
-
-        public void resetToolbar() { resetTitle(); }
 
         public void receivePath(String PATH){
 
@@ -838,20 +865,21 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
     };
 
-    public void resetTitle(){
-        getSupportActionBar().setTitle("그룹채팅 "+roomId);
-    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        mService.boundCheck = false;
-//        mService.boundStart = false;
-//        mService.boundedNo = -1;
-//        mService.boundedFriendId ="";
-//        unbindService(mConnection);
-//        unregisterReceiver(NetworkChangeUpdater);
-//        ChatRoomViewPager.DrawMode = false;
+
+        if(mService.boundCheck_ChatRoom){
+            getApplicationContext().unbindService(mConnection);
+        }
+        mService.boundCheck_ChatRoom = false;
+        mService.boundStart = false;
+        mService.boundedRoomId = -1;
+        mService.boundedFriendId ="";
+        unregisterReceiver(NetworkChangeUpdater);
+        ChatRoomViewPager.DrawMode = false;
     }
 
     @Override

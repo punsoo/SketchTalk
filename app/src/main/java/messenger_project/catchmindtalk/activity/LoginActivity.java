@@ -76,7 +76,13 @@ public class LoginActivity extends AppCompatActivity {
 //
 //        }
 
+        Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
+        getApplicationContext().startService(serviceIntent);
 
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -311,9 +317,8 @@ public class LoginActivity extends AppCompatActivity {
                 editor.commit();
 
                 Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
-                startService(serviceIntent);
+                getApplicationContext().startService(serviceIntent);
 
-                Log.d("여기는 왔는가?","여기는??");
 
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);

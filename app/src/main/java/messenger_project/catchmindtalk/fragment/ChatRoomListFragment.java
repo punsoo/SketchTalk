@@ -55,7 +55,7 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
 
         while(CRC.moveToNext()) {
 
-            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            int UnreadNum = db.getChatRoomUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
             Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
             ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             chatRoomListData.add(addItem);
@@ -75,6 +75,7 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
                 String roomName = (String) view.getTag(R.id.roomName);
 
 
+
                 Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
                 intent.putExtra("roomId",roomId);
                 intent.putExtra("friendId",friendId);
@@ -90,10 +91,11 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                String friendId = (String) view.getTag(R.id.userId);
-//                int no = (int) view.getTag(R.id.no);
-//
-//                mainActivity.sendToActivity2(no,friendId);
+                int roomId = (int) view.getTag(R.id.roomId);
+                String friendId = (String) view.getTag(R.id.friendId);
+
+
+                mainActivity.sendToActivityExit(roomId,friendId);
 
                 return true;
             }
@@ -118,13 +120,14 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
         if(db ==null){
             return;
         }
+
         ArrayList<ChatRoomItem> changeList = new ArrayList<>();
 
         Cursor CRC = db.getChatRoomListJoinOnMessageList(myId); //ChatRoomCursor
 
         while(CRC.moveToNext()) {
 
-            int UnreadNum = db.getUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
+            int UnreadNum = db.getChatRoomUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
             Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
             ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             changeList.add(addItem);
@@ -137,11 +140,12 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
     }
 
     @Override
-    public void startChatRoomActivity(String friendId,String nickname) {
+    public void startChatRoomActivity(int roomId, String friendId,String nickname) {
 
         Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
         intent.putExtra("friendId",friendId);
         intent.putExtra("nickname",nickname);
+        intent.putExtra("roomId",roomId);
         startActivity(intent);
     }
 

@@ -55,7 +55,7 @@ public class ChatMessageAdapter extends BaseAdapter {
         this.sdfNow = new SimpleDateFormat("HH:mm");
         this.sdfDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일");
         this.zeroFriendId = friendId;
-        db = new MyDatabaseOpenHelper(mContext,"catchMinTalk",null,1);
+        db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
         px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,150,mContext.getResources().getDisplayMetrics());
     }
 
@@ -120,7 +120,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 
 
 
-        if(chatMessageList.get(position).Type == 1){
+        if(chatMessageList.get(position).getType() == 1){
 
             long now = chatMessageList.get(position).getTime();
             Date when = new Date(now);
@@ -173,15 +173,15 @@ public class ChatMessageAdapter extends BaseAdapter {
             }catch (NullPointerException e){
                 Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
             }
-//            int tmpUnread = db.getUnReadWithRight(myId,friendId,no,now) ;
-            int tmpUnread = 1;
-            if(tmpUnread <=0) {
+            Log.d("확인쳇메세지어댑터",now+"");
+            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
+            if(Unread <=0) {
                 viewHolder.rightUnread.setText("");
             }else{
-                viewHolder.rightUnread.setText(tmpUnread+"");
+                viewHolder.rightUnread.setText(Unread+"");
             }
 
-        }else if(chatMessageList.get(position).Type == 2){
+        }else if(chatMessageList.get(position).getType() == 2){
 
             long now = chatMessageList.get(position).getTime();
             Date when = new Date(now);
@@ -228,14 +228,14 @@ public class ChatMessageAdapter extends BaseAdapter {
             profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
 
 //            int tmpUnread = db.getUnReadWithLeft(myId,zeroFriendId,no,now) ;
-            int tmpUnread = 1;
-            if(tmpUnread <=0) {
+            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
+            if(Unread <=0) {
                 viewHolder.leftUnread.setText("");
             }else{
-                viewHolder.leftUnread.setText(tmpUnread+"");
+                viewHolder.leftUnread.setText(Unread+"");
             }
 
-        }else if(chatMessageList.get(position).Type == 3) {
+        }else if(chatMessageList.get(position).getType() == 3) {
 
             Log.d("힘드네요",chatMessageList.get(position).getMsgContent());
 
@@ -250,7 +250,7 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder.leftLayout.setVisibility(View.GONE);
             viewHolder.rightLayout.setVisibility(View.GONE);
 
-        }else if(chatMessageList.get(position).Type == 51){
+        }else if(chatMessageList.get(position).getType() == 51){
 
             long now = chatMessageList.get(position).getTime();
             Date when = new Date(now);
@@ -370,16 +370,16 @@ public class ChatMessageAdapter extends BaseAdapter {
 
 
 //            int tmpUnread = db.getUnReadWithRight(myId,friendId,no,now) ;
-            int tmpUnread = 1;
-            if(tmpUnread <=0) {
+            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
+            if(Unread <=0) {
                 viewHolder.rightUnread.setText("");
             }else{
-                viewHolder.rightUnread.setText(tmpUnread+"");
+                viewHolder.rightUnread.setText(Unread+"");
             }
 
 
 
-        }else if(chatMessageList.get(position).Type == 52){
+        }else if(chatMessageList.get(position).getType() == 52){
 
 
 
@@ -480,11 +480,11 @@ public class ChatMessageAdapter extends BaseAdapter {
 
 
 //            int tmpUnread = db.getUnReadWithLeft(myId,zeroFriendId,no,now) ;
-            int tmpUnread = 1;
-            if(tmpUnread <=0) {
+            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
+            if(Unread <=0) {
                 viewHolder.leftUnread.setText("");
             }else{
-                viewHolder.leftUnread.setText(tmpUnread+"");
+                viewHolder.leftUnread.setText(Unread+"");
             }
 
 
