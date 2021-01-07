@@ -1,20 +1,35 @@
 package messenger_project.catchmindtalk.fragment;
 
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import androidx.fragment.app.Fragment;
+import messenger_project.catchmindtalk.ChatService;
 import messenger_project.catchmindtalk.Item.ChatMessageItem;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
@@ -35,7 +50,6 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
     ListView lv;
     public SimpleDateFormat sdfTime ;
     public SimpleDateFormat sdfDate ;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +72,11 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
             Date dateTime = new Date(msgTime);
             String time = sdfTime.format(dateTime);
             String day = sdfDate.format(dateTime);
-
+            int size = ListData.size();
+            if( size == 0 || !ListData.get(size-1).getDay().equals(day)){
+              ChatMessageItem dayItem = new ChatMessageItem(3,"","","",day,msgTime,time,day);
+                ListData.add(dayItem);
+            }
             ChatMessageItem addItem = new ChatMessageItem(cursor.getInt(4),cursor.getString(1),cursor.getString(7),cursor.getString(9),cursor.getString(2),msgTime,time,day);
             ListData.add(addItem);
 
@@ -74,6 +92,7 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
         lv.setAdapter(chatListAdapter);
 
         lv.setSelection(ListData.size()-1);
+
 
         return rootView;
 
@@ -155,6 +174,8 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
         lv.setSelection(ListData.size()-1);
 
     }
+
+
 
 
 }

@@ -2,27 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:background="#89cbed">
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:id="@+id/im1"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        >
+
         <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <ListView
                 android:id="@+id/messageList"
                 android:listSelector="#00000000"
                 android:cacheColorHint="#00000000"
                 android:divider="#000000"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:transcriptMode="normal"/>
 
         </FrameLayout>
-    </LinearLayout>
+
 
 </LinearLayout>

@@ -154,7 +154,7 @@ public class ChatService extends Service {
         public interface ICallback_ChatRoom {
             public void recvData(String friendId,String msgContent,long time); //액티비티에서 선언한 콜백 함수.
             public void changeRoomId(int roomId);
-            public void sendMessageMark(String msgContent,long time);
+            public void sendMessageMark(String friendId, String msgContent,long time);
             public void sendInviteMark(String inviteId,String msgContent,long time,boolean resetMemberList);
             public void sendExitMark(String friendId,String msgContent,long time);
             public void sendImageMark(String friendId,String msgContent, long time , int kind);
@@ -260,7 +260,7 @@ public class ChatService extends Service {
                 }
 
 
-                mCallback_ChatRoom.sendMessageMark(msgContent,time);
+                mCallback_ChatRoom.sendMessageMark(friendId,msgContent,time);
 
             }else{
 

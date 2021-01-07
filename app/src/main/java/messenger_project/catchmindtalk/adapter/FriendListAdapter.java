@@ -93,7 +93,6 @@ public class FriendListAdapter extends BaseAdapter {
         String profileMessage = "";
         String profileImageUpdateTime = "";
 
-
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
 

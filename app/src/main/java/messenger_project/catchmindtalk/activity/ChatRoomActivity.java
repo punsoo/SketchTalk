@@ -269,9 +269,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     Log.d("확인pass",NickHash.get(friendId)+"#");
 
                 }else if(msg.what ==2){
+                    String friendId = msg.getData().getString("friendId");
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", msgContent, time, 2);
+                    fragmentCommunicator.passData(friendId,NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 2);
                 }else if(msg.what ==3){
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
@@ -485,165 +486,165 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        if(resultCode == RESULT_OK){
-//
-//            if(requestCode == MakeGroupActivity){
-//                long now = System.currentTimeMillis();
-//                String content = data.getExtras().getString("content");
-//                String inviteId = data.getExtras().getString("inviteId");
-//
-//                mService.sendInvite(no,friendId,content,now,inviteId);
-//
-//            }else if(requestCode == PICK_FROM_CAMERA){
-//
-//                try {
-//
-//
-//                    String imgpath = data.getExtras().getString("CustomPath");
-//
-//                    if(imgpath.equals("none")) {
-//                        Toast.makeText(this,"사진촬영 실패",Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//
-//                    Log.d("이미지경로",imgpath);
-//
-//
-//                    ImageSendThread ist = new ImageSendThread(imgpath);
-//                    ist.start();
-//
-//                    ist.join();
-//
-//                    SetBottomThread sbt = new SetBottomThread();
-//                    sbt.start();
-//
-//                }catch(Exception e){
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }else if(requestCode == PICK_FROM_ALBUM ){
-//
-//                try {
-//
-//                    Log.d("이미지경로",getPath(data.getData()));
-//
-//                    ImageSendThread ist = new ImageSendThread(getPath(data.getData()));
-//
-//                    ist.start();
-//
-//                    ist.join();
-//
-//                    SetBottomThread sbt = new SetBottomThread();
-//                    sbt.start();
-//
-//
-//
-//                }catch(Exception e){
-//                    e.printStackTrace();
-//                }
-//
-//            }else if(requestCode == DeleteImage){
-//
-//
-//                int position = data.getExtras().getInt("position");
-//                fragmentCommunicator.deleteMessage(position);
-//
-//
-//
-//            }else if(requestCode == DeleteMessage){
-//
-//
-//                delPosition = data.getExtras().getInt("position");
-//                String type = data.getExtras().getString("type");
-//
-//                if(type.equals("del")) {
-//
-//                    DialogInterface.OnClickListener deleteListener = new DialogInterface.OnClickListener() {
-//
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            fragmentCommunicator.deleteMessage(delPosition);
-//                        }
-//
-//                    };
-//
-//
-//                    DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
-//
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//
-//                    };
-//
-//
-//                    AlertDialog dialog = new AlertDialog.Builder(this)
-//                            .setMessage("선택한 메시지를 삭제하시겠습니까 \n \n 삭제한 메시지는 내 채팅방에서만 적용되며 상대방의 채팅방에서는 삭제되지 않습니다.")
-//                            .setPositiveButton("확인", deleteListener)
-//                            .setNegativeButton("취소", cancelListener)
-//                            .create();
-//
-//
-//                    dialog.show();
-//
-//
-//                    Button deleteBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//                    deleteBtn.setTextColor(Color.BLACK);
-//
-//                    Button cancelBtn = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-//                    cancelBtn.setTextColor(Color.BLACK);
-//
-//
-//                }else if(type.equals("copy")){
-//
-//
-//                    String subType = data.getExtras().getString("subType");
-//
-//                    if(subType.equals("text")) {
-//
+        if(resultCode == RESULT_OK){
+
+            if(requestCode == MakeGroupActivity){
+                long now = System.currentTimeMillis();
+                String content = data.getExtras().getString("content");
+                String inviteId = data.getExtras().getString("inviteId");
+
+//                mService.sendInvite(roomId,friendId,content,now,inviteId);
+
+            }else if(requestCode == PICK_FROM_CAMERA){
+
+                try {
+
+
+                    String imgpath = data.getExtras().getString("CustomPath");
+
+                    if(imgpath.equals("none")) {
+                        Toast.makeText(this,"사진촬영 실패",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Log.d("이미지경로",imgpath);
+
+
+                    ImageSendThread ist = new ImageSendThread(imgpath);
+                    ist.start();
+
+                    ist.join();
+
+                    SetBottomThread sbt = new SetBottomThread();
+                    sbt.start();
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+
+            }else if(requestCode == PICK_FROM_ALBUM ){
+
+                try {
+
+                    Log.d("이미지경로",getPath(data.getData()));
+
+                    ImageSendThread ist = new ImageSendThread(getPath(data.getData()));
+
+                    ist.start();
+
+                    ist.join();
+
+                    SetBottomThread sbt = new SetBottomThread();
+                    sbt.start();
+
+
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }else if(requestCode == DeleteImage){
+
+
+                int position = data.getExtras().getInt("position");
+                fragmentCommunicator.deleteMessage(position);
+
+
+
+            }else if(requestCode == DeleteMessage){
+
+
+                delPosition = data.getExtras().getInt("position");
+                String type = data.getExtras().getString("type");
+
+                if(type.equals("del")) {
+
+                    DialogInterface.OnClickListener deleteListener = new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            fragmentCommunicator.deleteMessage(delPosition);
+                        }
+
+                    };
+
+
+                    DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+
+                    };
+
+
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setMessage("선택한 메시지를 삭제하시겠습니까 \n \n 삭제한 메시지는 내 채팅방에서만 적용되며 상대방의 채팅방에서는 삭제되지 않습니다.")
+                            .setPositiveButton("확인", deleteListener)
+                            .setNegativeButton("취소", cancelListener)
+                            .create();
+
+
+                    dialog.show();
+
+
+                    Button deleteBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                    deleteBtn.setTextColor(Color.BLACK);
+
+                    Button cancelBtn = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    cancelBtn.setTextColor(Color.BLACK);
+
+
+                }else if(type.equals("copy")){
+
+
+                    String subType = data.getExtras().getString("subType");
+
+                    if(subType.equals("text")) {
+
+                        String content = data.getExtras().getString("content");
+
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("catchMind", content);
+                        clipboard.setPrimaryClip(clip);
+                    }
+
+
+                }else if(type.equals("share")){
+
+
+
+                    String subType = data.getExtras().getString("subType");
+
+                    if(subType.equals("text")) {
+
+                        String content = data.getExtras().getString("content");
+
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, content);
+                        sendIntent.setType("text/plain");
+                        startActivity(sendIntent);
+
+                    }else if(subType.equals("image")){
+
 //                        String content = data.getExtras().getString("content");
 //
-//                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//                        ClipData clip = ClipData.newPlainText("catchMind", content);
-//                        clipboard.setPrimaryClip(clip);
-//                    }
-//
-//
-//                }else if(type.equals("share")){
-//
-//
-//
-//                    String subType = data.getExtras().getString("subType");
-//
-//                    if(subType.equals("text")) {
-//
-//                        String content = data.getExtras().getString("content");
-//
-//                        Intent sendIntent = new Intent();
-//                        sendIntent.setAction(Intent.ACTION_SEND);
-//                        sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-//                        sendIntent.setType("text/plain");
-//                        startActivity(sendIntent);
-//
-//                    }else if(subType.equals("image")){
-//
-//                        String content = data.getExtras().getString("content");
-//
-//                        ImageShareThread ist = new ImageShareThread(content,this);
-//                        ist.start();
-//
-//
-//                    }
-//
-//
-//                }
-//
-//            }
-//
-//        }
-//
+////                        ImageShareThread ist = new ImageShareThread(content,this);
+////                        ist.start();
+
+
+                    }
+
+
+                }
+
+            }
+
+        }
+
 
 
     }
@@ -802,13 +803,15 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 fragmentCommunicator.changeRoomId(passRoomId);
         }
 
-        public void sendMessageMark(String msgContent,long time){
+        public void sendMessageMark(String friendId, String msgContent,long time){
             Message message= Message.obtain();
             message.what = 2;
 
             Bundle bundle = new Bundle();
+            bundle.putString("friendId",friendId);
             bundle.putString("msgContent",msgContent);
             bundle.putLong("time",time);
+
 
             message.setData(bundle);
 

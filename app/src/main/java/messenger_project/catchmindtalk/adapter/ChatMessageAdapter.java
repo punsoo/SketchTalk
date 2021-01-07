@@ -18,13 +18,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Vector;
 
 import messenger_project.catchmindtalk.Item.ChatMessageItem;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
+import messenger_project.catchmindtalk.activity.MsgDeleteCopyActivity;
 import messenger_project.catchmindtalk.viewholder.MessageViewHolder;
 
 public class ChatMessageAdapter extends BaseAdapter {
@@ -36,7 +39,7 @@ public class ChatMessageAdapter extends BaseAdapter {
     public MyDatabaseOpenHelper db;
     public String myId;
     public int roomId;
-    public SimpleDateFormat sdfNow ;
+    public SimpleDateFormat sdfTime ;
     public SimpleDateFormat sdfDate ;
     public static final int DeleteImage = 3102;
     public static final int DeleteMessage = 2013;
@@ -49,7 +52,7 @@ public class ChatMessageAdapter extends BaseAdapter {
         this.chatMessageList = ListData;
         this.myId = myId;
         this.roomId = roomId;
-        this.sdfNow = new SimpleDateFormat("HH:mm");
+        this.sdfTime = new SimpleDateFormat("HH:mm");
         this.sdfDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일");
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
     }
@@ -60,8 +63,10 @@ public class ChatMessageAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return 4;
     }
+
+
 
     @Override
     public int getItemViewType(int position) {
@@ -79,6 +84,8 @@ public class ChatMessageAdapter extends BaseAdapter {
     }
 
 
+
+
     // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -87,12 +94,35 @@ public class ChatMessageAdapter extends BaseAdapter {
         String friendId = "";
         String profileIUT = "";
 
+        friendId = chatMessageList.get(position).getUserId();
+        String preId = "";
+        String nextId ="";
+        profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
+        String time = chatMessageList.get(position).getTime();
+        String preTime = "";
+        String nextTime ="";
+        String day = chatMessageList.get(position).getDay();
+        String preDay = "";
+        String nextDay ="";
+
+        Log.d("호출",position+"#"+friendId+"#"+chatMessageList.get(position).getMsgContent()+"#"+chatMessageList.get(position).getType());
+        if (position != getCount() - 1) {
+            nextId = chatMessageList.get(position + 1).getUserId();
+            nextTime = chatMessageList.get(position + 1).getTime();
+            nextDay = chatMessageList.get(position + 1).getDay();
+        }
+        if (position != 0) {
+            preId = chatMessageList.get(position - 1).getUserId();
+            preTime = chatMessageList.get(position - 1).getTime();
+            preDay = chatMessageList.get(position - 1).getDay();
+        }
+
+
         int msgType = getItemViewType(position);
 
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
-        if (convertView == null) {
-
+        if (convertView == null || convertView.getTag(R.id.viewType) == null ||(Integer)convertView.getTag(R.id.viewType) != msgType) {
             viewHolder = new MessageViewHolder();
 
             if(msgType == 1) {
@@ -111,6 +141,9 @@ public class ChatMessageAdapter extends BaseAdapter {
                 viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeRight);
                 viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadRight);
 
+            }else if(msgType == 3){
+                convertView = this.inflater.inflate(R.layout.chatmessage_item_center, parent, false);
+                viewHolder.msgContent = (TextView) convertView.findViewById(R.id.msgCenterContent);
             }
 
 
@@ -120,43 +153,24 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder = (MessageViewHolder) convertView.getTag();
         }
 
-        friendId = chatMessageList.get(position).getUserId();
-        String preId = "";
-        String nextId ="";
-        profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
-        String time = chatMessageList.get(position).getTime();
-        String preTime = "";
-        String nextTime ="";
-        String day = chatMessageList.get(position).getDay();
-        String preDay = "";
-        String nextDay ="";
+        convertView.setTag(R.id.viewType,msgType);
 
 
-            if(msgType == 1) {
 
+            if (msgType == 1) {
 
-                if(position != getCount() -1){
-                    nextId = chatMessageList.get(position+1).getUserId();
-                    nextTime = chatMessageList.get(position+1).getTime();
-                    nextDay = chatMessageList.get(position+1).getDay();
-                }
-                if(position != 0){
-                    preId = chatMessageList.get(position-1).getUserId();
-                    preTime = chatMessageList.get(position-1).getTime();
-                    preDay = chatMessageList.get(position-1).getDay();
-                }
                 try {
-                    Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
+                    Glide.with(mContext).load(ServerURL + "/profile_image/" + friendId + ".png")
                             .error(R.drawable.default_profile_image)
                             .signature(new ObjectKey(profileIUT))
                             .into(viewHolder.profileImage);
-                }catch (NullPointerException e){
-                    Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
+                } catch (NullPointerException e) {
+                    Log.d("ChatMessageAdapter", "NullpointerException, " + friendId);
                 }
                 viewHolder.nickname.setText(chatMessageList.get(position).getNickname());
                 viewHolder.profileImage.setVisibility(View.VISIBLE);
                 viewHolder.nickname.setVisibility(View.VISIBLE);
-                if( (position!=0) && friendId.equals(preId) && day.equals(preDay) && time.equals((preTime))){
+                if ((position != 0) && friendId.equals(preId) && day.equals(preDay) && time.equals((preTime)) && chatMessageList.get(position - 1).getType() == 1) {
                     viewHolder.profileImage.setVisibility(View.INVISIBLE);
                     viewHolder.nickname.setVisibility(View.GONE);
                 }
@@ -164,50 +178,75 @@ public class ChatMessageAdapter extends BaseAdapter {
                 viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
                 viewHolder.time.setText(time);
                 viewHolder.time.setVisibility(View.GONE);
-                if( (position==getCount()-1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) ){
+                if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime)) {
                     viewHolder.time.setVisibility(View.VISIBLE);
                 }
 
                 long dateTime = chatMessageList.get(position).getDateTime();
-                int Unread = db.getMessageUnReadNum(myId,roomId,friendId,dateTime);
-                if(Unread <= 0) {
-                    viewHolder.unRead.setText("1");
-                }else {
-                    viewHolder.unRead.setText("1");
+                if (roomId == 0) {
+                    viewHolder.unRead.setText("");
+                } else {
+                    int unRead = db.getMessageUnReadNum(myId, roomId, friendId, dateTime);
+                    if (unRead <= 0) {
+                        viewHolder.unRead.setText("");
+                    } else {
+                        viewHolder.unRead.setText(unRead + "");
+                    }
                 }
 
-
-            }else if(msgType == 2) {
-
-                if(position != getCount() -1){
-                    nextId = chatMessageList.get(position+1).getUserId();
-                    nextTime = chatMessageList.get(position+1).getTime();
-                    nextDay = chatMessageList.get(position+1).getDay();
-                }
-                if(position != 0){
-                    preId = chatMessageList.get(position-1).getUserId();
-                    preTime = chatMessageList.get(position-1).getTime();
-                    preDay = chatMessageList.get(position-1).getDay();
-                }
+            } else if (msgType == 2) {
 
                 viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
                 viewHolder.time.setText(chatMessageList.get(position).getTime());
                 viewHolder.time.setText(time);
                 viewHolder.time.setVisibility(View.GONE);
-                if( (position==getCount()-1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) ){
+                if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) || chatMessageList.get(position + 1).getType() != 2) {
                     viewHolder.time.setVisibility(View.VISIBLE);
                 }
                 long dateTime = chatMessageList.get(position).getDateTime();
-                int Unread = db.getMessageUnReadNum(myId,roomId,friendId,dateTime);
-                if(Unread <= 0) {
-                    viewHolder.unRead.setText("1");
-                }else {
-                    viewHolder.unRead.setText("1");
+                int unRead = db.getMessageUnReadNum(myId, roomId, friendId, dateTime);
+                if (unRead <= 0) {
+                    viewHolder.unRead.setText("");
+                } else {
+                    viewHolder.unRead.setText(unRead + "");
                 }
+            } else if (msgType == 3) {
+                viewHolder.msgContent.setText(chatMessageList.get(position).getDay());
             }
 
 
+        convertView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
 
+                int pos = (int) v.getTag(R.id.index);
+                String friendId = (String)v.getTag(R.id.userId);
+                long time = (long)v.getTag(R.id.time);
+
+                Intent intent = new Intent(mContext, MsgDeleteCopyActivity.class );
+
+                intent.putExtra("roomId",roomId);
+                intent.putExtra("myId",myId);
+                intent.putExtra("friendId",friendId);
+                intent.putExtra("time",time);
+                intent.putExtra("position",pos);
+
+                if(chatMessageList.get(pos).Type == 51 || chatMessageList.get(pos).Type == 52 ){
+
+                    intent.putExtra("subType","image");
+                    intent.putExtra("msgContent",ServerURL+"/sendImage/"+chatMessageList.get(pos).getMsgContent());
+
+                }else{
+
+                    intent.putExtra("subType","text");
+                    intent.putExtra("msgContent",chatMessageList.get(pos).getMsgContent());
+
+                }
+
+                ((Activity)mContext).startActivityForResult(intent,DeleteMessage);
+                return true;
+            }
+        });
 
         return convertView;
 
@@ -224,6 +263,8 @@ public class ChatMessageAdapter extends BaseAdapter {
     public Object getItem(int position) {
         return chatMessageList.get(position) ;
     }
+
+
 
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
 //    public void addItem(int type, String nickname, String content, String time) {

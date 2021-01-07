@@ -10,59 +10,59 @@
 
 
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="100"
-            android:background="#89cbed"
-            android:orientation="vertical"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="9dp"
-            >
-
-            <TextView
-                android:id="@+id/unReadRight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#89cbed"
-                android:textSize="10dp"
-                android:layout_gravity="right"
-                android:textColor="#FFFF00"
-                android:gravity="center_vertical"
-                android:text="99"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/msgTimeRight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#89cbed"
-                android:textSize="11dp"
-                android:layout_gravity="right"
-                android:textColor="#000000"
-                android:gravity="center_vertical"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
-
-
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
+        android:background="#89cbed"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="7dp"
+        >
 
         <TextView
-            android:id="@+id/msgContentRight"
+            android:id="@+id/unReadRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="7dp"
-            android:paddingStart="5dp"
-            android:layout_weight="1"
-            android:text="Hello~"
-            android:textAlignment="textStart"
-            android:textSize="17dp"
+            android:background="#89cbed"
+            android:textSize="10dp"
+            android:layout_gravity="right"
+            android:textColor="#FFFF00"
+            android:gravity="center_vertical"
+            android:text="99"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/msgTimeRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#89cbed"
+            android:textSize="11dp"
+            android:layout_gravity="right"
             android:textColor="#000000"
-            android:maxWidth="200dp"
-            android:layout_marginTop="-6dp"
-            android:layout_marginEnd="-25dp"
-            />
+            android:gravity="center_vertical"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+
+
+    <TextView
+        android:id="@+id/msgContentRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="7dp"
+        android:paddingStart="5dp"
+        android:layout_weight="1"
+        android:text="Hello~"
+        android:textAlignment="textStart"
+        android:textSize="17dp"
+        android:textColor="#000000"
+        android:maxWidth="200dp"
+        android:layout_marginTop="-6dp"
+        android:layout_marginEnd="-25dp"
+        />
 
 
 

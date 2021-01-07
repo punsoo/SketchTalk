@@ -327,7 +327,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
             }
             dbWriter.beginTransaction();
             dbWriter.execSQL(sql);
-            dbWriter.setTransactionSuccessful();
+
         }
         catch (Exception e)
         {
@@ -525,6 +525,36 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
 
     }
+
+    public void deleteChatMessageData(String myId,int roomId,String friendId,long time){
+
+
+        dbWriter.beginTransaction();
+        String sql;
+        if(roomId==0){
+            sql = "DELETE FROM chatMessageList_"+mPref.getString("userId",myId)+" WHERE roomId='"+roomId+"' AND friendId = '"+friendId+"' AND messageTime ='"+time+"'";
+        }else {
+            sql = "DELETE FROM chatMessageList_" + mPref.getString("userId", myId) + " WHERE roomId='" + roomId + "' AND messageTime ='"+time+"'";
+        }
+
+        Log.d("deleteMessageData",sql);
+        try
+        {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            dbWriter.endTransaction();
+        }
+
+
+    }
+
 
     public Cursor getChatMessageListJoinChatRoomMemberList(String myId,int roomId,String friendId){
 
