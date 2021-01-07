@@ -8,19 +8,23 @@ public class ChatMessageItem {
     public String Nickname;
     public String ProfileImageUpdateTime;
     public String MsgContent;
-    public long Time;
+    public long DateTime;
+    public String Time;
+    public String Day;
 
 
 
-    public ChatMessageItem(int type,String userId, String nickname, String profileIUT, String msgContent, long time){
+
+    public ChatMessageItem(int type,String userId, String nickname, String profileIUT, String msgContent,long dateTime, String time,String day){
 
         this.Type = type;
         this.UserId = userId;
         this.Nickname = nickname;
         this.ProfileImageUpdateTime = profileIUT;
         this.MsgContent = msgContent;
+        this.DateTime =dateTime;
         this.Time =  time;
-
+        this.Day = day;
     }
 
 
@@ -36,8 +40,9 @@ public class ChatMessageItem {
         this.MsgContent = msgContent ;
     }
 
-    public void setTime(long time) { this.Time = time ; }
-
+    public void setDateTime(long dateTime) {this.DateTime =dateTime;}
+    public void setTime(String time) { this.Time = time ; }
+    public void setDay(String day) { this.Day = day ; }
 
 
     public int getType() { return this.Type; }
@@ -52,8 +57,12 @@ public class ChatMessageItem {
         return this.MsgContent;
     }
 
-    public long getTime() {
+    public long getDateTime() {return this.DateTime;}
+    public String getTime() {
         return this.Time;
+    }
+    public String getDay() {
+        return this.Day;
     }
 
 

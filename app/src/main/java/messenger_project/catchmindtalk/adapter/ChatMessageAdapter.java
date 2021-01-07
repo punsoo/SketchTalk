@@ -35,12 +35,9 @@ public class ChatMessageAdapter extends BaseAdapter {
     public LayoutInflater inflater ;
     public MyDatabaseOpenHelper db;
     public String myId;
-    public String zeroFriendId;
     public int roomId;
     public SimpleDateFormat sdfNow ;
     public SimpleDateFormat sdfDate ;
-    public int px;
-
     public static final int DeleteImage = 3102;
     public static final int DeleteMessage = 2013;
     public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
@@ -54,15 +51,22 @@ public class ChatMessageAdapter extends BaseAdapter {
         this.roomId = roomId;
         this.sdfNow = new SimpleDateFormat("HH:mm");
         this.sdfDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일");
-        this.zeroFriendId = friendId;
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
-        px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,150,mContext.getResources().getDisplayMetrics());
     }
 
     public void setChatRoomList(ArrayList<ChatMessageItem> ListData) {
         this.chatMessageList = ListData;
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return 3;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return chatMessageList.get(position).getType();
+    }
 
     public void deleteMessage(int position){
         this.chatMessageList.remove(position);
@@ -81,31 +85,33 @@ public class ChatMessageAdapter extends BaseAdapter {
 
         MessageViewHolder viewHolder;
         String friendId = "";
-        String nickname = "";
         String profileIUT = "";
 
-        long msgTime = chatMessageList.get(position).getTime();
+        int msgType = getItemViewType(position);
+
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
 
-            convertView = this.inflater.inflate(R.layout.chatmessage_item, parent, false);
-
             viewHolder = new MessageViewHolder();
-            viewHolder.layout = (LinearLayout) convertView.findViewById(R.id.layout);
-            viewHolder.profileContainer = (LinearLayout)convertView.findViewById(R.id.profile_container);
-            viewHolder.leftLayout = (LinearLayout) convertView.findViewById(R.id.leftTextContainer);
-            viewHolder.rightLayout = (LinearLayout) convertView.findViewById(R.id.rightTextContainer);
-            viewHolder.dayLayout = (LinearLayout) convertView.findViewById(R.id.dayPresenter);
-            viewHolder.dayText = (TextView) convertView.findViewById(R.id.dayPresenterText);
-            viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.messageProfileImage);
-            viewHolder.nickName = (TextView) convertView.findViewById(R.id.messageNickname);
-            viewHolder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-            viewHolder.leftUnread = (TextView) convertView.findViewById(R.id.leftUnread);
-            viewHolder.chatContent = (TextView) convertView.findViewById(R.id.chatContent);
-            viewHolder.rightText = (TextView) convertView.findViewById(R.id.rightText);
-            viewHolder.rightUnread = (TextView) convertView.findViewById(R.id.rightUnread);
-            viewHolder.sendImage= (ImageView) convertView.findViewById(R.id.sendImageView);
+
+            if(msgType == 1) {
+                convertView = this.inflater.inflate(R.layout.chatmessage_item_left, parent, false);
+                viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.msgProfileImage);
+                viewHolder.nickname = (TextView) convertView.findViewById(R.id.msgNickname);
+                viewHolder.msgContent = (TextView) convertView.findViewById(R.id.msgContentLeft);
+                viewHolder.msgContent.setBackgroundResource(R.drawable.inchat);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeLeft);
+                viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadLeft);
+
+            }else if(msgType == 2) {
+                convertView = this.inflater.inflate(R.layout.chatmessage_item_right, parent, false);
+                viewHolder.msgContent = (TextView) convertView.findViewById(R.id.msgContentRight);
+                viewHolder.msgContent.setBackgroundResource(R.drawable.outchat);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeRight);
+                viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadRight);
+
+            }
 
 
             convertView.setTag(viewHolder);
@@ -114,419 +120,94 @@ public class ChatMessageAdapter extends BaseAdapter {
             viewHolder = (MessageViewHolder) convertView.getTag();
         }
 
+        friendId = chatMessageList.get(position).getUserId();
+        String preId = "";
+        String nextId ="";
+        profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
+        String time = chatMessageList.get(position).getTime();
+        String preTime = "";
+        String nextTime ="";
+        String day = chatMessageList.get(position).getDay();
+        String preDay = "";
+        String nextDay ="";
 
-        viewHolder.sendImage = null;
-        viewHolder.sendImage = (ImageView) convertView.findViewById(R.id.sendImageView);
+
+            if(msgType == 1) {
 
 
-
-        if(chatMessageList.get(position).getType() == 1){
-
-            long now = chatMessageList.get(position).getTime();
-            Date when = new Date(now);
-            String time = sdfNow.format(when);
-
-            if(position == 0){
-
-                viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                String day = sdfDate.format(when);
-                viewHolder.dayText.setText(day);
-
-            }else{
-
-                long pre = chatMessageList.get(position-1).getTime();
-                Date preWhen = new Date(pre);
-                String preTime = sdfDate.format(pre);
-
-                String day = sdfDate.format(when);
-
-                if(!day.equals(preTime)) {
-                    Log.d("chatMessageAdapter",preWhen+"###"+when);
-                    viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                    viewHolder.dayText.setText(day);
-                }else{
-                    viewHolder.dayLayout.setVisibility(View.GONE);
+                if(position != getCount() -1){
+                    nextId = chatMessageList.get(position+1).getUserId();
+                    nextTime = chatMessageList.get(position+1).getTime();
+                    nextDay = chatMessageList.get(position+1).getDay();
+                }
+                if(position != 0){
+                    preId = chatMessageList.get(position-1).getUserId();
+                    preTime = chatMessageList.get(position-1).getTime();
+                    preDay = chatMessageList.get(position-1).getDay();
+                }
+                try {
+                    Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
+                            .error(R.drawable.default_profile_image)
+                            .signature(new ObjectKey(profileIUT))
+                            .into(viewHolder.profileImage);
+                }catch (NullPointerException e){
+                    Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
+                }
+                viewHolder.nickname.setText(chatMessageList.get(position).getNickname());
+                viewHolder.profileImage.setVisibility(View.VISIBLE);
+                viewHolder.nickname.setVisibility(View.VISIBLE);
+                if( (position!=0) && friendId.equals(preId) && day.equals(preDay) && time.equals((preTime))){
+                    viewHolder.profileImage.setVisibility(View.INVISIBLE);
+                    viewHolder.nickname.setVisibility(View.GONE);
                 }
 
-            }
-
-            viewHolder.layout.setGravity(Gravity.LEFT);
-            viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setText(chatMessageList.get(position).getMsgContent());
-            viewHolder.chatContent.setBackgroundResource(R.drawable.inchat);
-            viewHolder.nickName.setGravity(Gravity.LEFT);
-            viewHolder.nickName.setText(chatMessageList.get(position).getNickname());
-            viewHolder.rightText.setText(time);
-            viewHolder.profileImage.setVisibility(View.VISIBLE);
-            viewHolder.nickName.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setVisibility(View.VISIBLE);
-            viewHolder.leftLayout.setVisibility(View.GONE);
-            viewHolder.rightLayout.setVisibility(View.VISIBLE);
-            viewHolder.sendImage.setVisibility(View.GONE);
-            friendId = chatMessageList.get(position).getUserId();
-            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
-            try {
-                Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
-                        .error(R.drawable.default_profile_image)
-                        .signature(new ObjectKey(profileIUT))
-                        .into(viewHolder.profileImage);
-            }catch (NullPointerException e){
-                Log.d("ChatMessageAdapter","NullpointerException, "+friendId);
-            }
-            Log.d("확인쳇메세지어댑터",now+"");
-            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
-            if(Unread <=0) {
-                viewHolder.rightUnread.setText("");
-            }else{
-                viewHolder.rightUnread.setText(Unread+"");
-            }
-
-        }else if(chatMessageList.get(position).getType() == 2){
-
-            long now = chatMessageList.get(position).getTime();
-            Date when = new Date(now);
-            String time = sdfNow.format(when);
-
-            if(position == 0){
-
-                viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                String day = sdfDate.format(when);
-                viewHolder.dayText.setText(day);
-
-            }else{
-
-                long pre = chatMessageList.get(position-1).getTime();
-                Date preWhen = new Date(pre);
-                String preTime = sdfDate.format(pre);
-
-                String day = sdfDate.format(when);
-
-                if(!day.equals(preTime)) {
-                    Log.d("chatMessageAdapter",preWhen+"###"+when);
-                    viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                    viewHolder.dayText.setText(day);
-                }else{
-                    viewHolder.dayLayout.setVisibility(View.GONE);
+                viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
+                viewHolder.time.setText(time);
+                viewHolder.time.setVisibility(View.GONE);
+                if( (position==getCount()-1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) ){
+                    viewHolder.time.setVisibility(View.VISIBLE);
                 }
 
-            }
-
-            viewHolder.layout.setGravity(Gravity.RIGHT);
-            viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setText(chatMessageList.get(position).getMsgContent());
-            viewHolder.chatContent.setBackgroundResource(R.drawable.outchat);
-            viewHolder.nickName.setGravity(Gravity.RIGHT);
-            viewHolder.leftLayout.setGravity(Gravity.RIGHT);
-            viewHolder.leftText.setText(time);
-            viewHolder.profileImage.setVisibility(View.GONE);
-            viewHolder.nickName.setVisibility(View.GONE);
-            viewHolder.chatContent.setVisibility(View.VISIBLE);
-            viewHolder.leftLayout.setVisibility(View.VISIBLE);
-            viewHolder.rightLayout.setVisibility(View.GONE);
-            viewHolder.sendImage.setVisibility(View.GONE);
-            friendId = chatMessageList.get(position).getUserId();
-            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
-
-//            int tmpUnread = db.getUnReadWithLeft(myId,zeroFriendId,no,now) ;
-            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
-            if(Unread <=0) {
-                viewHolder.leftUnread.setText("");
-            }else{
-                viewHolder.leftUnread.setText(Unread+"");
-            }
-
-        }else if(chatMessageList.get(position).getType() == 3) {
-
-            Log.d("힘드네요",chatMessageList.get(position).getMsgContent());
-
-            viewHolder.layout.setGravity(Gravity.CENTER);
-            viewHolder.profileContainer.setVisibility(View.GONE);
-
-            viewHolder.dayLayout.setVisibility(View.VISIBLE);
-            viewHolder.dayText.setText(chatMessageList.get(position).getMsgContent());
-
-            viewHolder.profileImage.setVisibility(View.GONE);
-            viewHolder.nickName.setVisibility(View.GONE);
-            viewHolder.leftLayout.setVisibility(View.GONE);
-            viewHolder.rightLayout.setVisibility(View.GONE);
-
-        }else if(chatMessageList.get(position).getType() == 51){
-
-            long now = chatMessageList.get(position).getTime();
-            Date when = new Date(now);
-            String time = sdfNow.format(when);
-
-
-            if(position == 0){
-
-                viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                String day = sdfDate.format(when);
-                viewHolder.dayText.setText(day);
-
-            }else{
-
-                long pre = chatMessageList.get(position-1).getTime();
-                Date preWhen = new Date(pre);
-                String preTime = sdfDate.format(pre);
-
-                String day = sdfDate.format(when);
-
-                if(!day.equals(preTime)) {
-
-                    viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                    viewHolder.dayText.setText(day);
-                }else{
-                    viewHolder.dayLayout.setVisibility(View.GONE);
+                long dateTime = chatMessageList.get(position).getDateTime();
+                int Unread = db.getMessageUnReadNum(myId,roomId,friendId,dateTime);
+                if(Unread <= 0) {
+                    viewHolder.unRead.setText("1");
+                }else {
+                    viewHolder.unRead.setText("1");
                 }
 
-            }
 
+            }else if(msgType == 2) {
 
-            viewHolder.layout.setGravity(Gravity.LEFT);
-            viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.nickName.setGravity(Gravity.LEFT);
-            viewHolder.nickName.setText(chatMessageList.get(position).getNickname());
-            viewHolder.rightText.setText(time);
-            viewHolder.profileImage.setVisibility(View.VISIBLE);
-            viewHolder.nickName.setVisibility(View.VISIBLE);
-            viewHolder.chatContent.setVisibility(View.GONE);
-            viewHolder.leftLayout.setVisibility(View.GONE);
-            viewHolder.rightLayout.setVisibility(View.VISIBLE);
-            viewHolder.sendImage.setVisibility(View.VISIBLE);
-
-            friendId = chatMessageList.get(position).getUserId();
-            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
-
-            try {
-
-                Glide.with(mContext).load(ServerURL+"/profile_image/" + friendId + ".png")
-                        .error(R.drawable.default_profile_image)
-                        .signature(new ObjectKey(profileIUT))
-                        .into(viewHolder.profileImage);
-
-//                Glide.with(mContext).load("http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(position).getContent())
-//                        .error(R.drawable.default_profile_image)
-//                        .signature(new StringSignature(chatMessageList.get(position).getContent()))
-//                        .into(viewHolder.sendImage);
-
-            }catch (NullPointerException e){
-                Log.d("널널",friendId);
-            }
-
-            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getMsgContent()).into(viewHolder.sendImage);
-
-
-            viewHolder.sendImage.setTag(R.id.sendImage,position);
-            viewHolder.sendImage.setTag(R.id.userId,friendId);
-
-
-            viewHolder.sendImage.setTag(R.id.time,msgTime);
-
-
-            viewHolder.sendImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-//                    int pos = (int)v.getTag(R.id.sendImage);
-//                    String friendId = (String)v.getTag(R.id.userId);
-//                    long time = (long)v.getTag(R.id.time);
-//
-//                    Intent IEintent = new Intent(mContext,ImageEnlargeActivity.class);
-//                    String IV = "http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(pos).getContent();
-//                    IEintent.putExtra("IV",IV);
-//                    IEintent.putExtra("no",no);
-//                    IEintent.putExtra("friendId",friendId);
-//                    IEintent.putExtra("time",time);
-//                    IEintent.putExtra("position",pos);
-//                    ((Activity)mContext).startActivityForResult(IEintent,DeleteImage);
-//
-
+                if(position != getCount() -1){
+                    nextId = chatMessageList.get(position+1).getUserId();
+                    nextTime = chatMessageList.get(position+1).getTime();
+                    nextDay = chatMessageList.get(position+1).getDay();
                 }
-            });
-
-            viewHolder.sendImage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-
-//                    int pos = (int)v.getTag(R.id.sendImage);
-//                    String friendId = (String)v.getTag(R.id.userId);
-//                    long time = (long)v.getTag(R.id.time);
-//
-//                    Intent intent = new Intent(mContext,MessageDeleteCopy.class);
-//
-//                    intent.putExtra("no",no);
-//                    intent.putExtra("friendId",friendId);
-//                    intent.putExtra("time",time);
-//                    intent.putExtra("position",pos);
-//                    intent.putExtra("subType","image");
-//                    intent.putExtra("content","http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(pos).getContent());
-//
-//                    ((Activity)mContext).startActivityForResult(intent,DeleteMessage);
-                    return true;
-                }
-            });
-
-
-
-//            int tmpUnread = db.getUnReadWithRight(myId,friendId,no,now) ;
-            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
-            if(Unread <=0) {
-                viewHolder.rightUnread.setText("");
-            }else{
-                viewHolder.rightUnread.setText(Unread+"");
-            }
-
-
-
-        }else if(chatMessageList.get(position).getType() == 52){
-
-
-
-            long now = chatMessageList.get(position).getTime();
-            Date when = new Date(now);
-            String time = sdfNow.format(when);
-
-            if(position == 0){
-
-                viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                String day = sdfDate.format(when);
-                viewHolder.dayText.setText(day);
-
-            }else{
-
-                long pre = chatMessageList.get(position-1).getTime();
-                Date preWhen = new Date(pre);
-                String preTime = sdfDate.format(pre);
-
-                String day = sdfDate.format(when);
-
-                if(!day.equals(preTime)) {
-
-                    viewHolder.dayLayout.setVisibility(View.VISIBLE);
-                    viewHolder.dayText.setText(day);
-                }else{
-                    viewHolder.dayLayout.setVisibility(View.GONE);
+                if(position != 0){
+                    preId = chatMessageList.get(position-1).getUserId();
+                    preTime = chatMessageList.get(position-1).getTime();
+                    preDay = chatMessageList.get(position-1).getDay();
                 }
 
-            }
-
-            viewHolder.layout.setGravity(Gravity.RIGHT);
-            viewHolder.profileContainer.setVisibility(View.VISIBLE);
-            viewHolder.nickName.setGravity(Gravity.RIGHT);
-            viewHolder.leftLayout.setGravity(Gravity.RIGHT);
-            viewHolder.leftText.setText(time);
-            viewHolder.profileImage.setVisibility(View.GONE);
-            viewHolder.nickName.setVisibility(View.GONE);
-            viewHolder.chatContent.setVisibility(View.GONE);
-            viewHolder.leftLayout.setVisibility(View.VISIBLE);
-            viewHolder.rightLayout.setVisibility(View.GONE);
-            viewHolder.sendImage.setVisibility(View.VISIBLE);
-            friendId = chatMessageList.get(position).getUserId();
-            profileIUT = chatMessageList.get(position).getProfileImageUpdateTime();
-
-
-            Picasso.get().load(ServerURL+"/sendImage/"+chatMessageList.get(position).getMsgContent()).into(viewHolder.sendImage);
-
-
-            viewHolder.sendImage.setTag(R.id.sendImage,position);
-            viewHolder.sendImage.setTag(R.id.userId,friendId);
-            viewHolder.sendImage.setTag(R.id.time,msgTime);
-
-
-            viewHolder.sendImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-//                    int pos = (int)v.getTag(R.id.sendImage);
-//                    String friendId = (String)v.getTag(R.id.userId);
-//                    long time = (long)v.getTag(R.id.time);
-//
-//                    Intent IEintent = new Intent(mContext,ImageEnlargeActivity.class);
-//                    String IV = "http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(pos).getContent();
-//                    IEintent.putExtra("IV",IV);
-//                    IEintent.putExtra("no",no);
-//                    IEintent.putExtra("friendId",friendId);
-//                    IEintent.putExtra("time",time);
-//                    IEintent.putExtra("position",pos);
-//                    ((Activity)mContext).startActivityForResult(IEintent,DeleteImage);
-
-
+                viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
+                viewHolder.time.setText(chatMessageList.get(position).getTime());
+                viewHolder.time.setText(time);
+                viewHolder.time.setVisibility(View.GONE);
+                if( (position==getCount()-1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) ){
+                    viewHolder.time.setVisibility(View.VISIBLE);
                 }
-            });
-
-            viewHolder.sendImage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-
-//                    int pos = (int)v.getTag(R.id.sendImage);
-//                    String friendId = (String)v.getTag(R.id.userId);
-//                    long time = (long)v.getTag(R.id.time);
-//
-//                    Intent intent = new Intent(mContext,MessageDeleteCopy.class);
-//
-//                    intent.putExtra("no",no);
-//                    intent.putExtra("friendId",friendId);
-//                    intent.putExtra("time",time);
-//                    intent.putExtra("position",pos);
-//                    intent.putExtra("subType","image");
-//                    intent.putExtra("content","http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(pos).getContent());
-//
-//                    ((Activity)mContext).startActivityForResult(intent,DeleteMessage);
-                    return true;
+                long dateTime = chatMessageList.get(position).getDateTime();
+                int Unread = db.getMessageUnReadNum(myId,roomId,friendId,dateTime);
+                if(Unread <= 0) {
+                    viewHolder.unRead.setText("1");
+                }else {
+                    viewHolder.unRead.setText("1");
                 }
-            });
-
-
-//            int tmpUnread = db.getUnReadWithLeft(myId,zeroFriendId,no,now) ;
-            int Unread = db.getMessageUnReadNum(myId,roomId,friendId,now);
-            if(Unread <=0) {
-                viewHolder.leftUnread.setText("");
-            }else{
-                viewHolder.leftUnread.setText(Unread+"");
             }
 
 
-        }
 
-
-        convertView.setTag(R.id.index, position);
-        convertView.setTag(R.id.userId, friendId);
-        convertView.setTag(R.id.time, msgTime);
-
-
-        convertView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-
-//                int pos = (int) v.getTag(R.id.index);
-//                String friendId = (String)v.getTag(R.id.userId);
-//                long time = (long)v.getTag(R.id.time);
-//
-//                Intent intent = new Intent(mContext, MessageDeleteCopy.class );
-//
-//                intent.putExtra("no",no);
-//                intent.putExtra("friendId",friendId);
-//                intent.putExtra("time",time);
-//                intent.putExtra("position",pos);
-//
-//                if(chatMessageList.get(pos).Type == 51 || chatMessageList.get(pos).Type == 52 || chatMessageList.get(pos).Type == 3){
-//
-//                    intent.putExtra("subType","image");
-//                    intent.putExtra("content","http://vnschat.vps.phps.kr/sendImage/"+chatMessageList.get(pos).getContent());
-//
-//                }else{
-//
-//                    intent.putExtra("subType","text");
-//                    intent.putExtra("content",chatMessageList.get(pos).getContent());
-//
-//                }
-//
-//                ((Activity)mContext).startActivityForResult(intent,DeleteMessage);
-                return true;
-            }
-        });
 
         return convertView;
 

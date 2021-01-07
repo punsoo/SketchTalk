@@ -76,6 +76,10 @@ public class LoginActivity extends AppCompatActivity {
 //
 //        }
 
+
+
+
+
         Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
         getApplicationContext().startService(serviceIntent);
 

@@ -185,8 +185,8 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
 
 
 
-        getSketchThread gst = new getSketchThread();
-        gst.start();
+//        getSketchThread gst = new getSketchThread();
+//        gst.start();
 
     }
 
