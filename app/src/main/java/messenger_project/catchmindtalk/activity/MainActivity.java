@@ -463,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         super.onDestroy();
 
         mService.boundCheck_Main = false;
-        unbindService(mConnection);
+        getApplicationContext().unbindService(mConnection);
 
 //
 //        boolean autoLogin = mPref.getBoolean("autoLogin",false);

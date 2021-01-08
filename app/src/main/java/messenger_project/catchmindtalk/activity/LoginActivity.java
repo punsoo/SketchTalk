@@ -80,13 +80,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-        Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
-        getApplicationContext().startService(serviceIntent);
-
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+//        Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
+//        getApplicationContext().startService(serviceIntent);
+//
+//
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
+//        finish();
     }
 
 
@@ -300,6 +300,8 @@ public class LoginActivity extends AppCompatActivity {
                 for(int i=0;i<chatRoomMemberListArray.length();i++) {
 
                     JSONObject jobject = new JSONObject(chatRoomMemberListArray.get(i).toString());
+
+                    Log.d("crmla",chatRoomMemberListArray.get(i).toString().toString());
 
                     int roomId = (int) jobject.getInt("roomId");
                     String friendId = (String) jobject.getString("friendId");

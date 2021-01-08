@@ -158,12 +158,10 @@ public class EditChatRoomAdapter extends BaseAdapter {
             convertView = this.inflater.inflate(R.layout.chatroom_item_check, parent, false);
 
             viewHolder = new ChatRoomViewHolder();
-            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomName);
-            viewHolder.chatRoomContent = (TextView) convertView.findViewById(R.id.chatRoomContent);
-            viewHolder.memberNum = (TextView) convertView.findViewById(R.id.chatRoomMemberNum);
-            viewHolder.chatRoomDate = (TextView) convertView.findViewById(R.id.chatRoomDate);
-            viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.chatRoomImage);
-            viewHolder.check = (ImageView) convertView.findViewById(R.id.check_image_room);
+            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomName_Check);
+            viewHolder.chatRoomContent = (TextView) convertView.findViewById(R.id.chatRoomContent_Check);
+            viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.chatRoomImage_Check);
+            viewHolder.check = (ImageView) convertView.findViewById(R.id.check_icon);
 
             convertView.setTag(viewHolder);
 
@@ -213,8 +211,6 @@ public class EditChatRoomAdapter extends BaseAdapter {
 
         viewHolder.chatRoomName.setText(RoomName);
         viewHolder.chatRoomContent.setText(chatRoomList.get(position).getLastMessageContent());
-        viewHolder.chatRoomDate.setText(lastMsgtime);
-        viewHolder.memberNum.setText("" + chatRoomList.get(position).getMemberNum());
 
         if( chatRoomList.get(position).getRoomType() == 1) {
             String FriendId;

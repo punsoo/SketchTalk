@@ -215,6 +215,10 @@ public class ChatMessageAdapter extends BaseAdapter {
             }
 
 
+            convertView.setTag(R.id.index,position);
+            convertView.setTag(R.id.userId,friendId);
+            convertView.setTag(R.id.time,chatMessageList.get(position).getDateTime());
+
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -222,7 +226,10 @@ public class ChatMessageAdapter extends BaseAdapter {
                 int pos = (int) v.getTag(R.id.index);
                 String friendId = (String)v.getTag(R.id.userId);
                 long time = (long)v.getTag(R.id.time);
-
+                boolean preMsgDelete= false;
+                if(pos != 0 && (chatMessageList.get(pos-1).getType()==3 && (chatMessageList.size() == (pos+1) || !chatMessageList.get(pos+1).getDay().equals( chatMessageList.get(pos).getDay() )))){
+                    preMsgDelete = true;
+                };
                 Intent intent = new Intent(mContext, MsgDeleteCopyActivity.class );
 
                 intent.putExtra("roomId",roomId);
@@ -230,6 +237,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                 intent.putExtra("friendId",friendId);
                 intent.putExtra("time",time);
                 intent.putExtra("position",pos);
+                intent.putExtra("preMsgDelete",preMsgDelete);
 
                 if(chatMessageList.get(pos).Type == 51 || chatMessageList.get(pos).Type == 52 ){
 

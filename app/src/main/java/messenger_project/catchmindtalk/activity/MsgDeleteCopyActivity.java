@@ -30,6 +30,8 @@ public class MsgDeleteCopyActivity extends Activity {
     String subType;
     String msgContent;
 
+    boolean preMsgDelete;
+
     LinearLayout WholeMDC;
 
     @Override
@@ -59,7 +61,7 @@ public class MsgDeleteCopyActivity extends Activity {
         position = intent.getExtras().getInt("position");
         subType = intent.getExtras().getString("subType");
         msgContent = intent.getExtras().getString("msgContent");
-
+        preMsgDelete = intent.getExtras().getBoolean("preMsgDelete");
 
         if(!subType.equals("text")){
 
@@ -82,6 +84,7 @@ public class MsgDeleteCopyActivity extends Activity {
 
                 resultIntent.putExtra("position",position);
                 resultIntent.putExtra("type","del");
+                resultIntent.putExtra("preMsgDelete",preMsgDelete);
 
                 setResult(RESULT_OK,resultIntent);
 

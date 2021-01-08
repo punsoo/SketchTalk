@@ -117,6 +117,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     DrawerLayout drawer;
 
     public int delPosition;
+    public boolean preMsgDelete;
 
     public static final int MakeGroupActivity = 6839;
 
@@ -338,7 +339,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         memberListItemList = new ArrayList<>();
 
         Vector<String[]> MemberList;
-
+        Log.d("뭘까member전",roomId+"#"+friendId);
         MemberList = db.getChatRoomMemberList(roomId, friendId);
 
         MemberListItem myItem = new MemberListItem(myUserId,myNickname,myProfileMessage,myProfileImageUpdateTime);
@@ -548,7 +549,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
                 int position = data.getExtras().getInt("position");
-                fragmentCommunicator.deleteMessage(position);
+                boolean preMsgDelete = data.getExtras().getBoolean("preMsgDelete");
+                fragmentCommunicator.deleteMessage(position,preMsgDelete);
 
 
 
@@ -557,14 +559,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
                 delPosition = data.getExtras().getInt("position");
                 String type = data.getExtras().getString("type");
-
+                preMsgDelete = data.getExtras().getBoolean("preMsgDelete");
                 if(type.equals("del")) {
 
                     DialogInterface.OnClickListener deleteListener = new DialogInterface.OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            fragmentCommunicator.deleteMessage(delPosition);
+                            fragmentCommunicator.deleteMessage(delPosition,preMsgDelete);
                         }
 
                     };
@@ -715,6 +717,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         NickHash = new HashMap<>();
         ProfileIUTHash = new HashMap<>();
+        Log.d("뭘까Reset",roomId+"#"+friendId);
         Vector<String[]> chatRoomMemberList = db.getChatRoomMemberList(roomId,friendId);
         String setRoomName ="";
         if(chatRoomMemberList.size()>0) {
@@ -760,7 +763,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         void passData(String friendId, String nickname, String profileIUT, String msgContent, long time,int type);
         void alertChange();
         void changeRoomId(int sRoomId);
-        void deleteMessage(int position);
+        void deleteMessage(int position,boolean preMsgDelete);
         void bottomSelect();
 
     }

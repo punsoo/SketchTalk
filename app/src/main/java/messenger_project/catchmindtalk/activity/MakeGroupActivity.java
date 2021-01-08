@@ -169,7 +169,7 @@ public class MakeGroupActivity extends AppCompatActivity {
             intent.putExtra("nickname",nickname);
             intent.putExtra("content",content);
 
-            Log.d("뭘까",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+content);
+            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+content);
             setResult(RESULT_OK, intent);
             finish();
 

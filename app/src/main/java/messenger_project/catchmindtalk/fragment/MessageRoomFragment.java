@@ -105,7 +105,11 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
         Date dateTime = new Date(msgTime);
         String time = sdfTime.format(dateTime);
         String day = sdfDate.format(dateTime);
-
+        int size = chatListAdapter.getCount();
+        if( (size == 0) || !(ListData.get(size-1).getDay().equals(day)) ){
+            ChatMessageItem dayItem = new ChatMessageItem(3, "", "", "", day, msgTime, time,day);
+            ListData.add(dayItem);
+        }
         if(type == 1) {
 
             ChatMessageItem addItem = new ChatMessageItem(1, friendId, nickname, profileIUT, msgContent, msgTime, time,day);
@@ -162,8 +166,11 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
 
 
     @Override
-    public void deleteMessage(int position) {
+    public void deleteMessage(int position, boolean preMsgDelete) {
         chatListAdapter.deleteMessage(position);
+        if(preMsgDelete){
+            chatListAdapter.deleteMessage(position-1);
+        }
         chatListAdapter.notifyDataSetChanged();
     }
 

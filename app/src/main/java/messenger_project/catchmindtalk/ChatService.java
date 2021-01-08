@@ -190,10 +190,10 @@ public class ChatService extends Service {
         public void sendMessage(int roomId, String friendId, String msgContent, long time){
 
             if(roomId < 0 ){
-                Log.d("위치확인",roomId+"#"+friendId+"#"+msgContent+"#"+time);
-                getRoomIdThread grt = new getRoomIdThread(roomId,friendId,time);
-                grt.start();
                 try {
+                    Log.d("위치확인",roomId+"#"+friendId+"#"+msgContent+"#"+time);
+                    getRoomIdThread grt = new getRoomIdThread(roomId,friendId,time);
+                    grt.start();
                     grt.join();
                     roomId = grt.returnRoomId();
                     if(roomId >0){
@@ -837,7 +837,7 @@ public class ChatService extends Service {
                 data = buff.toString().trim();
                 Log.d("getGroupThread.data",data);
                 db.insertChatRoomMemberListMultiple(data);
-                db.insertChatRoomList(sRoomId,"group",0,"",1);
+                db.insertChatRoomList(sRoomId,"group",0,"",2);
                 if(boundCheck_Main == true){
                     mCallback_Main.changeRoomList();
                     mCallback_Main.recvData();

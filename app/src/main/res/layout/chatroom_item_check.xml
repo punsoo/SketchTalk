@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/chatRoomImage"
+        android:id="@+id/chatRoomImage_Check"
         android:src="@drawable/default_profile_image"
         android:layout_alignParentStart="true"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:id="@+id/chatRoomTitle"
+        android:id="@+id/chatRoomName_Check"
         android:textSize="22sp"
         android:textColor="#000000"
         android:gravity="center_vertical"
@@ -34,12 +34,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Message"
-        android:id="@+id/chatRoomContent"
+        android:id="@+id/chatRoomContent_Check"
         android:textSize="15sp"
         android:textColor="#666666"
         android:layout_gravity="center_vertical"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/chatRoomImage"
+        android:layout_toEndOf="@+id/chatRoomImage_Check"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="15dp"/>
 
@@ -49,7 +49,7 @@
     <ImageView
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:id="@+id/check_image_room"
+        android:id="@+id/check_icon"
         android:src="@drawable/check_icon_inact"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
