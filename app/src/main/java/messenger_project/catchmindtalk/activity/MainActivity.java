@@ -398,12 +398,15 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         @Override
         public void run() {
-            Log.d("확인ExitThread",now+"#"+msgContent+"#"+roomIdExit);
-            db.deleteChatRoomList(roomIdExit,friendIdExit);
-            db.deleteChatRoomMemberList(roomIdExit,friendIdExit);
-            db.deleteChatMessageList(myUserId,roomIdExit,friendIdExit);
 
-            mService.sendExit(roomIdExit,friendIdExit,msgContent,now);
+            Log.d("확인ExitThread", now + "#" + msgContent + "#" + roomIdExit + "#" + friendIdExit);
+            db.deleteChatRoomList(roomIdExit, friendIdExit);
+            db.deleteChatRoomMemberList(roomIdExit, friendIdExit);
+            db.deleteChatMessageList(myUserId, roomIdExit, friendIdExit);
+
+            mService.sendExit(roomIdExit, friendIdExit, msgContent, now);
+
+
         }
 
 

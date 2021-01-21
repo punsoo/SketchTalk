@@ -146,7 +146,7 @@ public class MakeGroupActivity extends AppCompatActivity {
         }else if(id == R.id.invite_check_button){
 
             JSONArray jsonArray = new JSONArray();
-            String content = myNickname + "님이 ";
+            String msgContent = myNickname + "님이 ";
             String nickname ="";
 
             for (int i=0; i < inviteList.size(); i++) {
@@ -155,21 +155,21 @@ public class MakeGroupActivity extends AppCompatActivity {
 
             for (int i=0; i < inviteNicknameList.size();i++){
                 if(i != 0){
-                    content = content +",";
+                    msgContent = msgContent +",";
                     nickname = nickname + ",";
                 }
-                content = content + inviteNicknameList.get(i) + "님";
+                msgContent = msgContent + inviteNicknameList.get(i) + "님";
                 nickname = nickname + inviteNicknameList.get(i);
             }
-            content = content + "을 초대했습니다";
+            msgContent = msgContent + "을 초대했습니다";
 
             Intent intent = new Intent();
             intent.putExtra("roomId",db.getMinRoomId());
             intent.putExtra("inviteId",jsonArray.toString());
             intent.putExtra("nickname",nickname);
-            intent.putExtra("content",content);
+            intent.putExtra("msgContent",msgContent);
 
-            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+content);
+            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+msgContent);
             setResult(RESULT_OK, intent);
             finish();
 

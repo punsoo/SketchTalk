@@ -63,7 +63,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 4;
+        return 6;
     }
 
 
@@ -141,7 +141,7 @@ public class ChatMessageAdapter extends BaseAdapter {
                 viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeRight);
                 viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadRight);
 
-            }else if(msgType == 3){
+            }else if(msgType == 3 || msgType == 4 || msgType == 5){
                 convertView = this.inflater.inflate(R.layout.chatmessage_item_center, parent, false);
                 viewHolder.msgContent = (TextView) convertView.findViewById(R.id.msgCenterContent);
             }
@@ -212,6 +212,8 @@ public class ChatMessageAdapter extends BaseAdapter {
                 }
             } else if (msgType == 3) {
                 viewHolder.msgContent.setText(chatMessageList.get(position).getDay());
+            } else if (msgType == 4 || msgType == 5) {
+                viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
             }
 
 

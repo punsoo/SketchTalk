@@ -201,12 +201,13 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         String userId = mPref.getString("userId", myId);
 
 
-        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM (SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" GROUP BY roomId, friendId) cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
+        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM ( SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId <> 0 GROUP BY roomId UNION SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId = 0 GROUP BY roomId, friendId ) AS cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
         // roomId friendId lastReadTime(chatRoom) roomName roomType cm1roomId cm1friendId maxTime roomId friendId messageContent messageTime messageType
         Cursor cursor = dbReader.rawQuery(sql,null);
 
         return cursor;
 
+//        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM (SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" GROUP BY roomId, friendId) cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
 //        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN messageData_"+userId+" AS md ON md.friendId = (SELECT md1.friendId FROM messageData_"+userId+" AS md1 WHERE cr.no = md1.no AND cr.friendId = md1.friendId AND (md1.type = 1 OR md1.type = 2) ORDER BY md1.time DESC LIMIT 1)";
 //        String sql = "SELECT R.*, M.messageContent, M.messageTime, M.messageType FROM ChatRoomList AS R LEFT JOIN (SELECT MAX(M.messageTime), M.roomId FROM chatMessageList_"+userId+" GROUP BY M.roomId) AS lastestM ON R.roomId = lastestM.roomId LEFT JOIN chatMessageList_"+userId+" AS M ON R.roomId = M.roomId AND M.messageTime = lastestM.messageTime ORDER BY lastestM.messageTime DESC";
 //        String sql = "WITH lastestM (messageTime, roomId) AS (SELECT MAX(MM.messageTime), MM.roomId FROM chatMessageList_"+userId+" AS MM GROUP BY MM.roomId), M AS chatMessageList_"+userId+ "SELECT R.*, M.messageContent, M.messageTime, M.messageType FROM ChatRoomList AS R LEFT JOIN lastestM ON R.roomId = lastestM.roomId LEFT JOIN M ON R.roomId = M.roomId AND M.messageTime = lastestM.messageTime ORDER BY lastestM.messageTime DESC";
@@ -305,28 +306,33 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     }
 
 
-    public void insertChatRoomMemberListMultiple(String jarray) {
-
-
+    public void insertChatRoomMemberListMultiple(String jarray, String userId) {
+        String myId = mPref.getString("userId",userId);
         try
         {
             JSONArray chatArray = new JSONArray(jarray);
 
-            String sql="INSERT INTO chatRoomMemberList VALUES ";
 
+            String sql="INSERT INTO chatRoomMemberList VALUES ";
+            boolean commaCheck = false;
             for(int i=0;i<chatArray.length();i++){
-                if(i>0){
-                    sql = sql + ",";
-                }
+
                 JSONObject jobject = new JSONObject(chatArray.get(i).toString());
                 int roomId = (int) jobject.getInt("roomId");
                 String friendId = (String) jobject.getString("friendId");
+                if(friendId.equals(myId)){
+                    continue;
+                }
                 long lastReadTime = (long) jobject.getLong("lastReadTime");
                 String nickname = (String) jobject.getString("nickname");
                 String profileMessage = (String) jobject.getString("profileMessage");
                 String profileImageUpdateTime = (String) jobject.getString("profileImageUpdateTime");
 
+                if(commaCheck){
+                    sql = sql + ",";
+                }
                 sql = sql + "('"+roomId+"','"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+lastReadTime+"')";
+                commaCheck = true;
             }
             dbWriter.beginTransaction();
             dbWriter.execSQL(sql);

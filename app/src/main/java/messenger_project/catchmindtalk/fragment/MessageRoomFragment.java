@@ -122,8 +122,13 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
             ListData.add(addItem);
             chatListAdapter.notifyDataSetChanged();
             lv.setSelection(ListData.size()-1);
-        }else if(type == 3){
-            ChatMessageItem addItem = new ChatMessageItem(3, friendId, nickname, profileIUT, msgContent,msgTime, time,day);
+        }else if(type == 4){
+            ChatMessageItem addItem = new ChatMessageItem(4, friendId, nickname, profileIUT, msgContent,msgTime, time,day);
+            ListData.add(addItem);
+            chatListAdapter.notifyDataSetChanged();
+
+        }else if(type == 5){
+            ChatMessageItem addItem = new ChatMessageItem(5, friendId, nickname, profileIUT, msgContent,msgTime, time,day);
             ListData.add(addItem);
             chatListAdapter.notifyDataSetChanged();
 

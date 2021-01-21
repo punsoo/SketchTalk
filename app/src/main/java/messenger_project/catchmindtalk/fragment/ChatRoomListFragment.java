@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -57,7 +59,23 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
 
             int UnreadNum = db.getChatRoomUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
             Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
-            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
+
+            String friendId ;
+            if(CRC.getInt(0)==0){
+                if(ChatRoomMemberList.get(0)[0].equals(myId)) {
+                    friendId = ChatRoomMemberList.get(1)[0];
+                }else{
+                    friendId = ChatRoomMemberList.get(0)[0];
+                }
+            }else {
+                JSONArray jarray = new JSONArray();
+                for (int i = 0; i < ChatRoomMemberList.size(); i++) {
+                    jarray.put(ChatRoomMemberList.get(i)[0]);
+                }
+                friendId=jarray.toString();
+            }
+
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),friendId,CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             chatRoomListData.add(addItem);
 
         }
@@ -129,7 +147,23 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
 
             int UnreadNum = db.getChatRoomUnReadNum(myId,CRC.getInt(0),CRC.getString(1),CRC.getLong(2));
             Vector<String[]> ChatRoomMemberList  = db.getChatRoomMemberList(CRC.getInt(0),CRC.getString(1));
-            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),CRC.getString(1),CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
+
+            String friendId ;
+            if(CRC.getInt(0)==0){
+                if(ChatRoomMemberList.get(0)[0].equals(myId)) {
+                    friendId = ChatRoomMemberList.get(1)[0];
+                }else{
+                    friendId = ChatRoomMemberList.get(0)[0];
+                }
+            }else {
+                JSONArray jarray = new JSONArray();
+                for (int i = 0; i < ChatRoomMemberList.size(); i++) {
+                    jarray.put(ChatRoomMemberList.get(i)[0]);
+                }
+                friendId=jarray.toString();
+            }
+
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0),friendId,CRC.getLong(2),CRC.getString(3),CRC.getInt(4),CRC.getString(10),CRC.getLong(11),CRC.getInt(12),ChatRoomMemberList, UnreadNum);
             changeList.add(addItem);
 
         }
