@@ -58,11 +58,11 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
     WidthView WV ;
 
     final static int colorRequest = 9876;
-
+    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
 
     String userId;
     String friendId;
-    int no;
+    int roomId;
 
     public Handler handler;
 
@@ -77,9 +77,9 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
 
         userId = getArguments().getString("userId");
         friendId = getArguments().getString("friendId");
-        no = getArguments().getInt("no");
+        roomId = getArguments().getInt("roomId");
 
-        Log.d("DF_argument",userId+"###"+friendId+"###"+no);
+        Log.d("DF_argument",userId+"###"+friendId+"###"+roomId);
 
         cra = (ChatRoomActivity)getActivity();
 
@@ -114,7 +114,7 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
 
                 if(msg.what == 44) {
                     try {
-                        String content = msg.getData().getString("content");
+                        String content = msg.getData().getString("sketchContent");
                         JSONArray jarray = new JSONArray(content);
                         for(int i=0;i<jarray.length();i++){
                             drawLine.receiveLine(jarray.get(i).toString());
@@ -185,8 +185,8 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
 
 
 
-//        getSketchThread gst = new getSketchThread();
-//        gst.start();
+        getSketchThread gst = new getSketchThread();
+        gst.start();
 
     }
 
@@ -288,11 +288,11 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
             String data="";
 
             /* 인풋 파라메터값 생성 */
-            String param = "userId="+userId+"&no="+no+"&friendId="+friendId;
+            String param = "userId="+userId+"&roomId="+roomId+"&friendId="+friendId;
 
             try {
                 /* 서버연결 */
-                URL url = new URL("http://vnschat.vps.phps.kr/getSketch.php");
+                URL url = new URL(ServerURL+"/getSketch.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");
@@ -325,7 +325,7 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
                 message.what = 44;
 
                 Bundle bundle = new Bundle();
-                bundle.putString("content",data);
+                bundle.putString("sketchContent",data);
 
                 message.setData(bundle);
 

@@ -296,14 +296,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 }else if(msg.what==88){
 
                     String friendId = msg.getData().getString("friendId");
-                    String content = msg.getData().getString("content");
+                    String msgContent = msg.getData().getString("msgContent");
                     String nickname;
-                    if(true) {
-                        nickname = friendNickname;
-                    }else{
-                        nickname = NickHash.get(friendId);
-                    }
-                    drawCommunicator.drawChat(nickname,content);
+                    nickname = NickHash.get(friendId);
+                    drawCommunicator.drawChat(nickname,msgContent);
                 }else if(msg.what==51){
 
                     String msgContent = msg.getData().getString("msgContent");
@@ -860,17 +856,37 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
 
         public void receivePath(String PATH){
+            Message message= Message.obtain();
+            message.what = 10;
 
+            Bundle bundle = new Bundle();
+            bundle.putString("path",PATH);
+
+            message.setData(bundle);
+
+            handler.sendMessage(message);
         }
 
         @Override
         public void receiveClear() {
+            Message message= Message.obtain();
+            message.what = 11;
 
+            handler.sendMessage(message);
         }
 
         @Override
-        public void receiveDrawChat(String friendId, String content) {
+        public void receiveDrawChat(String friendId, String msgContent) {
+            Message message= Message.obtain();
+            message.what = 88;
 
+            Bundle bundle = new Bundle();
+            bundle.putString("msgContent",msgContent);
+            bundle.putString("friendId",friendId);
+
+            message.setData(bundle);
+
+            handler.sendMessage(message);
         }
     };
 
@@ -893,14 +909,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     @Override
     public void sendPath(String PATH){
-//        long now = System.currentTimeMillis();
-//        mService.sendPATH(no,friendId,PATH,now);
+        long now = System.currentTimeMillis();
+        mService.sendPATH(roomId,friendId,PATH,now);
     }
 
     @Override
     public void sendClear() {
-//        long now = System.currentTimeMillis();
-//        mService.sendClear(no,friendId,"just Clear",now);
+        long now = System.currentTimeMillis();
+        mService.sendClear(roomId,friendId,"justClear",now);
     }
 
     public void sendMessage(View v){
@@ -909,6 +925,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         long now = System.currentTimeMillis();
 
         String et = sendcontent.getText().toString();
+        if(et.equals("")){
+            return;
+        }
         sendcontent.setText("");
         Log.d("sendMessage,db.insert",myUserId+"####"+friendId+"####"+et);
         mService.sendMessage(roomId,friendId,et,now);
@@ -1010,10 +1029,13 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
     public void drawChat(View v){
-//        String et = sendcontent.getText().toString();
-//        drawCommunicator.drawChat(userNickname,et);
-//        sendcontent.setText("");
-//        mService.sendDrawChat(no,friendId,et,0);
+        String et = sendcontent.getText().toString();
+        if(et.equals("")){
+            return;
+        }
+        drawCommunicator.drawChat(myNickname,et);
+        sendcontent.setText("");
+        mService.sendDrawChat(roomId,friendId,et,0);
     }
 
     public void exitRoom(View v){
