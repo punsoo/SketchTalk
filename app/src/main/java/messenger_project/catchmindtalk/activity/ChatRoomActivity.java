@@ -137,7 +137,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     NavigationView navigationView;
 
-    final String upLoadServerUri = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String upLoadServerUri ;
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private Uri mImageCaptureUri;
@@ -149,7 +149,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom_nav);
 
-
+        upLoadServerUri = getResources().getString(R.string.ServerUrl)+"/SendImage.php";
         Intent serviceIntent = new Intent(this, ChatService.class);
         getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
@@ -309,9 +309,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 }else if(msg.what==52){
 
                     String friendId = msg.getData().getString("friendId");
-                    String content = msg.getData().getString("content");
+                    String content = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData("내아이디","내닉네임","내프로필", content, time, 52);
+                    fragmentCommunicator.passData(friendId,NickHash.get(friendId), ProfileIUTHash.get(friendId), content, time, 52);
 
                 }else if(msg.what == 365){
                     fragmentCommunicator.bottomSelect();
@@ -373,7 +373,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 //            alarmActive.setBackgroundResource(R.drawable.alarm_active_icon);
 //        }
 
-
+        Message message= Message.obtain();
+        message.what = 365;
+        handler.sendMessage(message);
 
     }
 
@@ -388,6 +390,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             mService.boundedRoomId = roomId;
             mService.boundedFriendId = friendId;
             long now = System.currentTimeMillis();
+            long TimeDiff = mPref.getLong("TimeDiff",0);
+            now = now +TimeDiff;
             mService.sendRead(roomId, friendId, now);
 
         }
@@ -401,11 +405,15 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     @Override
     protected void onStart() {
         super.onStart();
-                db.updateChatRoomLastReadTime(roomId,friendId,System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        long TimeDiff = mPref.getLong("TimeDiff",0);
+        now = now +TimeDiff;
+
+        db.updateChatRoomLastReadTime(roomId,friendId,now);
         if(mService != null) {
             Log.d("확인onStart","mService");
             mService.boundStart = true;
-            long now = System.currentTimeMillis();
+
             mService.sendRead(roomId, friendId, now);
         }
         if(mService == null){
@@ -463,6 +471,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
             if(requestCode == MakeGroupActivity){
                 long now = System.currentTimeMillis();
+                long TimeDiff = mPref.getLong("TimeDiff",0);
+                now = now +TimeDiff;
                 String msgContent = data.getExtras().getString("msgContent");
                 String inviteId = data.getExtras().getString("inviteId");
 
@@ -669,9 +679,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
-
-
     public void UpdateNetwork(String type){
 //        if(type.equals("wifi")) {
 //            Intent serviceIntent = new Intent(this, ChatService.class);
@@ -771,10 +778,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     private ChatService.ICallback_ChatRoom mCallback = new ChatService.ICallback_ChatRoom() {
 
-        public void recvData(String friendId,String msgContent,long time) {
+        public void recvData(String friendId,String msgContent,long time,int msgType) {
 
             Message message= Message.obtain();
-            message.what = 1;
+            message.what = msgType;
             Bundle bundle = new Bundle();
             bundle.putString("friendId",friendId);
             bundle.putString("msgContent",msgContent);
@@ -794,9 +801,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 fragmentCommunicator.changeRoomId(passRoomId);
         }
 
-        public void sendMessageMark(String friendId, String msgContent,long time){
+        public void sendMessageMark(String friendId, String msgContent,long time, int msgType){
+
+            int handleMsgType;
+            if(msgType == 1){
+                handleMsgType =2;
+            }else{
+                handleMsgType =52;
+            }
+
             Message message= Message.obtain();
-            message.what = 2;
+            message.what = handleMsgType;
 
             Bundle bundle = new Bundle();
             bundle.putString("friendId",friendId);
@@ -910,12 +925,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     @Override
     public void sendPath(String PATH){
         long now = System.currentTimeMillis();
+        long TimeDiff = mPref.getLong("TimeDiff",0);
+        now = now +TimeDiff;
         mService.sendPATH(roomId,friendId,PATH,now);
     }
 
     @Override
     public void sendClear() {
         long now = System.currentTimeMillis();
+        long TimeDiff = mPref.getLong("TimeDiff",0);
+        now = now +TimeDiff;
         mService.sendClear(roomId,friendId,"justClear",now);
     }
 
@@ -923,6 +942,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
         long now = System.currentTimeMillis();
+        long TimeDiff = mPref.getLong("TimeDiff",0);
+        now = now +TimeDiff;
 
         String et = sendcontent.getText().toString();
         if(et.equals("")){
@@ -930,7 +951,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
         sendcontent.setText("");
         Log.d("sendMessage,db.insert",myUserId+"####"+friendId+"####"+et);
-        mService.sendMessage(roomId,friendId,et,now);
+        mService.sendMessage(roomId,friendId,et,now,1);
 
     }
 
@@ -1085,6 +1106,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         String msgContent = myNickname + "님이 나갔습니다";
         long now = System.currentTimeMillis();
+        long TimeDiff = mPref.getLong("TimeDiff",0);
+        now = now +TimeDiff;
 
         mService.sendExit(roomId, friendId, msgContent, now);
 
@@ -1107,166 +1130,169 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
 
-//    public int uploadFile(String sourceFileUri) {
+    public int uploadFile(String sourceFileUri) {
 
-//        Log.d("이미지업로드시작CRA",sourceFileUri);
-//        String fileName = sourceFileUri;
-//
-//        HttpURLConnection conn = null;
-//        DataOutputStream dos = null;
-//        String lineEnd = "\r\n";
-//        String twoHyphens = "--";
-//        String boundary = "*****";
-//        int bytesRead, bytesAvailable, bufferSize;
-//        byte[] buffer;
-//        int maxBufferSize = 1 * 1024 * 1024;
-////        File sourceFile = new File(sourceFileUri);
-//
-//        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tmp.png";
-//
-//        Bitmap b= BitmapFactory.decodeFile(sourceFileUri);
-//
-//        Log.d("뭘기대",b.getWidth()+"###"+b.getHeight());
-//
-//        float height = 400 * (float)b.getHeight() /  (float)b.getWidth();
-//
-//        Bitmap out = Bitmap.createScaledBitmap(b, 400, (int)height, false);
-//
-//
-//        File sourceFile = new File(path);
-//        FileOutputStream fOut;
-//
-//
-//
-//        try {
-//
-//            Log.d("이미지새파일경로1",sourceFile.getAbsolutePath());
-//            fOut = new FileOutputStream(sourceFile);
-//            Log.d("이미지새파일경로2",sourceFile.getAbsolutePath());
-//            out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-//
-//        } catch (Exception e) {
-//
-//        }
-//
-//
-//
-//        if (!sourceFile.isFile()) {
-//
-//            Log.d("이미지경로에없음","경로에없나?");
-////            dialog.dismiss();
-//
-//            return 0;
-//
-//        }else{
-//
-//            int serverResponseCode = 123;
-//
-//            try {
-//
-//                // open a URL connection to the Servlet
-//                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-//                URL url = new URL(upLoadServerUri);
-//                // Open a HTTP  connection to  the URL
-//                conn = (HttpURLConnection) url.openConnection();
-//                conn.setDoInput(true); // Allow Inputs
-//                conn.setDoOutput(true); // Allow Outputs
-//                conn.setUseCaches(false); // Don't use a Cached Copy
-//                conn.setRequestMethod("POST");
-//                conn.setRequestProperty("Connection", "Keep-Alive");
-//                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-//                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-//                conn.setRequestProperty("uploaded_file", fileName);
-//
-//                dos = new DataOutputStream(conn.getOutputStream());
-//                dos.writeBytes(twoHyphens + boundary + lineEnd);
-//
-//
-//                long now = System.currentTimeMillis();
-//                String imageName = userId + "_" + now + ".png";
-//
-//
-//                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-//                        + imageName + "\"" + lineEnd);
-//
-//                dos.writeBytes(lineEnd);
-//                // create a buffer of  maximum size
-//                bytesAvailable = fileInputStream.available();
-//
-//                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                buffer = new byte[bufferSize];
-//
-//                // read file and write it into form...
-//                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//
-//                while (bytesRead > 0) {
-//
-//                    dos.write(buffer, 0, bufferSize);
-//                    bytesAvailable = fileInputStream.available();
-//                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-//                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-//
-//                }
-//
-//                // send multipart form data necesssary after file data...
-//                dos.writeBytes(lineEnd);
-//                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-//
-//                // Responses from the server (code and message)
-//                serverResponseCode = conn.getResponseCode();
-//                String serverResponseMessage = conn.getResponseMessage();
-//
-//                Log.d("이미지uploadFile", "HTTP Response is : "
-//                        + serverResponseMessage + ": " + serverResponseCode);
-//
-//
-//                //close the streams //
-//                fileInputStream.close();
-//                dos.flush();
-//                dos.close();
-//
-//
-//                InputStream is = null;
-//                BufferedReader in = null;
-//
-//
-//                is = conn.getInputStream();
-//                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
-//                String line = null;
-//                StringBuffer buff = new StringBuffer();
-//                while ( ( line = in.readLine() ) != null )
-//                {
-//                    buff.append(line + "\n");
-//                }
-//                String data = buff.toString().trim();
-//                Log.d("이미지성공실패",data);
-//
-//                if(data.equals("OK")){
-//                    mService.sendImage(no,friendId,imageName,now);
-//                }
-//
-//
-//            } catch (MalformedURLException ex) {
-//
-//
-//                ex.printStackTrace();
-//
-//
-//
-//                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
-//            } catch (Exception e) {
-//
-//                e.printStackTrace();
-//
-//
-//            }
-//
-////            dialog.dismiss();
-//            return serverResponseCode;
-//
-//        } // End else block
+        Log.d("이미지업로드시작CRA",sourceFileUri);
+        String fileName = sourceFileUri;
 
-//    }
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+//        File sourceFile = new File(sourceFileUri);
+
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tmp.png";
+
+        Bitmap b= BitmapFactory.decodeFile(sourceFileUri);
+
+        Log.d("이미지크기",b.getWidth()+"###"+b.getHeight());
+
+        float height = 400 * (float)b.getHeight() /  (float)b.getWidth();
+
+        Bitmap out = Bitmap.createScaledBitmap(b, 400, (int)height, false);
+
+
+        File sourceFile = new File(path);
+        FileOutputStream fOut;
+
+
+
+        try {
+
+            Log.d("이미지새파일경로1",sourceFile.getAbsolutePath());
+            fOut = new FileOutputStream(sourceFile);
+            Log.d("이미지새파일경로2",sourceFile.getAbsolutePath());
+            out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+
+        } catch (Exception e) {
+
+        }
+
+
+
+        if (!sourceFile.isFile()) {
+
+            Log.d("이미지","경로에없음");
+//            dialog.dismiss();
+
+            return 0;
+
+        }else{
+
+            int serverResponseCode = 123;
+
+            try {
+
+                // open a URL connection to the Servlet
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL(upLoadServerUri);
+                // Open a HTTP  connection to  the URL
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true); // Allow Inputs
+                conn.setDoOutput(true); // Allow Outputs
+                conn.setUseCaches(false); // Don't use a Cached Copy
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+
+                dos = new DataOutputStream(conn.getOutputStream());
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+
+
+                long now = System.currentTimeMillis();
+                long TimeDiff = mPref.getLong("TimeDiff",0);
+                now = now +TimeDiff;
+                String imageName = myUserId + "_" + now + ".png";
+
+
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
+                        + imageName + "\"" + lineEnd);
+
+                dos.writeBytes(lineEnd);
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available();
+
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                serverResponseCode = conn.getResponseCode();
+                String serverResponseMessage = conn.getResponseMessage();
+
+                Log.d("이미지uploadFile", "HTTP Response is : "
+                        + serverResponseMessage + ": " + serverResponseCode);
+
+
+                //close the streams //
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+
+                InputStream is = null;
+                BufferedReader in = null;
+
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                String data = buff.toString().trim();
+                Log.d("이미지성공실패",data);
+
+                if(data.equals("성공")){
+                    Log.d("메세지마크1",imageName+"");
+                    mService.sendMessage(roomId,friendId,imageName,now,51);
+                }
+
+
+            } catch (MalformedURLException ex) {
+
+
+                ex.printStackTrace();
+
+
+
+                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+
+            }
+
+//            dialog.dismiss();
+            return serverResponseCode;
+
+        } // End else block
+
+    }
 
 
 
@@ -1282,7 +1308,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         @Override
         public void run() {
 
-//            uploadFile(filePath);
+            uploadFile(filePath);
 
         }
 
@@ -1292,9 +1318,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     public void doTakePhotoAction(){
 
-//        Intent intent = new Intent (this, CustomCameraActivity.class);
-//
-//        startActivityForResult(intent, PICK_FROM_CAMERA);
+        Intent intent = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
+
+        startActivityForResult(intent, PICK_FROM_CAMERA);
 
     }
 
