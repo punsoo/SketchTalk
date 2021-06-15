@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/sketch_talk_base">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="회원가입"
-        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textSize="35sp"
+        android:textColor="@color/brown500"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp"/>
@@ -20,13 +23,18 @@
         android:layout_marginEnd="40dp"
         android:hint="아이디"
         android:textSize="12sp"
-        android:layout_marginTop="130dp" />
+        android:singleLine = "true"
+        android:lines = "1"
+        android:layout_marginTop="130dp"
+        android:theme="@style/EditTextStyle"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="아이디 중복확인"
+        android:textColor="@color/colorWhite"
         android:textSize="12sp"
+        android:background="@drawable/rounded_rectangle"
         android:id="@+id/idCheck"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="40dp"
@@ -43,7 +51,8 @@
         android:inputType="textPassword"
         android:hint="비밀번호"
         android:textSize="12sp"
-        android:layout_below="@+id/idCheck" />
+        android:layout_below="@+id/idCheck"
+        android:theme="@style/EditTextStyle"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,7 +62,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="40dp"
         android:layout_below="@+id/passwordInput_signup"
-        android:id="@+id/passwordTxt"/>
+        android:id="@+id/passwordTxt" />
 
     <EditText
         android:layout_width="170dp"
@@ -64,7 +73,8 @@
         android:inputType="textPassword"
         android:hint="비밀번호확인"
         android:textSize="12sp"
-        android:layout_below="@+id/passwordTxt" />
+        android:layout_below="@+id/passwordTxt"
+        android:theme="@style/EditTextStyle"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -84,13 +94,18 @@
         android:layout_marginEnd="40dp"
         android:hint="닉네임"
         android:textSize="12sp"
-        android:layout_below="@+id/passwordCheckTxt" />
+        android:singleLine = "true"
+        android:lines = "1"
+        android:layout_below="@+id/passwordCheckTxt"
+        android:theme="@style/EditTextStyle"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="닉네임 중복확인"
+        android:textColor="@color/colorWhite"
         android:textSize="12sp"
+        android:background="@drawable/rounded_rectangle"
         android:id="@+id/nicknameCheck"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="40dp"
@@ -103,6 +118,7 @@
         android:layout_height="wrap_content"
         android:text="ID :   "
         android:textSize="12sp"
+        android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
         android:layout_marginRight="10dp"
         android:layout_toStartOf="@+id/userIdInput_signup"
@@ -114,6 +130,7 @@
         android:layout_height="wrap_content"
         android:text="PASSWORD :   "
         android:textSize="12sp"
+        android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
         android:layout_marginRight="10dp"
         android:layout_toStartOf="@+id/passwordInput_signup"
@@ -124,6 +141,7 @@
         android:layout_height="wrap_content"
         android:text="PASSWORD CHECK:  "
         android:textSize="12sp"
+        android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
         android:layout_marginRight="10dp"
         android:layout_toStartOf="@+id/passwordInput_signup_check"
@@ -134,6 +152,7 @@
         android:layout_height="wrap_content"
         android:text="NICKNAME:   "
         android:textSize="12sp"
+        android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
         android:layout_marginRight="10dp"
         android:layout_toStartOf="@+id/nickname_signup"
@@ -143,9 +162,11 @@
 
     <Button
         android:layout_width="140dp"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         android:text="취소"
-        android:textSize="20sp"
+        android:textColor="@color/colorWhite"
+        android:textSize="22sp"
+        android:background="@drawable/rounded_rectangle"
         android:id="@+id/cancelButton"
         android:textAllCaps="false"
         android:layout_marginTop="40dp"
@@ -155,9 +176,11 @@
 
     <Button
         android:layout_width="140dp"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         android:text="가입완료"
-        android:textSize="20sp"
+        android:textColor="@color/colorWhite"
+        android:textSize="22sp"
+        android:background="@drawable/rounded_rectangle"
         android:id="@+id/signUpCompleteButton"
         android:textAllCaps="false"
         android:layout_alignTop="@+id/cancelButton"

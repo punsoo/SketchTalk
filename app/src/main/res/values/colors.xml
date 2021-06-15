@@ -6,7 +6,21 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorBasic">#c8ff40</color>
     <color name="colorPopup">#d7dbd6</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
     <color name="image_border_start">#40990000</color>
     <color name="image_border_end">#FF660000</color>
     <color name="image_border_center">#FFFF3333</color>
+    <color name="red500">#F44336</color>
+    <color name="pink500">#E91E63</color>
+    <color name="purple500">#9C27B0</color>
+    <color name="indigo500">#3F51B5</color>
+    <color name="blue500">#2196F3</color>
+    <color name="lightblue500">#03A9F4</color>
+    <color name="teal500">#009688</color>
+    <color name="green500">#4CAF50</color>
+    <color name="amber500">#FFC107</color>
+    <color name="orange500">#FF9800</color>
+    <color name="brown500">#795548</color>
+
 </resources>
