@@ -14,7 +14,7 @@
         android:id="@+id/toolbarChatRoom"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#703800"
+        android:background="@drawable/toolbar"
         android:theme="@style/AppTheme.NoActionBar"
         android:layout_weight="1"/>
     <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />-->
@@ -70,12 +70,14 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/ButtonContainer">
+                android:id="@+id/ButtonContainer"
+                android:layout_centerVertical="true">
 
                 <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/plus_icon"
+                    android:background="@drawable/rounded_rectangle"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     android:layout_alignParentStart="true"
@@ -83,14 +85,14 @@
                     android:onClick="ImageSendBtn"/>
 
                 <Button
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="5dp"
                     android:layout_alignParentStart="true"
                     android:id="@+id/drawMode_btn"
-                    android:text="낙서모드"
+                    android:text="낙서"
                     android:textSize="16sp"
-                    android:background="@drawable/btn_border"
+                    android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:gravity="center"
                     android:onClick="DrawModeBtn"/>
@@ -117,6 +119,7 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/rounded_rectangle"
                     android:text="전 송"
                     android:onClick="sendMessage"/>
 
@@ -125,6 +128,7 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/rounded_rectangle"
                     android:text="전 송"
                     android:onClick="drawChat"
                     android:visibility="gone"/>

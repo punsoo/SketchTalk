@@ -116,7 +116,7 @@
     <TextView
         android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:text="ID :   "
+        android:text="ID :  "
         android:textSize="12sp"
         android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
@@ -128,7 +128,7 @@
     <TextView
         android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:text="PASSWORD :   "
+        android:text="PASSWORD :  "
         android:textSize="12sp"
         android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
@@ -139,7 +139,7 @@
     <TextView
         android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:text="PASSWORD CHECK:  "
+        android:text="PASSWORD CHECK :  "
         android:textSize="12sp"
         android:textColor="@color/brown500"
         android:textAlignment="viewEnd"
@@ -150,7 +150,7 @@
     <TextView
         android:layout_width="125dp"
         android:layout_height="wrap_content"
-        android:text="NICKNAME:   "
+        android:text="NICKNAME :  "
         android:textSize="12sp"
         android:textColor="@color/brown500"
         android:textAlignment="viewEnd"

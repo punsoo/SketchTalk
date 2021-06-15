@@ -1026,10 +1026,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     public void DrawModeBtn(View v){
         if(ChatRoomViewPager.DrawMode){
-            drawModeBtn.setBackgroundResource(R.drawable.btn_border);
+            drawModeBtn.setBackgroundResource(R.drawable.draw_inactive);
             ChatRoomViewPager.DrawMode = false;
         }else{
-            drawModeBtn.setBackgroundResource(R.drawable.btn_border_active);
+            drawModeBtn.setBackgroundResource(R.drawable.draw_active);
             ChatRoomViewPager.DrawMode = true;
         }
     }

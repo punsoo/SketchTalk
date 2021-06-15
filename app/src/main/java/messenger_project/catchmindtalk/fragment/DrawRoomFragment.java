@@ -210,16 +210,11 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
     @Override
     public void onStart() {
         super.onStart();
-
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-
-
     }
 
     @Override
@@ -274,15 +269,8 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
     public class getSketchThread extends Thread{
 
 
-
-
         public getSketchThread(){
-
-
-
         }
-
-
 
         @Override
         public void run(){

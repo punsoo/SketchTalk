@@ -2,37 +2,38 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="프로필"
+        android:textColor="@color/colorWhite"
         android:textSize="16sp"
+        android:background="@drawable/rounded_rectangle"
         android:layout_marginTop="30dp"
         android:id="@+id/settingProfile"
         android:onClick="myProfileBtn"/>
-
-
-
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="알림"
+        android:textColor="@color/colorWhite"
         android:textSize="16sp"
+        android:background="@drawable/rounded_rectangle"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/settingProfile"
         android:id="@+id/settingNotice" />
-
-
-
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그아웃"
+        android:textColor="@color/colorWhite"
         android:textSize="16sp"
+        android:background="@drawable/rounded_rectangle"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/settingNotice"
         android:id="@+id/logout"
