@@ -1,67 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loginBase"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/sketch_talk_main">
 
-    <EditText
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:id="@+id/userIdInput"
-        android:layout_centerHorizontal="true"
-        android:hint="아이디"
-        android:layout_marginTop="450dp"
-        android:singleLine = "true"
-        android:lines = "1"
-        android:theme="@style/EditTextStyle"/>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/loginContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp">
 
-    <EditText
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:id="@+id/passwordInput"
-        android:layout_centerHorizontal="true"
-        android:inputType="textPassword"
-        android:hint="비밀번호"
-        android:layout_below="@+id/userIdInput"
-        android:theme="@style/EditTextStyle"/>
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:id="@+id/userIdInput"
+            android:layout_centerHorizontal="true"
+            android:hint="아이디"
+            android:singleLine = "true"
+            android:lines = "1"
+            android:theme="@style/EditTextStyle"/>
 
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="55dp"
-        android:text="로그인"
-        android:id="@+id/loginButton"
-        android:textAllCaps="false"
-        android:textColor="@color/colorWhite"
-        android:textSize="17sp"
-        android:background="@drawable/rounded_rectangle"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/passwordInput"
-        android:layout_alignStart="@+id/userIdInput"
-        android:onClick="login"/>
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:id="@+id/passwordInput"
+            android:layout_centerHorizontal="true"
+            android:inputType="textPassword"
+            android:hint="비밀번호"
+            android:layout_below="@+id/userIdInput"
+            android:theme="@style/EditTextStyle"/>
 
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="55dp"
-        android:text="회원가입"
-        android:id="@+id/signUpButton"
-        android:textAllCaps="false"
-        android:textColor="@color/colorWhite"
-        android:textSize="17sp"
-        android:background="@drawable/rounded_rectangle"
-        android:layout_alignTop="@+id/loginButton"
-        android:layout_alignEnd="@+id/passwordInput"
-        android:onClick="signUp"/>
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="55dp"
+            android:text="로그인"
+            android:id="@+id/loginButton"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="17sp"
+            android:background="@drawable/rounded_rectangle"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/passwordInput"
+            android:layout_alignStart="@+id/userIdInput"
+            android:onClick="login"
+            android:layout_marginBottom="20dp"/>
 
-    <!--<CheckBox-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="자동 로그인"-->
-        <!--android:id="@+id/autoLogin"-->
-        <!--android:layout_marginTop="20dp"-->
-        <!--android:layout_below="@+id/signUpButton"-->
-        <!--android:layout_alignEnd="@+id/signUpButton"-->
-        <!--android:layout_centerHorizontal="true" />-->
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="55dp"
+            android:text="회원가입"
+            android:id="@+id/signUpButton"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="17sp"
+            android:background="@drawable/rounded_rectangle"
+            android:layout_alignTop="@+id/loginButton"
+            android:layout_alignEnd="@+id/passwordInput"
+            android:onClick="signUp"
+            android:layout_marginBottom="20dp"/>
 
+        <!--<CheckBox-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="자동 로그인"-->
+            <!--android:id="@+id/autoLogin"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_below="@+id/signUpButton"-->
+            <!--android:layout_alignEnd="@+id/signUpButton"-->
+            <!--android:layout_centerHorizontal="true" />-->
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
-

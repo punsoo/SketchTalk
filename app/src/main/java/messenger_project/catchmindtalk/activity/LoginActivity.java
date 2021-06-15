@@ -5,14 +5,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -35,6 +38,7 @@ import messenger_project.catchmindtalk.R;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public RelativeLayout loginContainer;
     public EditText userId,password;
     public String sUserId,sPassword;
     public MyDatabaseOpenHelper db;
@@ -48,6 +52,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        loginContainer = (RelativeLayout) findViewById(R.id.loginContainer);
+        RelativeLayout.LayoutParams mLayoutParams = (RelativeLayout.LayoutParams) loginContainer.getLayoutParams();
+        Display display = getWindowManager().getDefaultDisplay();  // in Activity
+        /* getActivity().getWindowManager().getDefaultDisplay() */ // in Fragment
+        Point size = new Point();
+        display.getRealSize(size); // or getSize(size)
+        int height = size.y;
+        mLayoutParams.bottomMargin = height/6;
         userId = (EditText) findViewById(R.id.userIdInput);
         password = (EditText) findViewById(R.id.passwordInput);
         sUserId = userId.getText().toString();

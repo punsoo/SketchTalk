@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -109,11 +110,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public HashMap<String,String> ProfileIUTHash = new HashMap<>();
     BroadcastReceiver NetworkChangeUpdater;
     public ImageButton plusBtn;
-    public Button drawModeBtn;
-    public Button sendMsgBtn;
-    public Button drawChatBtn;
+    public ImageButton drawModeBtn;
+    public ImageButton sendMsgBtn;
+    public ImageButton drawChatBtn;
     public ImageButton alarmActive;
     DrawerLayout drawer;
+    InputMethodManager inputMethodManager;
 
     public int delPosition;
     public boolean preMsgDelete;
@@ -155,9 +157,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         // Adding Toolbar to the activity
         toolbar = (Toolbar) findViewById(R.id.toolbarChatRoom);
         plusBtn = (ImageButton) findViewById(R.id.plus_btn);
-        drawModeBtn = (Button) findViewById(R.id.drawMode_btn);
-        sendMsgBtn = (Button) findViewById(R.id.SendMsgBtn);
-        drawChatBtn = (Button) findViewById(R.id.drawChatBtn);
+        drawModeBtn = (ImageButton) findViewById(R.id.drawMode_btn);
+        sendMsgBtn = (ImageButton) findViewById(R.id.SendMsgBtn);
+        drawChatBtn = (ImageButton) findViewById(R.id.drawChatBtn);
 
         View header = (RelativeLayout) findViewById(R.id.memberListInviteContainer);
         header.setOnClickListener(mClickListener);
@@ -167,6 +169,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
 //        actionBar.setDisplayShowTitleEnabled(false);
 
+        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
         db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
         mPref = getSharedPreferences("login",MODE_PRIVATE);
@@ -1028,9 +1031,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         if(ChatRoomViewPager.DrawMode){
             drawModeBtn.setBackgroundResource(R.drawable.draw_inactive);
             ChatRoomViewPager.DrawMode = false;
+            sendcontent.setEnabled(true);
+            sendcontent.setClickable(true);
+            sendcontent.setHint(R.string.enterMessage);
         }else{
             drawModeBtn.setBackgroundResource(R.drawable.draw_active);
             ChatRoomViewPager.DrawMode = true;
+            inputMethodManager.hideSoftInputFromWindow(sendcontent.getWindowToken(),0);
+            sendcontent.setEnabled(false);
+            sendcontent.setClickable(false);
+            sendcontent.setHint(R.string.unableEnterMessage);
         }
     }
 

@@ -167,9 +167,9 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
 
     @Override
     public void bottomSelect() {
-
-        lv.setSelection(ListData.size()-1);
-
+        if(ListData != null && ListData.size() >= 1) {
+            lv.setSelection(ListData.size() - 1);
+        }
     }
 
 

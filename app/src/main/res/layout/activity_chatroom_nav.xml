@@ -35,7 +35,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:layout_weight="100"
         tools:openDrawer="end">
 
@@ -54,86 +53,133 @@
             android:id="@+id/pagerChatRoom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="100"
+            android:layout_weight="1"
             />
 
 
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:background="#FFFFFF"
-            android:layout_below="@id/pagerChatRoom"
-            android:layout_weight="1"
-            >
+            android:layout_below="@id/pagerChatRoom">
 
             <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:id="@+id/ButtonContainer"
                 android:layout_centerVertical="true">
 
                 <ImageButton
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:padding="10dp"
                     android:src="@drawable/plus_icon"
-                    android:background="@drawable/rounded_rectangle"
+                    android:background="@drawable/normal_rectangle"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
                     android:layout_alignParentStart="true"
                     android:id="@+id/plus_btn"
                     android:onClick="ImageSendBtn"/>
 
-                <Button
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="5dp"
+                <ImageButton
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:padding="5dp"
+                    android:src="@drawable/draw_icon"
+                    android:background="@drawable/normal_rectangle"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
                     android:layout_alignParentStart="true"
                     android:id="@+id/drawMode_btn"
-                    android:text="낙서"
-                    android:textSize="16sp"
-                    android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
-                    android:gravity="center"
                     android:onClick="DrawModeBtn"/>
 
             </FrameLayout>
 
-            <LinearLayout
+            <EditText
+                android:hint="@string/enterMessage"
+                android:id="@+id/messageContent"
+                android:inputType="textMultiLine"
+                android:maxLines="4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_toEndOf="@+id/ButtonContainer">
+                android:layout_toEndOf="@+id/ButtonContainer"
+                android:layout_toStartOf="@+id/SendButtonContainer"/>
 
-                <EditText
-                    android:hint="메세지를 입력하세요"
-                    android:id="@+id/messageContent"
-                    android:inputType="textMultiLine"
-                    android:maxLines="4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/SendButtonContainer"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true">
 
-                <Button
+                <ImageButton
                     android:id="@+id/SendMsgBtn"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/rounded_rectangle"
-                    android:text="전 송"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:padding="13dp"
+                    android:src="@drawable/send_icon"
+                    android:background="@drawable/normal_rectangle"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
                     android:onClick="sendMessage"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/drawChatBtn"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/rounded_rectangle"
-                    android:text="전 송"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
+                    android:padding="13dp"
+                    android:src="@drawable/send_icon"
+                    android:background="@drawable/normal_rectangle"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
                     android:onClick="drawChat"
                     android:visibility="gone"/>
 
-            </LinearLayout>
+            </FrameLayout>
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_toEndOf="@+id/ButtonContainer">-->
+
+<!--                <EditText-->
+<!--                    android:hint="메세지를 입력하세요"-->
+<!--                    android:id="@+id/messageContent"-->
+<!--                    android:inputType="textMultiLine"-->
+<!--                    android:maxLines="4"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"/>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/SendMsgBtn"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="45dp"-->
+<!--                    android:padding="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:src="@drawable/send_icon"-->
+<!--                    android:background="@drawable/rounded_rectangle"-->
+<!--                    android:adjustViewBounds="true"-->
+<!--                    android:scaleType="centerCrop"-->
+<!--                    android:onClick="sendMessage"/>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/drawChatBtn"-->
+<!--                    android:layout_width="80dp"-->
+<!--                    android:layout_height="45dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:src="@drawable/send_icon"-->
+<!--                    android:background="@drawable/rounded_rectangle"-->
+<!--                    android:adjustViewBounds="true"-->
+<!--                    android:scaleType="centerCrop"-->
+<!--                    android:onClick="drawChat"-->
+<!--                    android:visibility="gone"/>-->
+
+<!--            </LinearLayout>-->
 
         </RelativeLayout>
 
