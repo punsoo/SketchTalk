@@ -9,14 +9,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
-import androidx.annotation.DrawableRes;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -34,7 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import messenger_project.catchmindtalk.ChatService;
+import messenger_project.catchmindtalk.chatservice.ChatService;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 import messenger_project.catchmindtalk.adapter.TabPagerAdapter;
@@ -67,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
     public static final int MakeGroupActivity = 5409;
     public static final int EditChatRoom = 5828;
+    public static final int notifyRecvData = 7509;
+    public static final int changeRoomList = 1458;
 
     BroadcastReceiver NetworkChangeUpdater;
 
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
-        getSupportActionBar().setTitle("캐마톡");
+        getSupportActionBar().setTitle("스케치톡");
 
         mPref = getSharedPreferences("login",MODE_PRIVATE);
         editor = mPref.edit();
@@ -160,9 +159,9 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             @Override
             public void handleMessage(Message msg){
 
-                if(msg.what == 1) {
+                if(msg.what == notifyRecvData) {
                     fragmentCommunicator.notifyRecvData();
-                }else if(msg.what ==2){
+                }else if(msg.what == changeRoomList){
                     Log.d("확인5","55555");
                     fragmentCommunicator.changeRoomList();
                 }
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         public void recvData() {
 
             Message message= Message.obtain();
-            message.what = 1;
+            message.what = notifyRecvData;
             handler.sendMessage(message);
 
         }
@@ -229,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         public void changeRoomList(){
 
             Message message= Message.obtain();
-            message.what = 2;
+            message.what = changeRoomList;
             handler.sendMessage(message);
 
         }
@@ -390,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         public ExitThread(int RoomIdExit, String FriendIdExit){
             this.now = System.currentTimeMillis();
+            long TimeDiff = mPref.getLong("TimeDiff",0);
+            this.now = this.now +TimeDiff;
             this.msgContent = myNickname + "님이 나갔습니다";
             this.roomIdExit = RoomIdExit;
             this.friendIdExit = FriendIdExit;
@@ -437,6 +438,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
                     String content =  myNickname + "님이 나갔습니다";
                     long now = System.currentTimeMillis();
+                    long TimeDiff = mPref.getLong("TimeDiff",0);
+                    now = now +TimeDiff;
 
                     for(int i=0;i<jarray.length();i++){
 

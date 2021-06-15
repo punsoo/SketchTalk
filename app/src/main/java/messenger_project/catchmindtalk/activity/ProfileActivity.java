@@ -57,8 +57,8 @@ public class ProfileActivity extends AppCompatActivity {
     private String absolutePath;
     ProgressDialog dialog = null;
     int serverResponseCode = 0;
-    final String upLoadServerUri = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com/UploadToServer.php";
-    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String upLoadServerUri;
+    String ServerURL ;
 
     public TextView profileTitleView;
     public TextView profileMessageView;
@@ -93,6 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        ServerURL = getResources().getString(R.string.ServerUrl);
         profileTitleView = (TextView)findViewById(R.id.ProfileTitle);
         profileMessageView = (TextView)findViewById(R.id.ProfileMessage);
         profileImageView = (ImageView)findViewById(R.id.ProfileImage);

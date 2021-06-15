@@ -35,11 +35,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -54,9 +52,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,9 +62,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
-import messenger_project.catchmindtalk.ChatRoomViewPager;
-import messenger_project.catchmindtalk.ChatService;
-import messenger_project.catchmindtalk.DrawLine;
+import messenger_project.catchmindtalk.chatroom.ChatRoomViewPager;
+import messenger_project.catchmindtalk.chatservice.ChatService;
+import messenger_project.catchmindtalk.chatroom.DrawLine;
 import messenger_project.catchmindtalk.Item.MemberListItem;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;

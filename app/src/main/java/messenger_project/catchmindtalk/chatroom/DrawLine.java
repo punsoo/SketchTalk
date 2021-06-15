@@ -1,4 +1,4 @@
-package messenger_project.catchmindtalk;
+package messenger_project.catchmindtalk.chatroom;
 
 
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -18,6 +17,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 import messenger_project.catchmindtalk.activity.ChatRoomActivity;
+import messenger_project.catchmindtalk.chatroom.ChatRoomViewPager;
+import messenger_project.catchmindtalk.chatroom.Coordinate;
 
 public class DrawLine extends View
 {

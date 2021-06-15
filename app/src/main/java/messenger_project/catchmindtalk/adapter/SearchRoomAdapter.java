@@ -38,7 +38,7 @@ public class SearchRoomAdapter extends BaseAdapter {
     public MyDatabaseOpenHelper db;
     public String userId;
     public SimpleDateFormat sdfNow ;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL ;
 
 
     public SearchRoomAdapter(Context context, ArrayList<ChatRoomItem> searchRoomList, String myId) {
@@ -49,6 +49,7 @@ public class SearchRoomAdapter extends BaseAdapter {
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
         this.userId = myId;
         this.sdfNow = new SimpleDateFormat("HH:mm");
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
 
     }
 

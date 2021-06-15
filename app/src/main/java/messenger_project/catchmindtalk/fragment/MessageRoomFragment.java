@@ -1,35 +1,20 @@
 package messenger_project.catchmindtalk.fragment;
 
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import androidx.fragment.app.Fragment;
-import messenger_project.catchmindtalk.ChatService;
 import messenger_project.catchmindtalk.Item.ChatMessageItem;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;

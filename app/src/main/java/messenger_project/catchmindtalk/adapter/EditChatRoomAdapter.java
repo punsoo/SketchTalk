@@ -38,7 +38,7 @@ public class EditChatRoomAdapter extends BaseAdapter {
     public LayoutInflater inflater ;
     public MyDatabaseOpenHelper db;
     public String userId;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL;
     HashMap<String, Boolean> isChecked = new HashMap<>();
     public SimpleDateFormat sdfNow ;
 
@@ -50,7 +50,7 @@ public class EditChatRoomAdapter extends BaseAdapter {
         this.userId = myId;
         this.isChecked = IsChecked;
         this.sdfNow = new SimpleDateFormat("HH:mm");
-
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
 
     }

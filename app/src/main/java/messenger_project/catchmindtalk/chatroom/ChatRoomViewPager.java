@@ -1,4 +1,4 @@
-package messenger_project.catchmindtalk;
+package messenger_project.catchmindtalk.chatroom;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -43,7 +43,7 @@ public class ChatMessageAdapter extends BaseAdapter {
     public SimpleDateFormat sdfDate ;
     public static final int DeleteImage = 3102;
     public static final int DeleteMessage = 2013;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL;
 
     // ListViewAdapter의 생성자
     public ChatMessageAdapter(Context context,ArrayList<ChatMessageItem> ListData,String myId ,int roomId, String friendId) {
@@ -54,7 +54,9 @@ public class ChatMessageAdapter extends BaseAdapter {
         this.roomId = roomId;
         this.sdfTime = new SimpleDateFormat("HH:mm");
         this.sdfDate = new SimpleDateFormat("yyyy년 MM월 dd일 E요일");
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
+
     }
 
     public void setChatRoomList(ArrayList<ChatMessageItem> ListData) {
@@ -63,7 +65,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 6;
+        return 53;
     }
 
 
@@ -144,6 +146,18 @@ public class ChatMessageAdapter extends BaseAdapter {
             }else if(msgType == 3 || msgType == 4 || msgType == 5){
                 convertView = this.inflater.inflate(R.layout.chatmessage_item_center, parent, false);
                 viewHolder.msgContent = (TextView) convertView.findViewById(R.id.msgCenterContent);
+            }else if(msgType == 51){
+                convertView = this.inflater.inflate(R.layout.chatmessage_item_left_image, parent, false);
+                viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.msgProfileImage);
+                viewHolder.nickname = (TextView) convertView.findViewById(R.id.msgNickname);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeLeft);
+                viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadLeft);
+                viewHolder.sendImage = (ImageView) convertView.findViewById(R.id.sendImageViewLeft);
+            }else if(msgType == 52){
+                convertView = this.inflater.inflate(R.layout.chatmessage_item_right_image, parent, false);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.msgTimeRight);
+                viewHolder.unRead = (TextView) convertView.findViewById(R.id.unReadRight);
+                viewHolder.sendImage = (ImageView) convertView.findViewById(R.id.sendImageViewRight);
             }
 
 
@@ -176,44 +190,60 @@ public class ChatMessageAdapter extends BaseAdapter {
                 }
 
                 viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
-                viewHolder.time.setText(time);
-                viewHolder.time.setVisibility(View.GONE);
-                if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime)) {
-                    viewHolder.time.setVisibility(View.VISIBLE);
-                }
-
-                long dateTime = chatMessageList.get(position).getDateTime();
-                if (roomId == 0) {
-                    viewHolder.unRead.setText("");
-                } else {
-                    int unRead = db.getMessageUnReadNum(myId, roomId, friendId, dateTime);
-                    if (unRead <= 0) {
-                        viewHolder.unRead.setText("");
-                    } else {
-                        viewHolder.unRead.setText(unRead + "");
-                    }
-                }
-
             } else if (msgType == 2) {
-
                 viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
-                viewHolder.time.setText(chatMessageList.get(position).getTime());
+
+            } else if (msgType == 3) {
+                viewHolder.msgContent.setText(chatMessageList.get(position).getDay());
+            } else if (msgType == 4 || msgType == 5) {
+                viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
+            } else if (msgType == 51 ){
+                try {
+                    Glide.with(mContext).load(ServerURL + "/profile_image/" + friendId + ".png")
+                            .error(R.drawable.default_profile_image)
+                            .signature(new ObjectKey(profileIUT))
+                            .into(viewHolder.profileImage);
+                } catch (NullPointerException e) {
+                    Log.d("ChatMessageAdapter", "NullpointerException, " + friendId);
+                }
+                viewHolder.nickname.setText(chatMessageList.get(position).getNickname());
+                viewHolder.profileImage.setVisibility(View.VISIBLE);
+                viewHolder.nickname.setVisibility(View.VISIBLE);
+                if ((position != 0) && friendId.equals(preId) && day.equals(preDay) && time.equals((preTime)) && chatMessageList.get(position - 1).getType() == 1) {
+                    viewHolder.profileImage.setVisibility(View.INVISIBLE);
+                    viewHolder.nickname.setVisibility(View.GONE);
+                }
+
+                Glide.with(mContext).load(ServerURL + "/sendImage/" + chatMessageList.get(position).getMsgContent())
+                        .error(R.drawable.default_profile_image)
+                        .into(viewHolder.sendImage);
+            }else if (msgType == 52){
+                Glide.with(mContext).load(ServerURL + "/sendImage/" + chatMessageList.get(position).getMsgContent())
+                        .error(R.drawable.default_profile_image)
+                        .into(viewHolder.sendImage);
+            }
+
+            if(msgType == 1 || msgType ==2 || msgType == 51 || msgType ==52){
                 viewHolder.time.setText(time);
                 viewHolder.time.setVisibility(View.GONE);
                 if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) || chatMessageList.get(position + 1).getType() != 2) {
                     viewHolder.time.setVisibility(View.VISIBLE);
                 }
                 long dateTime = chatMessageList.get(position).getDateTime();
-                int unRead = db.getMessageUnReadNum(myId, roomId, friendId, dateTime);
+
+                int unRead ;
+
+                if(roomId ==0 && (msgType == 1 || msgType == 51 )){
+                    unRead = 0;
+                }else{
+                    unRead = db.getMessageUnReadNum(myId, roomId, friendId, dateTime);
+                }
+
                 if (unRead <= 0) {
                     viewHolder.unRead.setText("");
                 } else {
                     viewHolder.unRead.setText(unRead + "");
                 }
-            } else if (msgType == 3) {
-                viewHolder.msgContent.setText(chatMessageList.get(position).getDay());
-            } else if (msgType == 4 || msgType == 5) {
-                viewHolder.msgContent.setText(chatMessageList.get(position).getMsgContent());
             }
 
 

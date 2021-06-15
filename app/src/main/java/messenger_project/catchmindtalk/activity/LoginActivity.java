@@ -28,7 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import messenger_project.catchmindtalk.ChatService;
+import messenger_project.catchmindtalk.chatservice.ChatService;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
 
@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     public MyDatabaseOpenHelper db;
     public SharedPreferences mPref;
     public SharedPreferences.Editor editor;
-    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String ServerURL ;
 
 
     @Override
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         sPassword = password.getText().toString();
         mPref = getSharedPreferences("login",MODE_PRIVATE);
         editor = mPref.edit();
-
+        ServerURL = getResources().getString(R.string.ServerUrl);
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                 /* 서버연결 */
                 Log.d("전전",sUserId + sPassword);
                 URL url = new URL(ServerURL+"/login.php");
-                Log.d("후후",sUserId + sPassword);
+                Log.d("후후",sUserId + sPassword + "#"+ServerURL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");

@@ -15,7 +15,7 @@ public class MessageViewHolder {
     public TextView unRead;
     public TextView time;
     public ImageView profileImage;
-    public LinearLayout msgContainer;
+    public ImageView sendImage;
 
 
 

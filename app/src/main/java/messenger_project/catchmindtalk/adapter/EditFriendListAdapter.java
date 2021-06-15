@@ -42,7 +42,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class EditFriendListAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
 
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL;
     public ArrayList<FriendListItem> listViewItemList = new ArrayList<>() ;
     public ArrayList<FriendListItem> FlistViewItemList = new ArrayList<>() ;
     public ArrayList<String> BookmarkList = new ArrayList<String>();
@@ -69,7 +69,9 @@ public class EditFriendListAdapter extends BaseAdapter {
         this.mPref = mContext.getSharedPreferences("login",MODE_PRIVATE);
         this.myId = this.mPref.getString("userId","아이디없음");
         this.BookmarkList = BookmarkData;
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         FIndexReset();
+
     }
 
     public void FIndexReset(){

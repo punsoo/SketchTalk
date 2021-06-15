@@ -23,7 +23,7 @@ import messenger_project.catchmindtalk.viewholder.FriendViewHolder;
 
 public class FriendListAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL;
     public FriendListItem MyProfile;
     public ArrayList<FriendListItem> listViewItemList = new ArrayList<>() ;
     public ArrayList<FriendListItem> FlistViewItemList = new ArrayList<>() ;
@@ -42,6 +42,7 @@ public class FriendListAdapter extends BaseAdapter {
         this.listSize = ListData.size();
         this.FlistSize = FListData.size();
         this.MyProfile = MyData;
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
 
     }
 

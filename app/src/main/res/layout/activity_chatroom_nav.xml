@@ -50,7 +50,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <messenger_project.catchmindtalk.ChatRoomViewPager
+        <messenger_project.catchmindtalk.chatroom.ChatRoomViewPager
             android:id="@+id/pagerChatRoom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

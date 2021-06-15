@@ -33,10 +33,10 @@ import java.net.URL;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import messenger_project.catchmindtalk.DrawLine;
+import messenger_project.catchmindtalk.chatroom.DrawLine;
 import messenger_project.catchmindtalk.Item.drawChatItem;
 import messenger_project.catchmindtalk.R;
-import messenger_project.catchmindtalk.WidthView;
+import messenger_project.catchmindtalk.chatroom.WidthView;
 import messenger_project.catchmindtalk.activity.ChatRoomActivity;
 import messenger_project.catchmindtalk.activity.ColorPickerActivity;
 import messenger_project.catchmindtalk.adapter.drawChatAdapter;
@@ -58,7 +58,7 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
     WidthView WV ;
 
     final static int colorRequest = 9876;
-    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String ServerURL ;
 
     String userId;
     String friendId;
@@ -79,9 +79,11 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
         friendId = getArguments().getString("friendId");
         roomId = getArguments().getInt("roomId");
 
+
         Log.d("DF_argument",userId+"###"+friendId+"###"+roomId);
 
         cra = (ChatRoomActivity)getActivity();
+        ServerURL = getResources().getString(R.string.ServerUrl);
 
         sketchBook = (RelativeLayout) rootView.findViewById(R.id.SketchBook);
         widthContainer = (LinearLayout) rootView.findViewById(R.id.widthContainer);

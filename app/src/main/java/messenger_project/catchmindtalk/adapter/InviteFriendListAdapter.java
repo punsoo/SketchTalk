@@ -35,7 +35,7 @@ public class InviteFriendListAdapter extends BaseAdapter {
     public LayoutInflater inflater ;
     public int FlistSize;
     public HashMap<String, Boolean> isChecked = new HashMap<>();
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL ;
 
     // ListViewAdapter의 생성자
     public InviteFriendListAdapter(Context context,ArrayList<FriendListItem> FListData,ArrayList<FriendListItem> ListData ,HashMap<String,Boolean> IC , ArrayList<String> AlreadyList) {
@@ -46,6 +46,7 @@ public class InviteFriendListAdapter extends BaseAdapter {
         this.FlistSize = FlistViewItemList.size();
         this.isChecked = IC;
         this.alreadyList = AlreadyList;
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
     }
 
     public void changeIsChecked(String userId){

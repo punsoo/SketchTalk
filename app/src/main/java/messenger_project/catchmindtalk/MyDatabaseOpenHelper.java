@@ -643,7 +643,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 //        SQLiteDatabase db = this.getReadableDatabase();
         String sql;
         String userId = mPref.getString("userId",myId);
-
+        Log.d("아이디확인",myId+"#"+friendId);
         // meesageType 에 관한 조건도 추가
         if(roomId == 0){
             sql = "SELECT COUNT(*) FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId = '"+ friendId + "' AND lastReadTime <'" + time + "';";

@@ -1,11 +1,7 @@
-package messenger_project.catchmindtalk;
+package messenger_project.catchmindtalk.chatservice;
 
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,7 +10,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +28,9 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+
+import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
+import messenger_project.catchmindtalk.R;
 
 public class ChatService extends Service {
 
@@ -44,8 +41,8 @@ public class ChatService extends Service {
         String userId;
         public MyDatabaseOpenHelper db;
         public boolean connectable;
-        String ServerAddress = "54.180.196.239";
-        String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+        String ServerAddress ;
+        String ServerURL ;
 
         public boolean boundCheck_ChatRoom;
         public boolean boundCheck_Main;
@@ -65,7 +62,8 @@ public class ChatService extends Service {
             super.onCreate();
 
             Log.d("확인ChatServiceOnCreate","크리에이트");
-
+            ServerAddress = getResources().getString(R.string.ServerAddress);
+            ServerURL = getResources().getString(R.string.ServerUrl);
             connectable = true;
 
             mPref = getSharedPreferences("login",MODE_PRIVATE);
@@ -91,36 +89,31 @@ public class ChatService extends Service {
 
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-            editor.putBoolean("Service",true);
+            editor.putBoolean("Service", true);
             editor.commit();
 
-            db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
+            db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
-            mPref = getSharedPreferences("login",MODE_PRIVATE);
+            mPref = getSharedPreferences("login", MODE_PRIVATE);
             editor = mPref.edit();
-            userId = mPref.getString("userId","아이디없음");
+            userId = mPref.getString("userId", "아이디없음");
 
-            Log.d("ChatServiceOnStart",userId);
+            Log.d("ChatServiceOnStart", userId);
 
-            if( socket == null ) {
+            if (socket == null) {
 
                 ConnectThread ct = new ConnectThread();
                 ct.start();
 
-            }else{
+            } else {
 
-                if( socket.isClosed() || !socket.isConnected() ){
+                if (socket.isClosed() || !socket.isConnected()) {
                     ConnectThread ct = new ConnectThread();
                     ct.start();
                 }
 
             }
-
-
             return START_STICKY;
-
         }
 
 
@@ -152,9 +145,9 @@ public class ChatService extends Service {
 
         //콜백 인터페이스 선언
         public interface ICallback_ChatRoom {
-            public void recvData(String friendId,String msgContent,long time); //액티비티에서 선언한 콜백 함수.
+            public void recvData(String friendId,String msgContent,long time,int msgType); //액티비티에서 선언한 콜백 함수.
             public void changeRoomId(int roomId);
-            public void sendMessageMark(String friendId, String msgContent,long time);
+            public void sendMessageMark(String friendId, String msgContent,long time,int msgType);
             public void sendInviteMark(String msgContent,long time,boolean resetMemberList);
             public void sendExitMark(String friendId,String msgContent,long time);
             public void sendImageMark(String friendId,String msgContent, long time , int kind);
@@ -187,7 +180,7 @@ public class ChatService extends Service {
 
 
         //액티비티에서 메세지 전송
-        public void sendMessage(int roomId, String friendId, String msgContent, long time){
+        public void sendMessage(int roomId, String friendId, String msgContent, long time,int msgType){
 
             if(roomId < 0 ){
                 try {
@@ -239,7 +232,7 @@ public class ChatService extends Service {
                 gft.start();
             }
 
-            SendThread st = new SendThread(socket, roomId, friendId, msgContent, time , 1);
+            SendThread st = new SendThread(socket, roomId, friendId, msgContent, time , msgType);
             st.start();
 
             try {
@@ -248,19 +241,25 @@ public class ChatService extends Service {
                 e.printStackTrace();
             }
 
+            int dbMsgType;
+            if(msgType ==1){
+                dbMsgType = 2;
+            }else{
+                dbMsgType = 52;
+            }
 
 
             if(st.isSuccess()){
 
-                Log.d("st.isSucess",roomId+"#"+friendId+"#"+msgContent+"#"+time);
+                Log.d("st.isSucess",roomId+"#"+friendId+"#"+msgContent+"#"+time+"#"+dbMsgType);
                 if(roomId==0) {
-                    db.insertChatMessageList(userId, roomId, friendId, msgContent, time, 2);
+                    db.insertChatMessageList(userId, roomId, friendId, msgContent, time, dbMsgType);
                 }else{
-                    db.insertChatMessageList(userId, roomId, userId, msgContent, time, 2);
+                    db.insertChatMessageList(userId, roomId, userId, msgContent, time, dbMsgType);
                 }
 
-
-                mCallback_ChatRoom.sendMessageMark(friendId,msgContent,time);
+                Log.d("메세지마크2",msgContent+"");
+                mCallback_ChatRoom.sendMessageMark(friendId,msgContent,time,msgType);
 
             }else{
 
@@ -315,10 +314,11 @@ public class ChatService extends Service {
                     socket = new Socket(dstAddress, dstPort);
 
                 } catch (UnknownHostException e) {
+                    Log.d("ConnectThread","UnknowHostException");
                     e.printStackTrace();
                 } catch (IOException e) {
 
-
+                    Log.d("ConnectThread","IOException");
                     if(tPref.getBoolean("Service",false)) {
 
                         ConnectThread ct = new ConnectThread();
@@ -337,6 +337,12 @@ public class ChatService extends Service {
                     DataOutputStream output = new DataOutputStream(sender);
                     String sendData = userId;
                     output.writeUTF(sendData);
+                    DataInputStream input = new DataInputStream(socket.getInputStream());
+                    long ServerTime = Long.parseLong(input.readUTF());
+                    long now = System.currentTimeMillis();
+                    editor.putLong("TimeDiff",ServerTime - now);
+                    editor.commit();
+                    Log.d("타임디프",(ServerTime-now)+"");
 
                     Message message= Message.obtain();
                     message.what = PostConnect;
@@ -385,6 +391,9 @@ public class ChatService extends Service {
                     this.output = new DataOutputStream(sender);
                 }catch (IOException e){
                     e.printStackTrace();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                    Log.d("소켓연결실패",e.toString());
                 }
 
                 Log.d("SendThread.Socket: ",threadSocket.toString());
@@ -610,7 +619,8 @@ public class ChatService extends Service {
             @Override
             public void run() {
                 Log.d("ReceiveMessageThread",sRoomId+"#"+sFriendId+"#"+sMsgContent+"#"+sTime+"#"+sMsgType);
-                if(sMsgType == 1){
+                db.updateChatRoomMemberLastReadTime(sRoomId,sFriendId,sTime);
+                if(sMsgType == 1 || sMsgType == 51){
 
                     db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
 
@@ -639,7 +649,7 @@ public class ChatService extends Service {
                         }
                     }else if(sRoomId > 0 && !db.haveChatRoom(sRoomId,sFriendId)){
                         try {
-                            getGroupThread ggt = new getGroupThread(sRoomId, sFriendId, sMsgContent, sTime, 1);
+                            getGroupThread ggt = new getGroupThread(sRoomId, sFriendId, sMsgContent, sTime, sMsgType);
                             ggt.start();
                             ggt.join();
                         }catch(InterruptedException e){
@@ -650,13 +660,13 @@ public class ChatService extends Service {
                             if (sRoomId == 0) {
 
                                 if (boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
-                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                                 }
 
 
                             } else {
                                 if (boundedRoomId == sRoomId) {
-                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                                    mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                                 }
                             }
                         }
@@ -668,7 +678,7 @@ public class ChatService extends Service {
 
                 }else if(sMsgType == UpdateRead){
 
-                    db.updateChatRoomMemberLastReadTime(sRoomId,sFriendId,sTime);
+//                    db.updateChatRoomMemberLastReadTime(sRoomId,sFriendId,sTime);
                     if(boundStart){
                         if(sRoomId == 0){
                             if(boundedRoomId ==0 && boundedFriendId.equals(sFriendId)){
@@ -904,14 +914,10 @@ public class ChatService extends Service {
                     db.insertChatRoomMemberList(0,friendId,nickname,profileMessage,profileImageUpdateTime,sTime);
                     db.insertChatRoomList(0,friendId,0,"",1);
 
-//                    if(boundCheck_2 == true){
-//                        mCallback_2.changeRoomList();
-//                    }
-
-//                    if(boundCheck_2 == true) {
-//                        mCallback_2.recvData();
-//                    }
-
+                    if(boundCheck_Main == true){
+                        mCallback_Main.changeRoomList();
+                        mCallback_Main.recvData();
+                    }
 
 
                 }catch (JSONException e){
@@ -992,7 +998,7 @@ public class ChatService extends Service {
 
                 if(boundCheck_ChatRoom == true) {
                     if(boundedRoomId == sRoomId ) {
-                        mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime);
+                        mCallback_ChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                     }else{
 //                        if(sMsgType == 55) {
 //                            NotificationAlarm(sFriendId, 0, "#없음", "<사진>");
@@ -1267,5 +1273,7 @@ public class ChatService extends Service {
         st.start();
 
     }
+
+
 
 }

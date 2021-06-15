@@ -31,13 +31,15 @@ public class SignUpActivity extends AppCompatActivity {
     public EditText userId, password, passwordCheck, nickname;
     public TextView passwordTxt, passwordCheckTxt;
     public String sUserId, sPassword, sPasswordCheck, sNickname, checkMode;
-    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String ServerURL ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        ServerURL = getResources().getString(R.string.ServerUrl);
 
         userId = (EditText) findViewById(R.id.userIdInput_signup);
         password = (EditText) findViewById(R.id.passwordInput_signup);

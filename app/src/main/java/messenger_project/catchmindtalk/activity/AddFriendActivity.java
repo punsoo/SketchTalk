@@ -67,7 +67,7 @@ public class AddFriendActivity extends AppCompatActivity {
     String myId;
     ArrayList<String> friendList = new ArrayList<String>();
 
-    String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    String ServerURL ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +85,8 @@ public class AddFriendActivity extends AppCompatActivity {
         db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
         mPref = getSharedPreferences("login",MODE_PRIVATE);
         myId = mPref.getString("userId","아이디없음");
+
+        ServerURL = getResources().getString(R.string.ServerUrl);
 
         Cursor cursor = db.getFriendList();
 

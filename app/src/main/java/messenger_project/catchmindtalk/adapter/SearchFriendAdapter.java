@@ -28,13 +28,14 @@ public class SearchFriendAdapter extends BaseAdapter {
     public ArrayList<SearchFriendItem> SearchFriendList = new ArrayList<SearchFriendItem>() ;
     public Context mContext;
     public LayoutInflater inflater ;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL ;
 
     public SearchFriendAdapter(Context context, ArrayList<SearchFriendItem> searchFriendList) {
 
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.SearchFriendList = searchFriendList;
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
 
     }
 

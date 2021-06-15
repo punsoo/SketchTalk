@@ -35,7 +35,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
     public MyDatabaseOpenHelper db;
     public String userId;
     public SimpleDateFormat sdfNow ;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL ;
 
     // ListViewAdapter의 생성자
     public ChatRoomListAdapter(Context context,ArrayList<ChatRoomItem> ListData,String myId ) {
@@ -44,6 +44,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         this.chatRoomList = ListData;
         this.userId = myId;
         this.sdfNow = new SimpleDateFormat("HH:mm");
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         db = new MyDatabaseOpenHelper(mContext,"catchTalk",null,1);
     }
 

@@ -26,7 +26,7 @@ public class MemberListAdapter extends BaseAdapter {
     public ArrayList<MemberListItem> MemberListItemList = new ArrayList<MemberListItem>() ;
     public Context mContext;
     public LayoutInflater inflater ;
-    public String ServerURL = "http://ec2-54-180-196-239.ap-northeast-2.compute.amazonaws.com";
+    public String ServerURL;
 
 
     public MemberListAdapter(Context context,ArrayList<MemberListItem> MemberList) {
@@ -34,6 +34,7 @@ public class MemberListAdapter extends BaseAdapter {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.MemberListItemList = MemberList;
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
 
     }
 
