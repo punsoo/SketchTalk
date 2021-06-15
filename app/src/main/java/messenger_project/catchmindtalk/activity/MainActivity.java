@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_Main(mCallback); //콜백 등록
-            mService.boundCheck_Main = true;
+            mService.mBoundState.boundCheckMain = true;
         }
 
         // Called when the connection with the service disconnects unexpectedly
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     protected void onDestroy() {
         super.onDestroy();
 
-        mService.boundCheck_Main = false;
+        mService.mBoundState.boundCheckMain = false;
         getApplicationContext().unbindService(mConnection);
 
 //

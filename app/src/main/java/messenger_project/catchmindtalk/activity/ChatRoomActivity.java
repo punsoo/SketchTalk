@@ -382,10 +382,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_ChatRoom(mCallback); //콜백 등록
-            mService.boundCheck_ChatRoom = true;
-            mService.boundStart = true;
-            mService.boundedRoomId = roomId;
-            mService.boundedFriendId = friendId;
+            mService.mBoundState.boundCheckChatRoom = true;
+            mService.mBoundState.boundStart = true;
+            mService.mBoundState.boundedRoomId = roomId;
+            mService.mBoundState.boundedFriendId = friendId;
             long now = System.currentTimeMillis();
             long TimeDiff = mPref.getLong("TimeDiff",0);
             now = now +TimeDiff;
@@ -409,7 +409,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         db.updateChatRoomLastReadTime(roomId,friendId,now);
         if(mService != null) {
             Log.d("확인onStart","mService");
-            mService.boundStart = true;
+            mService.mBoundState.boundStart = true;
 
             mService.sendRead(roomId, friendId, now);
         }
@@ -423,7 +423,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     @Override
     protected void onStop() {
         super.onStop();
-        mService.boundStart = false;
+        mService.mBoundState.boundStart = false;
     }
 
 
@@ -439,8 +439,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             editor.putBoolean(alarmKey,true);
             editor.commit();
             alarmActive.setBackgroundResource(R.drawable.alarm_active_icon);
-
-
         }
     }
 
@@ -908,13 +906,13 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     protected void onDestroy() {
         super.onDestroy();
 
-        if(mService.boundCheck_ChatRoom){
+        if(mService.mBoundState.boundCheckChatRoom){
             getApplicationContext().unbindService(mConnection);
         }
-        mService.boundCheck_ChatRoom = false;
-        mService.boundStart = false;
-        mService.boundedRoomId = -1;
-        mService.boundedFriendId ="";
+        mService.mBoundState.boundCheckChatRoom = false;
+        mService.mBoundState.boundStart = false;
+        mService.mBoundState.boundedRoomId = -1;
+        mService.mBoundState.boundedFriendId ="";
         unregisterReceiver(NetworkChangeUpdater);
         ChatRoomViewPager.DrawMode = false;
     }

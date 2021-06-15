@@ -44,11 +44,7 @@ public class ChatService extends Service {
         String ServerAddress ;
         String ServerURL ;
 
-        public boolean boundCheck_ChatRoom;
-        public boolean boundCheck_Main;
-        public boolean boundStart;
-        public int boundedRoomId;
-        public String boundedFriendId;
+        public boundState mBoundState;
 
         static final int PostConnect = 3333;
         static final int ConnectThread = 5555;
@@ -68,6 +64,7 @@ public class ChatService extends Service {
 
             mPref = getSharedPreferences("login",MODE_PRIVATE);
             editor = mPref.edit();
+            mBoundState = boundState.getInstance();
 
             handler = new Handler(){
                 @Override
@@ -120,7 +117,6 @@ public class ChatService extends Service {
         @Override
         public void onDestroy() {
             super.onDestroy();
-
             editor.putBoolean("Service",false);
             editor.commit();
 
@@ -142,7 +138,6 @@ public class ChatService extends Service {
             //throw new UnsupportedOperationException("Not yet implemented");
             return mBinder;
         }
-        
 
 
         private CallbackChatRoom mCallbackChatRoom;
@@ -170,22 +165,22 @@ public class ChatService extends Service {
                     grt.join();
                     roomId = grt.returnRoomId();
                     if(roomId >0){
-                        if(boundCheck_ChatRoom) {
+                        if(mBoundState.boundCheckChatRoom) {
                             mCallbackChatRoom.changeRoomId(roomId);
-                            boundedRoomId = roomId;
+                            mBoundState.boundedRoomId = roomId;
                         }
                     }
                     if(!db.haveChatRoom(roomId,friendId)) {
                         db.insertChatRoomMemberListMultipleByJoin(roomId,friendId);
                         db.insertChatRoomList(roomId, "group", time,"",2);
 
-                        if (boundCheck_ChatRoom) {
+                        if (mBoundState.boundCheckChatRoom) {
                             mCallbackChatRoom.reset();
                             mCallbackChatRoom.recvUpdate();
                             mCallbackChatRoom.changeRoomId(roomId);
                         }
 
-                        if(boundCheck_Main == true){
+                        if(mBoundState.boundCheckMain == true){
                             mCallbackMain.changeRoomList();
                         }
 
@@ -604,14 +599,14 @@ public class ChatService extends Service {
 
                     db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
 
-                    if(boundStart) {
+                    if(mBoundState.boundStart) {
                         if(sRoomId == 0 ) {
-                            if(boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                            if(mBoundState.boundedRoomId == 0 && mBoundState.boundedFriendId.equals(sFriendId)) {
                                 db.updateChatRoomLastReadTime(sRoomId, sFriendId, sTime);
                                 sendRead(sRoomId,mCallbackChatRoom.getFriendId(),sTime);
                             }
                         }else{
-                            if(boundedRoomId == sRoomId) {
+                            if(mBoundState.boundedRoomId == sRoomId) {
                                 db.updateChatRoomLastReadTime(sRoomId, sFriendId, sTime);
                                 sendRead(sRoomId,mCallbackChatRoom.getFriendId(),sTime);
                             }
@@ -636,36 +631,36 @@ public class ChatService extends Service {
                             e.printStackTrace();
                         }
                     }else{
-                        if(boundCheck_ChatRoom) {
+                        if(mBoundState.boundCheckChatRoom) {
                             if (sRoomId == 0) {
 
-                                if (boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                                if (mBoundState.boundedRoomId == 0 && mBoundState.boundedFriendId.equals(sFriendId)) {
                                     mCallbackChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                                 }
 
 
                             } else {
-                                if (boundedRoomId == sRoomId) {
+                                if (mBoundState.boundedRoomId == sRoomId) {
                                     mCallbackChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                                 }
                             }
                         }
                     }
 
-                    if(boundCheck_Main) {
+                    if(mBoundState.boundCheckMain) {
                         mCallbackMain.changeRoomList();
                     }
 
                 }else if(sMsgType == UpdateRead){
 
 //                    db.updateChatRoomMemberLastReadTime(sRoomId,sFriendId,sTime);
-                    if(boundStart){
+                    if(mBoundState.boundStart){
                         if(sRoomId == 0){
-                            if(boundedRoomId ==0 && boundedFriendId.equals(sFriendId)){
+                            if(mBoundState.boundedRoomId ==0 && mBoundState.boundedFriendId.equals(sFriendId)){
                                 mCallbackChatRoom.recvUpdate();
                             }
                         }else{
-                            if(boundedRoomId == sRoomId){
+                            if(mBoundState.boundedRoomId == sRoomId){
                                 mCallbackChatRoom.recvUpdate();
                             }
                         }
@@ -677,8 +672,8 @@ public class ChatService extends Service {
 
                     db.deleteChatRoomMemberList(sRoomId,sFriendId);
                     db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent,sTime,sMsgType);
-                    if(boundCheck_ChatRoom){
-                        if(boundedRoomId == sRoomId){
+                    if(mBoundState.boundCheckChatRoom){
+                        if(mBoundState.boundedRoomId == sRoomId){
                             mCallbackChatRoom.sendExitMark(sFriendId,sMsgContent,sTime);
                         }
                     }
@@ -705,26 +700,26 @@ public class ChatService extends Service {
                         }
                     }
                 }else if(sMsgType == 10){
-                    if(boundCheck_ChatRoom) {
+                    if(mBoundState.boundCheckChatRoom) {
                         if(sRoomId == 0 ) {
-                            if(boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                            if(mBoundState.boundedRoomId == 0 && mBoundState.boundedFriendId.equals(sFriendId)) {
                                 mCallbackChatRoom.receivePath(sMsgContent);
                             }
                         }else{
-                            if(boundedRoomId == sRoomId) {
+                            if(mBoundState.boundedRoomId == sRoomId) {
                                 mCallbackChatRoom.receivePath(sMsgContent);
                             }
                         }
 
                     }
                 }else if(sMsgType == 11){
-                    if(boundCheck_ChatRoom) {
+                    if(mBoundState.boundCheckChatRoom) {
                         if(sRoomId == 0 ) {
-                            if(boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                            if(mBoundState.boundedRoomId == 0 && mBoundState.boundedFriendId.equals(sFriendId)) {
                                 mCallbackChatRoom.receiveClear();
                             }
                         }else{
-                            if(boundedRoomId == sRoomId) {
+                            if(mBoundState.boundedRoomId == sRoomId) {
                                 mCallbackChatRoom.receiveClear();
                             }
                         }
@@ -732,15 +727,15 @@ public class ChatService extends Service {
                     }
                 }else if(sMsgType == 88){
 
-                    if(boundCheck_ChatRoom) {
+                    if(mBoundState.boundCheckChatRoom) {
 
 
                         if(sRoomId == 0 ) {
-                            if(boundedRoomId == 0 && boundedFriendId.equals(sFriendId)) {
+                            if(mBoundState.boundedRoomId == 0 && mBoundState.boundedFriendId.equals(sFriendId)) {
                                 mCallbackChatRoom.receiveDrawChat(sFriendId,sMsgContent);
                             }
                         }else{
-                            if(boundedRoomId == sRoomId) {
+                            if(mBoundState.boundedRoomId == sRoomId) {
                                 mCallbackChatRoom.receiveDrawChat(sFriendId,sMsgContent);
                             }
                         }
@@ -812,7 +807,7 @@ public class ChatService extends Service {
                 db.insertChatMessageList(userId,sRoomId,sFriendId,sMsgContent, sTime, 5);
                 db.insertChatRoomMemberListMultiple(data,userId);
                 db.insertChatRoomList(sRoomId,"group",0,"",2);
-                if( boundCheck_Main == true){
+                if( mBoundState.boundCheckMain == true){
                     mCallbackMain.changeRoomList();
                 }
 
@@ -894,7 +889,7 @@ public class ChatService extends Service {
                     db.insertChatRoomMemberList(0,friendId,nickname,profileMessage,profileImageUpdateTime,sTime);
                     db.insertChatRoomList(0,friendId,0,"",1);
 
-                    if(boundCheck_Main == true){
+                    if(mBoundState.boundCheckMain == true){
                         mCallbackMain.changeRoomList();
                         mCallbackMain.recvData();
                     }
@@ -970,14 +965,14 @@ public class ChatService extends Service {
                 Log.d("getGroupThread.data",data);
                 db.insertChatRoomMemberListMultiple(data, userId);
                 db.insertChatRoomList(sRoomId,"group",0,"",2);
-                if(boundCheck_Main == true){
+                if(mBoundState.boundCheckMain == true){
                     mCallbackMain.changeRoomList();
                     mCallbackMain.recvData();
                 }
 
 
-                if(boundCheck_ChatRoom == true) {
-                    if(boundedRoomId == sRoomId ) {
+                if(mBoundState.boundCheckChatRoom == true) {
+                    if(mBoundState.boundedRoomId == sRoomId ) {
                         mCallbackChatRoom.recvData(sFriendId, sMsgContent, sTime, sMsgType);
                     }else{
 //                        if(sMsgType == 55) {
@@ -1149,8 +1144,8 @@ public class ChatService extends Service {
 
                 db.insertChatMessageList(userId,sRoomId,userId,sMsgContent,sTime,5);
 
-                if(boundCheck_ChatRoom) {
-                    if(boundedRoomId == sRoomId) {
+                if(mBoundState.boundCheckChatRoom) {
+                    if(mBoundState.boundedRoomId == sRoomId) {
                         mCallbackChatRoom.sendInviteMark(sMsgContent,sTime,true);
                     }
                 }
