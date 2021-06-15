@@ -4,7 +4,6 @@ package messenger_project.catchmindtalk.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import messenger_project.catchmindtalk.R;
 import messenger_project.catchmindtalk.activity.ChatRoomActivity;
 import messenger_project.catchmindtalk.activity.MainActivity;
 import messenger_project.catchmindtalk.adapter.ChatRoomListAdapter;
-import messenger_project.catchmindtalk.adapter.SearchRoomAdapter;
 
 public class ChatRoomListFragment extends Fragment implements MainActivity.FragmentCommunicator{
 
@@ -188,9 +186,5 @@ public class ChatRoomListFragment extends Fragment implements MainActivity.Fragm
         super.onResume();
         changeRoomList();
     }
-
-
-
-
 }
 

@@ -63,6 +63,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 import messenger_project.catchmindtalk.chatroom.ChatRoomViewPager;
+import messenger_project.catchmindtalk.chatservice.CallbackChatRoom;
 import messenger_project.catchmindtalk.chatservice.ChatService;
 import messenger_project.catchmindtalk.chatroom.DrawLine;
 import messenger_project.catchmindtalk.Item.MemberListItem;
@@ -772,7 +773,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
 
-    private ChatService.ICallback_ChatRoom mCallback = new ChatService.ICallback_ChatRoom() {
+    private CallbackChatRoom mCallback = new CallbackChatRoom() {
 
         public void recvData(String friendId,String msgContent,long time,int msgType) {
 

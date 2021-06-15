@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import messenger_project.catchmindtalk.chatservice.CallbackMain;
 import messenger_project.catchmindtalk.chatservice.ChatService;
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
 import messenger_project.catchmindtalk.R;
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     }
 
 
-    private ChatService.ICallback_Main mCallback = new ChatService.ICallback_Main() {
+    private CallbackMain mCallback = new CallbackMain() {
 
         public void recvData() {
 
