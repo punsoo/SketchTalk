@@ -226,7 +226,7 @@ public class ChatMessageAdapter extends BaseAdapter {
             if(msgType == 1 || msgType ==2 || msgType == 51 || msgType ==52){
                 viewHolder.time.setText(time);
                 viewHolder.time.setVisibility(View.GONE);
-                if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime) || chatMessageList.get(position + 1).getType() != 2) {
+                if ((position == getCount() - 1) || !friendId.equals(nextId) || !day.equals(nextDay) || !time.equals(nextTime)) {
                     viewHolder.time.setVisibility(View.VISIBLE);
                 }
                 long dateTime = chatMessageList.get(position).getDateTime();
