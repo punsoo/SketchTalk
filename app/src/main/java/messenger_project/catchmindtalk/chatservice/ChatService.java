@@ -41,8 +41,9 @@ public class ChatService extends Service {
         String userId;
         public MyDatabaseOpenHelper db;
         public boolean connectable;
-        String ServerAddress ;
-        String ServerURL ;
+        String ServerAddress;
+        String ServerURL;
+        int Port;
 
         public boundState mBoundState;
 
@@ -60,6 +61,7 @@ public class ChatService extends Service {
             Log.d("확인ChatServiceOnCreate","크리에이트");
             ServerAddress = getResources().getString(R.string.ServerAddress);
             ServerURL = getResources().getString(R.string.ServerUrl);
+            Port = Integer.valueOf(getResources().getString(R.string.Port));
             connectable = true;
 
             mPref = getSharedPreferences("login",MODE_PRIVATE);
@@ -207,7 +209,7 @@ public class ChatService extends Service {
                 gft.start();
             }
 
-            SendThread st = new SendThread(socket, roomId, friendId, msgContent, time , msgType);
+            SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , msgType);
             st.start();
 
             try {
@@ -258,16 +260,14 @@ public class ChatService extends Service {
 
         public class ConnectThread extends Thread {
 
-            String dstAddress;
-            int dstPort;
-            SharedPreferences tPref;
+            String serverAddress;
+            int port;
 
             public ConnectThread(){
-                this.dstAddress = ServerAddress;
-                this.dstPort = 5000;
-                this.tPref = getSharedPreferences("login",MODE_PRIVATE);
+                this.serverAddress = ServerAddress;
+                this.port = Port;
 
-                Log.d("ServiceConnectThread생성자",this.dstAddress+"##"+this.dstPort+"##"+userId);
+                Log.d("ServiceConnectThread생성자",this.serverAddress+"##"+this.port+"##"+userId);
             }
 
             @Override
@@ -286,7 +286,7 @@ public class ChatService extends Service {
                         socket = null;
                     }
 
-                    socket = new Socket(dstAddress, dstPort);
+                    socket = new Socket(serverAddress, port);
 
                 } catch (UnknownHostException e) {
                     Log.d("ConnectThread","UnknowHostException");
@@ -294,7 +294,7 @@ public class ChatService extends Service {
                 } catch (IOException e) {
 
                     Log.d("ConnectThread","IOException");
-                    if(tPref.getBoolean("Service",false)) {
+                    if(mPref.getBoolean("Service",false)) {
 
                         ConnectThread ct = new ConnectThread();
                         ct.start();
@@ -313,11 +313,11 @@ public class ChatService extends Service {
                     String sendData = userId;
                     output.writeUTF(sendData);
                     DataInputStream input = new DataInputStream(socket.getInputStream());
-                    long ServerTime = Long.parseLong(input.readUTF());
-                    long now = System.currentTimeMillis();
-                    editor.putLong("TimeDiff",ServerTime - now);
-                    editor.commit();
-                    Log.d("타임디프",(ServerTime-now)+"");
+//                    long ServerTime = Long.parseLong(input.readUTF());
+//                    long now = System.currentTimeMillis();
+//                    editor.putLong("TimeDiff",ServerTime - now);
+//                    editor.commit();
+//                    Log.d("타임디프",(ServerTime-now)+"");
 
                     Message message= Message.obtain();
                     message.what = PostConnect;
@@ -335,93 +335,6 @@ public class ChatService extends Service {
             }
         }
 
-
-        public class SendThread extends Thread {
-
-            String msgContent;
-            int roomId;
-            String friendId;
-            long time;
-            boolean success;
-            int msgType;
-            String sendObj;
-
-            OutputStream sender ;
-
-            DataOutputStream output;
-
-            public SendThread(Socket threadSocket,int roomId, String friendId, String msgContent,long time,int msgType) {
-
-                this.roomId = roomId;
-                this.friendId = friendId;
-                this.msgContent = msgContent;
-                this.time = time;
-                this.msgType = msgType;
-                this.success = true;
-                this.sendObj = "default";
-
-
-                try {
-                    this.sender = threadSocket.getOutputStream();
-                    this.output = new DataOutputStream(sender);
-                }catch (IOException e){
-                    e.printStackTrace();
-                }catch (NullPointerException e){
-                    e.printStackTrace();
-                    Log.d("소켓연결실패",e.toString());
-                }
-
-                Log.d("SendThread.Socket: ",threadSocket.toString());
-                Log.d("SendThread내용",roomId + "###" + friendId + "###" + msgContent + "###" + time + "###" +msgType);
-
-            }
-
-
-
-            @Override
-            public void run() {
-                Log.d("sendThreadId",friendId);
-
-
-                try {
-
-                    JSONObject obj = new JSONObject();
-
-                    obj.put("userId", userId);
-                    obj.put("roomId", this.roomId);
-                    obj.put("friendId", friendId);
-                    obj.put("msgContent", this.msgContent);
-                    obj.put("time", time);
-                    obj.put("msgType", msgType);
-
-
-                    this.sendObj = obj.toString();
-
-                    output.writeUTF(sendObj);
-
-                    Log.d("SendThread.Output: ",output.toString());
-
-
-                }catch (IOException e){
-                    Log.d("SendThreadIOException",this.sendObj);
-                    e.printStackTrace();
-                }catch (JSONException e){
-                    Log.d("SendThreadJSONException",this.sendObj);
-                    e.printStackTrace();
-                }catch (NullPointerException e){
-                    Log.d("SendThreadNullException",this.sendObj);
-                    e.printStackTrace();
-                }
-
-
-            }
-
-            public boolean isSuccess(){
-                return this.success;
-            }
-
-
-        }
 
 
     public class ReceiveThread extends Thread {
@@ -1170,7 +1083,7 @@ public class ChatService extends Service {
             return;
         }
 
-        SendThread st = new SendThread(socket, roomId, friendId, "justUpdateTime", time , UpdateRead);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, "justUpdateTime", time , UpdateRead);
         st.start();
 
     }
@@ -1181,7 +1094,7 @@ public class ChatService extends Service {
             return;
         }
 
-        SendThread st = new SendThread(socket, roomId, friendId, msgContent, time, 4);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time, 4);
         st.start();
 
     }
@@ -1208,7 +1121,7 @@ public class ChatService extends Service {
         }
 
 
-        SendThread st = new SendThread(socket, roomId, friendId, jobject.toString(), time, 5);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, jobject.toString(), time, 5);
         st.start();
 
 
@@ -1223,7 +1136,7 @@ public class ChatService extends Service {
             return;
         }
 
-        SendThread st = new SendThread(socket, roomId, friendId, msgContent, time , 10);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 10);
         st.start();
 
     }
@@ -1233,7 +1146,7 @@ public class ChatService extends Service {
             return;
         }
 
-        SendThread st = new SendThread(socket, roomId, friendId, msgContent, time , 11);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 11);
         st.start();
 
     }
@@ -1244,11 +1157,10 @@ public class ChatService extends Service {
             return;
         }
 
-        SendThread st = new SendThread(socket, roomId, friendId, content, time , 88);
+        SendThread st = new SendThread(socket, userId, roomId, friendId, content, time , 88);
         st.start();
 
     }
-
 
 
 }

@@ -46,6 +46,7 @@
     <string name="unableEnterMessage">그리기 중에는 메세지 입력불가</string>
     <string name="ServerUrl">http://ec2-52-79-116-9.ap-northeast-2.compute.amazonaws.com</string>
     <string name="ServerAddress">52.79.116.9</string>
+    <string name="Port">5000</string>
 
 
 
