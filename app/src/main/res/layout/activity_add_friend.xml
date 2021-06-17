@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/sketch_talk_base">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarAddFriend"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#703800"
+        android:background="@drawable/toolbar"
         android:theme="@style/AppTheme.NoActionBar"
         android:layout_weight="0"/>
 
@@ -19,9 +20,10 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:id="@+id/idfindtxt"
-            android:text="아이디로 친구 찾기"
+            android:text=" 아이디로 친구 찾기"
             android:textSize="20sp"
             android:textColor="#000000"
+            android:layout_marginStart="10dp"
             android:gravity="center_vertical"/>
 
         <RelativeLayout
@@ -32,13 +34,16 @@
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:id="@+id/idfindedit"
-                android:hint="아이디"/>
+                android:hint="아이디"
+                android:layout_marginStart="10dp"/>
 
             <ImageButton
                 android:id="@+id/idfindbtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_toEndOf="@+id/idfindedit"
+                android:background="@drawable/rounded_rectangle"
+                android:padding="5dp"
                 android:src="@drawable/search_icon"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -65,6 +70,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="20dp"
                 android:text="추가"
+                android:background="@drawable/rounded_rectangle"
+                android:padding="5dp"
                 android:visibility="invisible"
                 android:onClick="idAddBtn"/>
 
@@ -72,67 +79,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="190dp"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/nicknamefindtxt"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:text="닉네임으로 친구 찾기"
-            android:textSize="20sp"
-            android:textColor="#000000"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <EditText
-                android:layout_width="200dp"
-                android:layout_height="50dp"
-                android:id="@+id/nicknamefindedit"
-                android:hint="닉네임"/>
-
-            <ImageButton
-                android:id="@+id/nicknamefindbtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_toEndOf="@+id/nicknamefindedit"
-                android:src="@drawable/search_icon"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:layout_centerInParent="true"
-                android:onClick="nicknameSearch"/>
-
-        </RelativeLayout>
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:id="@+id/nicknameFL">
-
-        </FrameLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/nicknameaddbtn"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="20dp"
-                android:text="추가"
-                android:visibility="invisible"
-                android:onClick="nickAddBtn"/>
-
-        </RelativeLayout>
-
-    </LinearLayout>
 
 
 </LinearLayout>

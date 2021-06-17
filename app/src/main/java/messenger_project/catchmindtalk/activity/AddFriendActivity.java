@@ -46,22 +46,18 @@ public class AddFriendActivity extends AppCompatActivity {
     Button nicknameAddbtn;
 
     FrameLayout idFL;
-    FrameLayout nicknameFL;
     String idData;
-    String nicknameData;
     String idId;
-    String nicknameId;
     EditText idEdit;
-    EditText nicknameEdit;
-    View noDataId,noDataNickname;
-    TextView noDataTVId,noDataTVNickname;
+    View noDataId;
+    TextView noDataTVId;
 
-    View friendViewId,friendViewNickname;
+    View friendViewId;
 
-    ImageView profileViewId,profileViewNickname;
-    TextView nameViewId,nameViewNickname;
-    TextView messageViewId,messageViewNickname;
-    LinearLayout sectionLinearId,sectionLinearNickname;
+    ImageView profileViewId;
+    TextView nameViewId;
+    TextView messageViewId;
+    LinearLayout sectionLinearId;
     public MyDatabaseOpenHelper db;
     public SharedPreferences mPref;
     String myId;
@@ -98,16 +94,12 @@ public class AddFriendActivity extends AppCompatActivity {
 
 
         idEdit = (EditText) findViewById(R.id.idfindedit);
-        nicknameEdit = (EditText) findViewById(R.id.nicknamefindedit);
 
         noDataId = getLayoutInflater().inflate(R.layout.nodata,null);
-        noDataNickname = getLayoutInflater().inflate(R.layout.nodata,null);
 
         noDataTVId = (TextView)noDataId.findViewById(R.id.nodatatxt);
-        noDataTVNickname = (TextView)noDataNickname.findViewById(R.id.nodatatxt);
 
         friendViewId = getLayoutInflater().inflate(R.layout.friendlist_item,null);
-        friendViewNickname = getLayoutInflater().inflate(R.layout.friendlist_item,null);
 
         profileViewId = (ImageView) friendViewId.findViewById(R.id.profileImage);
         nameViewId = (TextView) friendViewId.findViewById(R.id.nickname);
@@ -115,20 +107,10 @@ public class AddFriendActivity extends AppCompatActivity {
         sectionLinearId = (LinearLayout) friendViewId.findViewById(R.id.sectionHeader);
         sectionLinearId.setVisibility(View.GONE);
 
-        profileViewNickname = (ImageView) friendViewNickname.findViewById(R.id.profileImage);
-        nameViewNickname = (TextView) friendViewNickname.findViewById(R.id.nickname);
-        messageViewNickname = (TextView) friendViewNickname.findViewById(R.id.profileMessage);
-        sectionLinearNickname = (LinearLayout) friendViewNickname.findViewById(R.id.sectionHeader);
-        sectionLinearNickname.setVisibility(View.GONE);
 
         idAddbtn = (Button) findViewById(R.id.idaddbtn);
-        nicknameAddbtn = (Button) findViewById(R.id.nicknameaddbtn);
 
         idFL = (FrameLayout) findViewById(R.id.idFL);
-        nicknameFL = (FrameLayout) findViewById(R.id.nicknameFL);
-
-
-
 
     }
 
@@ -228,100 +210,6 @@ public class AddFriendActivity extends AppCompatActivity {
 
     }
 
-    public void nicknameSearch(View v){
-
-        FindThread ft = new FindThread(nicknameEdit.getText().toString(),"nickname");
-        ft.start();
-
-        try{
-            ft.join();
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        }
-
-        nicknameFL.removeAllViewsInLayout();
-
-        if(nicknameData.equals("아이디")){
-            noDataTVNickname.setText("검색결과가 없습니다");
-            nicknameFL.addView(noDataTVNickname);
-            nicknameAddbtn.setVisibility(View.INVISIBLE);
-
-        }else{
-
-            try {
-                JSONObject jobject = new JSONObject(nicknameData);
-
-                String userId = jobject.getString("friendId");
-                String nickname = jobject.getString("nickname");
-                String profileMessage = jobject.getString("profileMessage");
-                String profileImageUpdateTime = jobject.getString("profileImageUpdateTime");
-
-                if(friendList.contains(userId)){
-                    noDataTVNickname.setText("이미 친구입니다");
-                    nicknameFL.addView(noDataNickname);
-                    nicknameAddbtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                if(userId.equals(myId)){
-                    noDataTVNickname.setText("본인닉네임입니다");
-                    nicknameFL.addView(noDataNickname);
-                    nicknameAddbtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                nameViewNickname.setText(nickname);
-                messageViewNickname.setText(profileMessage);
-
-
-
-                Glide.with(this).load(ServerURL + "/profile_image/"+userId+".png")
-                        .error(R.drawable.default_profile_image)
-                        .signature(new ObjectKey(String.valueOf(profileImageUpdateTime)))
-                        .into(profileViewNickname);
-
-                nicknameFL.addView(friendViewNickname);
-                nicknameAddbtn.setVisibility(View.VISIBLE);
-
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-
-        }
-
-    }
-
-    public void nickAddBtn(View v){
-        try {
-            JSONObject jobject = new JSONObject(nicknameData);
-
-            String userId = jobject.getString("friendId");
-            String nickname = jobject.getString("nickname");
-            String profileMessage = jobject.getString("profileMessage");
-            String profileImageUpdateTime = jobject.getString("profileImageUpdateTime");
-
-            if(friendList.contains(userId)){
-                nicknameFL.removeAllViewsInLayout();
-                noDataTVNickname.setText("이미 친구입니다");
-                nicknameFL.addView(noDataNickname);
-                nicknameAddbtn.setVisibility(View.INVISIBLE);
-                return;
-            }
-
-            AddThread at = new AddThread(userId);
-            at.start();
-
-            db.insertFriendList(userId, nickname, profileMessage, profileImageUpdateTime, 0,0,0);
-            friendList.add(userId);
-
-            nicknameFL.removeAllViewsInLayout();
-            nicknameAddbtn.setVisibility(View.INVISIBLE);
-
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-
     public class FindThread extends Thread {
 
         String sdata;
@@ -371,8 +259,6 @@ public class AddFriendActivity extends AppCompatActivity {
 
                 if(sMode.equals("id")) {
                     idData = data;
-                }else{
-                    nicknameData = data;
                 }
 
             } catch (MalformedURLException e) {
