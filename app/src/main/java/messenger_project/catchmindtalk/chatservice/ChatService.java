@@ -11,22 +11,16 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 
 import messenger_project.catchmindtalk.MyDatabaseOpenHelper;
@@ -247,95 +241,112 @@ public class ChatService extends Service {
                 }
 
             }
-
-
-
         }
 
 
-        public void postConnect(){
-            ReceiveThread startReceive = new ReceiveThread(socket);
-            startReceive.start();
+
+    public void sendRead(int roomId, String friendId, long time){
+        Log.d("확인sendRead",roomId+"#"+friendId+"#"+time);
+        if (roomId < 0){
+            return;
         }
 
-        public class ConnectThread extends Thread {
+        SendThread st = new SendThread(socket, userId, roomId, friendId, "justUpdateTime", time , UpdateRead);
+        st.start();
 
-            String serverAddress;
-            int port;
-
-            public ConnectThread(){
-                this.serverAddress = ServerAddress;
-                this.port = Port;
-
-                Log.d("ServiceConnectThread생성자",this.serverAddress+"##"+this.port+"##"+userId);
-            }
-
-            @Override
-            public void run() {
-
-                if(socket != null){
-                    if(socket.isConnected()){
-                        return;
-                    }
-                }
-
-                try {
-
-                    if(socket != null) {
-                        socket.close();
-                        socket = null;
-                    }
-
-                    socket = new Socket(serverAddress, port);
-
-                } catch (UnknownHostException e) {
-                    Log.d("ConnectThread","UnknowHostException");
-                    e.printStackTrace();
-                } catch (IOException e) {
-
-                    Log.d("ConnectThread","IOException");
-                    if(mPref.getBoolean("Service",false)) {
-
-                        ConnectThread ct = new ConnectThread();
-                        ct.start();
-
-                    }
-
-                    e.printStackTrace();
-                    return;
-                }
+    }
 
 
-                try {
+    public void sendExit(int roomId,String friendId, String msgContent, long time){
+        if (roomId < 0){
+            return;
+        }
 
-                    OutputStream sender = socket.getOutputStream();
-                    DataOutputStream output = new DataOutputStream(sender);
-                    String sendData = userId;
-                    output.writeUTF(sendData);
-                    DataInputStream input = new DataInputStream(socket.getInputStream());
-//                    long ServerTime = Long.parseLong(input.readUTF());
-//                    long now = System.currentTimeMillis();
-//                    editor.putLong("TimeDiff",ServerTime - now);
-//                    editor.commit();
-//                    Log.d("타임디프",(ServerTime-now)+"");
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time, 4);
+        st.start();
 
-                    Message message= Message.obtain();
-                    message.what = PostConnect;
-                    handler.sendMessage(message);
-                    Log.d("ServiceConnectThread완료",""+sendData);
+    }
 
-                }catch (IOException e){
-                    e.printStackTrace();
-                    Log.d("ServiceConnectThread","IOE예외");
-                }catch (NullPointerException e){
-                    e.printStackTrace();
-                    Log.d("ServiceConnectThread","Null에외");
-                }
+    public void sendInvite(int roomId, String friendId, String msgContent, long time, String inviteId ){
 
-            }
+
+        if(roomId < 0){
+            return;
         }
 
 
+        db.insertChatRoomMemberListMultipleByJoin(roomId,inviteId);
+
+
+        JSONObject jobject = new JSONObject();
+
+
+        try {
+            jobject.put("msgContent", msgContent);
+            jobject.put("inviteId", inviteId);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+
+        SendThread st = new SendThread(socket, userId, roomId, friendId, jobject.toString(), time, 5);
+        st.start();
+
+
+        db.insertChatMessageList(userId, roomId, userId, msgContent, time, 5);
+        mCallbackChatRoom.sendInviteMark(msgContent,time,true);
+
+
+    }
+
+    public void sendPATH(int roomId, String friendId, String msgContent, long time){
+        if (roomId < 0){
+            return;
+        }
+
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 10);
+        st.start();
+
+    }
+
+    public void sendClear(int roomId,String friendId, String msgContent, long time){
+        if (roomId < 0){
+            return;
+        }
+
+        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 11);
+        st.start();
+
+    }
+
+
+    public void sendDrawChat(int roomId,String friendId, String content, long time){
+        if (roomId < 0){
+            return;
+        }
+
+        SendThread st = new SendThread(socket, userId, roomId, friendId, content, time , 88);
+        st.start();
+
+    }
+
+    public void Reconnect(){
+
+        Log.d("ChatService","Reconnect");
+
+        try {
+            socket.close();
+            socket = null ;
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        Message message= Message.obtain();
+        message.what = ConnectThread;
+        handler.sendMessage(message);
+    }
 
     public class ReceiveThread extends Thread {
 
@@ -436,111 +447,91 @@ public class ChatService extends Service {
         }
     }
 
-
-
-    public void Reconnect(){
-
-        Log.d("ChatService","Reconnect");
-
-        try {
-            socket.close();
-            socket = null ;
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-        Message message= Message.obtain();
-        message.what = ConnectThread;
-        handler.sendMessage(message);
+    public void postConnect(){
+        ReceiveThread startReceive = new ReceiveThread(socket);
+        startReceive.start();
     }
 
+    public class ConnectThread extends Thread {
 
-    public void sendRead(int roomId, String friendId, long time){
-        Log.d("확인sendRead",roomId+"#"+friendId+"#"+time);
-        if (roomId < 0){
-            return;
+        String serverAddress;
+        int port;
+
+        public ConnectThread(){
+            this.serverAddress = ServerAddress;
+            this.port = Port;
+
+            Log.d("ServiceConnectThread생성자",this.serverAddress+"##"+this.port+"##"+userId);
         }
 
-        SendThread st = new SendThread(socket, userId, roomId, friendId, "justUpdateTime", time , UpdateRead);
-        st.start();
+        @Override
+        public void run() {
 
+            if(socket != null){
+                if(socket.isConnected()){
+                    return;
+                }
+            }
+
+            try {
+
+                if(socket != null) {
+                    socket.close();
+                    socket = null;
+                }
+
+                socket = new Socket(serverAddress, port);
+
+            } catch (UnknownHostException e) {
+                Log.d("ConnectThread","UnknowHostException");
+                e.printStackTrace();
+            } catch (IOException e) {
+
+                Log.d("ConnectThread","IOException");
+                if(mPref.getBoolean("Service",false)) {
+
+                    ConnectThread ct = new ConnectThread();
+                    ct.start();
+
+                }
+
+                e.printStackTrace();
+                return;
+            }
+
+
+            try {
+
+                OutputStream sender = socket.getOutputStream();
+                DataOutputStream output = new DataOutputStream(sender);
+                String sendData = userId;
+                output.writeUTF(sendData);
+                DataInputStream input = new DataInputStream(socket.getInputStream());
+                long ServerTime = Long.parseLong(input.readUTF());
+                long now = System.currentTimeMillis();
+                editor.putLong("TimeDiff",ServerTime - now);
+                editor.commit();
+                Log.d("타임디프",(ServerTime-now)+"");
+
+                Message message= Message.obtain();
+                message.what = PostConnect;
+//                    try { // 스레드에게 수행시킬 동작들 구현
+//                        Thread.sleep(1000); // 1초간 Thread를 잠재운다
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+
+                handler.sendMessage(message);
+                Log.d("ServiceConnectThread완료",""+sendData);
+
+            }catch (IOException e){
+                e.printStackTrace();
+                Log.d("ServiceConnectThread","IOE예외");
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                Log.d("ServiceConnectThread","Null에외");
+            }
+
+        }
     }
-
-
-    public void sendExit(int roomId,String friendId, String msgContent, long time){
-        if (roomId < 0){
-            return;
-        }
-
-        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time, 4);
-        st.start();
-
-    }
-
-    public void sendInvite(int roomId, String friendId, String msgContent, long time, String inviteId ){
-
-
-        if(roomId < 0){
-            return;
-        }
-
-
-        db.insertChatRoomMemberListMultipleByJoin(roomId,inviteId);
-
-
-        JSONObject jobject = new JSONObject();
-
-
-        try {
-            jobject.put("msgContent", msgContent);
-            jobject.put("inviteId", inviteId);
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-
-
-        SendThread st = new SendThread(socket, userId, roomId, friendId, jobject.toString(), time, 5);
-        st.start();
-
-
-        db.insertChatMessageList(userId, roomId, userId, msgContent, time, 5);
-        mCallbackChatRoom.sendInviteMark(msgContent,time,true);
-
-
-    }
-
-    public void sendPATH(int roomId, String friendId, String msgContent, long time){
-        if (roomId < 0){
-            return;
-        }
-
-        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 10);
-        st.start();
-
-    }
-
-    public void sendClear(int roomId,String friendId, String msgContent, long time){
-        if (roomId < 0){
-            return;
-        }
-
-        SendThread st = new SendThread(socket, userId, roomId, friendId, msgContent, time , 11);
-        st.start();
-
-    }
-
-
-    public void sendDrawChat(int roomId,String friendId, String content, long time){
-        if (roomId < 0){
-            return;
-        }
-
-        SendThread st = new SendThread(socket, userId, roomId, friendId, content, time , 88);
-        st.start();
-
-    }
-
-
 }

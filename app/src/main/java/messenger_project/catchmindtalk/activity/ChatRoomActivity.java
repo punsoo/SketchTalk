@@ -385,6 +385,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_ChatRoom(mCallback); //콜백 등록
+            Log.d("어니부기챗룸",mCallback.toString());
             mService.mBoundState.boundCheckChatRoom = true;
             mService.mBoundState.boundStart = true;
             mService.mBoundState.boundedRoomId = roomId;

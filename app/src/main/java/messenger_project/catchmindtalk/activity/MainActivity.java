@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     private ServiceConnection mConnection = new ServiceConnection() {
         // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("확인Main","");
+            Log.d("확인Main","혹시");
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_Main(mCallback); //콜백 등록
