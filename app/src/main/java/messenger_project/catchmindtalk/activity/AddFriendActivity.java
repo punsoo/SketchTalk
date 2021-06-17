@@ -43,11 +43,9 @@ public class AddFriendActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     Button idAddbtn;
-    Button nicknameAddbtn;
 
     FrameLayout idFL;
     String idData;
-    String idId;
     EditText idEdit;
     View noDataId;
     TextView noDataTVId;

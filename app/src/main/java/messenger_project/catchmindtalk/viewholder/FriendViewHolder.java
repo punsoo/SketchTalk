@@ -22,7 +22,7 @@ public class FriendViewHolder {
     public FrameLayout api_frame;
 
 
-    public Button Deletebtn;
-    public Button Bookmarktn;
+    public Button deleteBtn;
+    public Button favoriteBtn;
 
 }

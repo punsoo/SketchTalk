@@ -64,7 +64,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/friendBookmark"
+                android:id="@+id/friendFavorite"
                 android:text="즐겨찾기 등록"
                 android:textSize="14sp"
                 android:textAlignment="gravity"

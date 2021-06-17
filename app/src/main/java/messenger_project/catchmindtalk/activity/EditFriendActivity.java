@@ -42,7 +42,7 @@ public class EditFriendActivity extends AppCompatActivity {
 
         final ArrayList<FriendListItem> ListData = new ArrayList<>();
         ArrayList<FriendListItem> FListData = new ArrayList<>();
-        ArrayList<String> BookmarkList = new ArrayList<String>();
+        ArrayList<String> favoriteList = new ArrayList<String>();
 
 
         db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
@@ -54,7 +54,7 @@ public class EditFriendActivity extends AppCompatActivity {
             ListData.add(addItem);
             if(cursor.getInt(4) == 1){
                 FListData.add(addItem);
-                BookmarkList.add(addItem.getId());
+                favoriteList.add(addItem.getId());
             }
 
             //Log.d("EditFriendActivity", cursor.getString(0)+"#####"+cursor.getString(1) + "" +cursor.getString(2));
@@ -63,7 +63,7 @@ public class EditFriendActivity extends AppCompatActivity {
 
         friendList = (ListView) findViewById(R.id.editFriendList);
 
-        friendListAdapter = (new EditFriendListAdapter(this,FListData,ListData,BookmarkList));
+        friendListAdapter = (new EditFriendListAdapter(this,FListData,ListData,favoriteList));
 
         friendList.setAdapter(friendListAdapter);
 

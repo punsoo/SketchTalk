@@ -45,7 +45,7 @@ public class EditFriendListAdapter extends BaseAdapter {
     public String ServerURL;
     public ArrayList<FriendListItem> listViewItemList = new ArrayList<>() ;
     public ArrayList<FriendListItem> FlistViewItemList = new ArrayList<>() ;
-    public ArrayList<String> BookmarkList = new ArrayList<String>();
+    public ArrayList<String> favoriteList = new ArrayList<String>();
     public Context mContext;
     public LayoutInflater inflater ;
     public int FlistSize;
@@ -58,7 +58,7 @@ public class EditFriendListAdapter extends BaseAdapter {
 
 
     // ListViewAdapter의 생성자
-    public EditFriendListAdapter(Context context,ArrayList<FriendListItem> FListData,ArrayList<FriendListItem> ListData ,ArrayList<String> BookmarkData) {
+    public EditFriendListAdapter(Context context,ArrayList<FriendListItem> FListData,ArrayList<FriendListItem> ListData ,ArrayList<String> favoriteData) {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.listViewItemList = ListData;
@@ -68,7 +68,7 @@ public class EditFriendListAdapter extends BaseAdapter {
         this.db = new MyDatabaseOpenHelper(mContext,"catchMind",null,1);
         this.mPref = mContext.getSharedPreferences("login",MODE_PRIVATE);
         this.myId = this.mPref.getString("userId","아이디없음");
-        this.BookmarkList = BookmarkData;
+        this.favoriteList = favoriteData;
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         FIndexReset();
 
@@ -141,7 +141,7 @@ public class EditFriendListAdapter extends BaseAdapter {
         }
     };
 
-    final View.OnClickListener bookmarkListener = new View.OnClickListener() {
+    final View.OnClickListener favoriteListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
@@ -149,12 +149,12 @@ public class EditFriendListAdapter extends BaseAdapter {
             tmp_view = v;
             String userId = (String) tmp_view.getTag(R.id.userId);
             String nickname = (String) tmp_view.getTag(R.id.nickname);
-            String mode = (String) tmp_view.getTag(R.id.bookmarkmode);
+            String mode = (String) tmp_view.getTag(R.id.favoriteMode);
             int index = (int) tmp_view.getTag(R.id.index);
 
             if(mode.equals("add")){
 
-                if (BookmarkList.contains(userId)) {
+                if (favoriteList.contains(userId)) {
 
 
                     AlertDialog.Builder alt_bld = new AlertDialog.Builder(mContext);
@@ -181,24 +181,24 @@ public class EditFriendListAdapter extends BaseAdapter {
 
                 }
 
-                FriendListItem addItem = (FriendListItem) tmp_view.getTag(R.id.bookmarkitem);
+                FriendListItem addItem = (FriendListItem) tmp_view.getTag(R.id.favoriteItem);
                 FlistViewItemList.add(addItem);
-                BookmarkList.add(userId);
-                BookmarkThread bt = new BookmarkThread(myId,userId,1);
-                bt.start();
+                favoriteList.add(userId);
+                favoriteThread ft = new favoriteThread(myId,userId,1);
+                ft.start();
                 sizeReset();
                 FIndexReset();
-                //db.addBookmark(userId);
+                //db.addfavorite(userId);
                 notifyDataSetChanged();
 
             }else{
 
                 FlistViewItemList.remove(index);
-                //db.removeBookmark(userId);
-                BookmarkList.remove(userId);
+                //db.removefavorite(userId);
+                favoriteList.remove(userId);
                 sizeReset();
                 FIndexReset();
-                BookmarkThread bt = new BookmarkThread(myId,userId,0);
+                favoriteThread bt = new favoriteThread(myId,userId,0);
                 bt.start();
                 notifyDataSetChanged();
 
@@ -264,11 +264,11 @@ public class EditFriendListAdapter extends BaseAdapter {
             viewHolder.nickname = (TextView) convertView.findViewById(R.id.NicknameTextView);
             viewHolder.section = (LinearLayout) convertView.findViewById(R.id.sectionHeader);
             viewHolder.sectionTxt = (TextView) convertView.findViewById(R.id.sectionText);
-            viewHolder.Deletebtn = (Button) convertView.findViewById(R.id.friendDelete);
-            viewHolder.Bookmarktn = (Button) convertView.findViewById(R.id.friendBookmark);
+            viewHolder.deleteBtn = (Button) convertView.findViewById(R.id.friendDelete);
+            viewHolder.favoriteBtn = (Button) convertView.findViewById(R.id.friendFavorite);
             viewHolder.profile_container = (RelativeLayout) convertView.findViewById(R.id.profile_container);
-            viewHolder.Deletebtn.setOnClickListener(deleteListener);
-            viewHolder.Bookmarktn.setOnClickListener(bookmarkListener);
+            viewHolder.deleteBtn.setOnClickListener(deleteListener);
+            viewHolder.favoriteBtn.setOnClickListener(favoriteListener);
 
             convertView.setTag(viewHolder);
 
@@ -301,13 +301,13 @@ public class EditFriendListAdapter extends BaseAdapter {
                             .signature(new ObjectKey(profileImageUpdateTime))
                             .into(viewHolder.icon);
                 }
-                viewHolder.Deletebtn.setVisibility(View.GONE);
+                viewHolder.deleteBtn.setVisibility(View.GONE);
 
-                viewHolder.Bookmarktn.setTag(R.id.bookmarkmode,"remove");
-                viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
-                viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
-                viewHolder.Bookmarktn.setTag(R.id.index,position-1);
-                viewHolder.Bookmarktn.setText("즐겨찾기 해제");
+                viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"remove");
+                viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
+                viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
+                viewHolder.favoriteBtn.setTag(R.id.index,position-1);
+                viewHolder.favoriteBtn.setText("즐겨찾기 해제");
 
 
             } else if (position == (1 + FlistSize)) {
@@ -330,17 +330,17 @@ public class EditFriendListAdapter extends BaseAdapter {
                             .signature(new ObjectKey(profileImageUpdateTime))
                             .into(viewHolder.icon);
                 }
-                viewHolder.Deletebtn.setVisibility(View.VISIBLE);
-                viewHolder.Deletebtn.setTag(R.id.userId,friendId);
-                viewHolder.Deletebtn.setTag(R.id.nickname,nickname);
-                viewHolder.Deletebtn.setTag(R.id.index,position-2-FlistSize);
+                viewHolder.deleteBtn.setVisibility(View.VISIBLE);
+                viewHolder.deleteBtn.setTag(R.id.userId,friendId);
+                viewHolder.deleteBtn.setTag(R.id.nickname,nickname);
+                viewHolder.deleteBtn.setTag(R.id.index,position-2-FlistSize);
 
-                viewHolder.Bookmarktn.setTag(R.id.bookmarkitem,listViewItemList.get(position-2-FlistSize));
-                viewHolder.Bookmarktn.setTag(R.id.bookmarkmode,"add");
-                viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
-                viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
-                viewHolder.Bookmarktn.setTag(R.id.index,position-2-FlistSize);
-                viewHolder.Bookmarktn.setText("즐겨찾기 등록");
+                viewHolder.favoriteBtn.setTag(R.id.favoriteItem,listViewItemList.get(position-2-FlistSize));
+                viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"add");
+                viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
+                viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
+                viewHolder.favoriteBtn.setTag(R.id.index,position-2-FlistSize);
+                viewHolder.favoriteBtn.setText("즐겨찾기 등록");
 
             }
 
@@ -369,17 +369,17 @@ public class EditFriendListAdapter extends BaseAdapter {
                             .into(viewHolder.icon);
                 }
 
-                viewHolder.Deletebtn.setVisibility(View.VISIBLE);
-                viewHolder.Deletebtn.setTag(R.id.userId,friendId);
-                viewHolder.Deletebtn.setTag(R.id.nickname,nickname);
-                viewHolder.Deletebtn.setTag(R.id.index,position-1);
+                viewHolder.deleteBtn.setVisibility(View.VISIBLE);
+                viewHolder.deleteBtn.setTag(R.id.userId,friendId);
+                viewHolder.deleteBtn.setTag(R.id.nickname,nickname);
+                viewHolder.deleteBtn.setTag(R.id.index,position-1);
 
-                viewHolder.Bookmarktn.setTag(R.id.bookmarkitem,listViewItemList.get(position-1));
-                viewHolder.Bookmarktn.setTag(R.id.bookmarkmode,"add");
-                viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
-                viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
-                viewHolder.Bookmarktn.setTag(R.id.index,position-1);
-                viewHolder.Bookmarktn.setText("즐겨찾기 등록");
+                viewHolder.favoriteBtn.setTag(R.id.favoriteItem,listViewItemList.get(position-1));
+                viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"add");
+                viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
+                viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
+                viewHolder.favoriteBtn.setTag(R.id.index,position-1);
+                viewHolder.favoriteBtn.setText("즐겨찾기 등록");
 
             }
 
@@ -468,13 +468,13 @@ public class EditFriendListAdapter extends BaseAdapter {
 
 
 
-    public class BookmarkThread extends Thread {
+    public class favoriteThread extends Thread {
 
         String sUserId;
         String sFriendId;
         int sMode;
 
-        public BookmarkThread(String userId,String friendId,int mode) {
+        public favoriteThread(String userId,String friendId,int mode) {
             this.sUserId = userId;
             this.sFriendId = friendId;
             this.sMode = mode;
@@ -490,7 +490,7 @@ public class EditFriendListAdapter extends BaseAdapter {
             String param = "userId=" + sUserId + "&friendId=" + sFriendId + "&mode=" +sMode +"";
             try {
                 /* 서버연결 */
-                URL url = new URL("http://vnschat.vps.phps.kr/friendBookmark.php");
+                URL url = new URL(ServerURL + "/favoriteFriend.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");
@@ -515,7 +515,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                     buff.append(line + "\n");
                 }
                 data = buff.toString().trim();
-                Log.d("북마크스레드결과",data.toString());
+                Log.d("favoriteThreadResult",data.toString());
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
