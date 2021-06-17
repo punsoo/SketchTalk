@@ -55,13 +55,17 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:id="@+id/idFL">
+            android:id="@+id/idFL"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp">
 
         </FrameLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp">
 
             <Button
                 android:layout_width="wrap_content"
