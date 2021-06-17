@@ -1,5 +1,7 @@
 package messenger_project.catchmindtalk.Item;
 
+import android.util.Log;
+
 public class FriendListItem {
 
     public String profileImageUpdateTime ;
@@ -12,7 +14,7 @@ public class FriendListItem {
 
 
 
-    public FriendListItem(String _userId,String _nickname,String _profileImageUpdateTime, String _profileMessage, int _favorite, int _hiding, int _blocked){
+    public FriendListItem(String _userId,String _nickname,String _profileMessage, String _profileImageUpdateTime, int _favorite, int _hiding, int _blocked){
 
         this.userId = _userId;
         this.nickname = _nickname;
@@ -21,7 +23,6 @@ public class FriendListItem {
         this.favortie = _favorite;
         this.hiding = _hiding;
         this.blocked = _blocked;
-
     }
 
 

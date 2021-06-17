@@ -111,7 +111,7 @@ public class FriendListFragment extends Fragment {
         String myProfileMessage = mPref.getString("profileMessage","");
 
 
-        FriendListItem myItem= new FriendListItem(myId,myNickname,myProfileImageUpdateTime,myProfileMessage,0,0,0);
+        FriendListItem myItem= new FriendListItem(myId,myNickname,myProfileMessage,myProfileImageUpdateTime,0,0,0);
 
         myListAdapter.changeMyItem(myItem);
 

@@ -2,6 +2,7 @@ package messenger_project.catchmindtalk.adapter;
 
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,7 +94,6 @@ public class FriendListAdapter extends BaseAdapter {
         String nickname = "";
         String profileMessage = "";
         String profileImageUpdateTime = "";
-
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
 
@@ -172,13 +172,13 @@ public class FriendListAdapter extends BaseAdapter {
                     viewHolder.profile_container.setVisibility(View.GONE);
 
                 } else {
-                    viewHolder.nickname.setText(listViewItemList.get(position - 4 - FlistSize).getNickname());
-                    viewHolder.profileMessage.setText(listViewItemList.get(position - 4 - FlistSize).getProfileMessage());
-                    viewHolder.section.setVisibility(View.GONE);
-                    viewHolder.profile_container.setVisibility(View.VISIBLE);
                     userId = listViewItemList.get(position-4-FlistSize).getId();
                     nickname = listViewItemList.get(position-4-FlistSize).getNickname();
                     profileMessage = listViewItemList.get(position-4-FlistSize).getProfileMessage();
+                    viewHolder.nickname.setText(nickname);
+                    viewHolder.profileMessage.setText(profileMessage);
+                    viewHolder.section.setVisibility(View.GONE);
+                    viewHolder.profile_container.setVisibility(View.VISIBLE);
                     profileImageUpdateTime = listViewItemList.get(position-4-FlistSize).getProfileImageUpdateTime();
                     if(profileImageUpdateTime.equals("none")){
                         viewHolder.icon.setImageResource(R.drawable.default_profile_image);
@@ -201,13 +201,13 @@ public class FriendListAdapter extends BaseAdapter {
 
                 } else {
 
-                    viewHolder.nickname.setText(listViewItemList.get(position - 3).getNickname());
-                    viewHolder.profileMessage.setText(listViewItemList.get(position - 3).getProfileMessage());
-                    viewHolder.section.setVisibility(View.GONE);
-                    viewHolder.profile_container.setVisibility(View.VISIBLE);
                     userId = listViewItemList.get(position-3).getId();
                     nickname = listViewItemList.get(position-3).getNickname();
                     profileMessage = listViewItemList.get(position-3).getProfileMessage();
+                    viewHolder.nickname.setText(nickname);
+                    viewHolder.profileMessage.setText(profileMessage);
+                    viewHolder.section.setVisibility(View.GONE);
+                    viewHolder.profile_container.setVisibility(View.VISIBLE);
                     profileImageUpdateTime = listViewItemList.get(position-3).getProfileImageUpdateTime();
 
                     if(profileImageUpdateTime.equals("none")){

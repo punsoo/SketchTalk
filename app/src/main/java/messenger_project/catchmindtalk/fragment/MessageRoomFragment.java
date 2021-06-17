@@ -62,7 +62,12 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
               ChatMessageItem dayItem = new ChatMessageItem(3,"","","",day,msgTime,time,day);
                 ListData.add(dayItem);
             }
-            ChatMessageItem addItem = new ChatMessageItem(cursor.getInt(4),cursor.getString(1),cursor.getString(7),cursor.getString(9),cursor.getString(2),msgTime,time,day);
+            String msgId = cursor.getString(1);
+            int msgType = cursor.getInt(4);
+            if(msgType == 1 || msgType == 51) {
+                msgId = userId;
+            }
+            ChatMessageItem addItem = new ChatMessageItem(msgType,msgId,cursor.getString(7),cursor.getString(9),cursor.getString(2),msgTime,time,day);
             ListData.add(addItem);
 
             Log.d("ChatMessageItem",cursor.getInt(0)+"#"+cursor.getString(1)+"#"+cursor.getString(2)+"#"+cursor.getLong(3)+"#"+cursor.getInt(4)+"#"+cursor.getInt(5)+"#"+cursor.getString(6)+"#"+cursor.getString(7)+"#"+cursor.getString(8)+"#"+cursor.getString(9)+"#"+cursor.getLong(10));

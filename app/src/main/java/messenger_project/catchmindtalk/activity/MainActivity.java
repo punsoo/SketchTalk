@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 
@@ -175,6 +176,12 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         serviceIntent.putExtra("FromLogin",false);
         getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
+        String test = null;
+        if(test == null) {
+            Log.d("치킨","지코바");
+        }else{
+            Log.d("치킨","오태식");
+        }
 
     }
 
@@ -293,8 +300,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         };
 
 
-
-
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage("채팅방에서 나가기를 하면 대화 내용 및 채팅목록에서 모두 삭제됩니다.\n채팅방에서 나가시겠습니까?")
                 .setPositiveButton("확인", exitListener)
@@ -330,7 +335,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
         int id = item.getItemId();
         switch (id){
             case R.id.action_align:
-
                 break;
             case R.id.action_search_friend:
 
@@ -368,10 +372,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
                 Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
                 startActivityForResult(intentEdit,EditChatRoom);
                 break;
-
-
         }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -380,7 +381,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
 
     public class ExitThread extends Thread{
-
 
         String msgContent;
         long now;
@@ -408,9 +408,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             mService.sendExit(roomIdExit, friendIdExit, msgContent, now);
 
-
         }
-
 
     }
 
@@ -485,4 +483,17 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
     }
 
+    public void Logout(View v){
+
+        editor.putBoolean("autoLogin",false);
+        editor.commit();
+        Intent stopIntent = new Intent(this,ChatService.class);
+        stopService(stopIntent);
+        Log.d("MainActivity","Logout");
+
+        Intent intent = new Intent(this,LoginActivity.class);
+        startActivity(intent);
+        finish();
+
+    }
 }

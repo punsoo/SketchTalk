@@ -59,7 +59,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
         Log.d("db.insertIFD",friendId+" | "+nickname+" | "+profileMessage+" | "+profileImageUpdateTime+" | "+ favorite+" | "+ hiding+" | "+ blocked);
         dbWriter.beginTransaction();
-        String sql="INSERT INTO friendList VALUES('"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+favorite+"','"+hiding+"','"+ blocked+ "')";
+        String sql="INSERT OR REPLACE INTO friendList VALUES('"+friendId+"','"+nickname+"','"+profileMessage+"','"+profileImageUpdateTime+"','"+favorite+"','"+hiding+"','"+ blocked+ "')";
         try
         {
             dbWriter.execSQL(sql);
