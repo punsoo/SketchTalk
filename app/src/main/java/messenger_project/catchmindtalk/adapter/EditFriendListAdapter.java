@@ -117,7 +117,6 @@ public class EditFriendListAdapter extends BaseAdapter {
                         int tmpIndex = (int) map.get(userId);
                         FlistViewItemList.remove(tmpIndex);
                     }
-                    Log.d("피곤테스트",map.get(userId)+"");
                     sizeReset();
                     FIndexReset();
                     DeleteThread dt = new DeleteThread(myId,userId);
@@ -308,7 +307,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
                 viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
                 viewHolder.Bookmarktn.setTag(R.id.index,position-1);
-                viewHolder.Bookmarktn.setText("즐겨찾기해제");
+                viewHolder.Bookmarktn.setText("즐겨찾기 해제");
 
 
             } else if (position == (1 + FlistSize)) {
@@ -341,7 +340,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
                 viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
                 viewHolder.Bookmarktn.setTag(R.id.index,position-2-FlistSize);
-                viewHolder.Bookmarktn.setText("즐겨찾기등록");
+                viewHolder.Bookmarktn.setText("즐겨찾기 등록");
 
             }
 
@@ -380,7 +379,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.Bookmarktn.setTag(R.id.userId,friendId);
                 viewHolder.Bookmarktn.setTag(R.id.nickname,nickname);
                 viewHolder.Bookmarktn.setTag(R.id.index,position-1);
-                viewHolder.Bookmarktn.setText("즐겨찾기등록");
+                viewHolder.Bookmarktn.setText("즐겨찾기 등록");
 
             }
 

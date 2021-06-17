@@ -9,14 +9,15 @@
         android:background="#b7b09f" >
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Section"
             android:id="@+id/sectionText"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textColor="#000000"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
             android:layout_weight="1" />
 
 
@@ -40,7 +41,7 @@
 
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name"
             android:id="@+id/NicknameTextView"
@@ -64,9 +65,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/friendBookmark"
-                android:text="즐겨찾기"
-                android:textSize="15sp"
+                android:text="즐겨찾기 등록"
+                android:textSize="14sp"
                 android:textAlignment="gravity"
+                android:background="@drawable/rounded_rectangle"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_gravity="center_vertical"/>
 
             <Button
@@ -74,8 +78,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/friendDelete"
                 android:text="삭제"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textAlignment="gravity"
+                android:background="@drawable/rounded_rectangle"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="15dp"
                 android:layout_gravity="center_vertical"/>
 
 
