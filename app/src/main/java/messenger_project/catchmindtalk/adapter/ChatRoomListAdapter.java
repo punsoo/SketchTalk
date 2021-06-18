@@ -29,23 +29,25 @@ import messenger_project.catchmindtalk.viewholder.ChatRoomViewHolder;
 
 public class ChatRoomListAdapter extends BaseAdapter {
 
-    public ArrayList<ChatRoomItem> chatRoomList = new ArrayList<ChatRoomItem>() ;
+    public ArrayList<ChatRoomItem> chatRoomList = new ArrayList<ChatRoomItem>();
     public Context mContext;
-    public LayoutInflater inflater ;
+    public LayoutInflater inflater;
     public MyDatabaseOpenHelper db;
     public String userId;
-    public SimpleDateFormat sdfNow ;
-    public String ServerURL ;
+    public SimpleDateFormat sdfTime;
+    public SimpleDateFormat sdfDate;
+    public String ServerURL;
 
     // ListViewAdapter의 생성자
-    public ChatRoomListAdapter(Context context,ArrayList<ChatRoomItem> ListData,String myId ) {
+    public ChatRoomListAdapter(Context context, ArrayList<ChatRoomItem> ListData, String myId) {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.chatRoomList = ListData;
         this.userId = myId;
-        this.sdfNow = new SimpleDateFormat("HH:mm");
+        this.sdfTime = new SimpleDateFormat("HH:mm");
+        this.sdfDate = new SimpleDateFormat("yyyy.MM.dd");
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
-        db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
+        db = new MyDatabaseOpenHelper(mContext, "catchMindTalk", null, 1);
     }
 
     public void setChatRoomList(ArrayList<ChatRoomItem> ListData) {
@@ -81,7 +83,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
             convertView.setTag(viewHolder);
 
-        }else{
+        } else {
             viewHolder = (ChatRoomViewHolder) convertView.getTag();
         }
 
@@ -90,18 +92,19 @@ public class ChatRoomListAdapter extends BaseAdapter {
         long lastMessageTime = 0;
         long lastReadTime = 0;
         int unReadMessageNum = 0;
-        Date lastMsgTime;
-        String lastMsgtime;
+        Date lastMsgDateFormat;
+        String lastMsgTime;
+        String lastMsgDate;
+        Date nowDateFormat;
+        String nowDate;
 
-
-
-        if(chatRoomList.get(position).getLastMessageType() == 1 ) {
-            if(!TextUtils.isEmpty( chatRoomList.get(position).getLastMessageContent() )){
+        if (chatRoomList.get(position).getLastMessageType() == 1 || chatRoomList.get(position).getLastMessageType() == 2) {
+            if (!TextUtils.isEmpty(chatRoomList.get(position).getLastMessageContent())) {
                 lastMessageContent = chatRoomList.get(position).getLastMessageContent();
-            }else {
+            } else {
                 lastMessageContent = "";
             }
-        }else if(chatRoomList.get(position).getLastMessageType() == 2) {
+        } else if (chatRoomList.get(position).getLastMessageType() == 51 || chatRoomList.get(position).getLastMessageType() == 52) {
             lastMessageContent = "<사진>";
         }
 
@@ -109,27 +112,39 @@ public class ChatRoomListAdapter extends BaseAdapter {
         lastMessageTime = chatRoomList.get(position).getLastMessageTime();
         lastReadTime = chatRoomList.get(position).getLastReadTime();
         unReadMessageNum = chatRoomList.get(position).getUnreadNum();
-        lastMsgTime = new Date(lastMessageTime);
-        lastMsgtime = this.sdfNow.format(lastMsgTime);
-
-        Vector<String []> ChatRoomMemberList = chatRoomList.get(position).getChatRoomMemberList();
-
-
-
-        if(unReadMessageNum==0){
-            viewHolder.unReadMessageNum.setVisibility(View.INVISIBLE);
+        
+        if(lastMessageTime == 0) {
+            lastMsgTime = "";
         }else{
+            lastMsgDateFormat = new Date(lastMessageTime);
+            nowDateFormat = new Date(System.currentTimeMillis());
+            lastMsgDate = sdfDate.format(lastMsgDateFormat);
+            nowDate = sdfDate.format(nowDateFormat);
+            if(lastMsgDate.equals(nowDate)) {
+                lastMsgTime = sdfTime.format(lastMsgDateFormat);
+            }else {
+                lastMsgTime = lastMsgDate;
+            }
+        }
+        
+
+        Vector<String[]> ChatRoomMemberList = chatRoomList.get(position).getChatRoomMemberList();
+
+
+        if (unReadMessageNum == 0) {
+            viewHolder.unReadMessageNum.setVisibility(View.INVISIBLE);
+        } else {
             viewHolder.unReadMessageNum.setVisibility(View.VISIBLE);
-            viewHolder.unReadMessageNum.setText(unReadMessageNum+"");
+            viewHolder.unReadMessageNum.setText(unReadMessageNum + "");
         }
 
         String RoomName = chatRoomList.get(position).getRoomName();
 
-        if(RoomName == null || RoomName.equals("")){
+        if (RoomName == null || RoomName.equals("")) {
             for (int i = 0; i < ChatRoomMemberList.size(); i++) {
-                if(i==0){
+                if (i == 0) {
                     RoomName = ChatRoomMemberList.get(0)[1];
-                }else {
+                } else {
                     RoomName += ", " + ChatRoomMemberList.get(i)[1];
                 }
             }
@@ -137,38 +152,34 @@ public class ChatRoomListAdapter extends BaseAdapter {
         }
 
         viewHolder.chatRoomName.setText(RoomName);
-        viewHolder.chatRoomContent.setText(chatRoomList.get(position).getLastMessageContent());
-        viewHolder.chatRoomDate.setText(lastMsgtime);
+        viewHolder.chatRoomContent.setText(lastMessageContent);
+        viewHolder.chatRoomDate.setText(lastMsgTime);
         viewHolder.memberNum.setText("" + chatRoomList.get(position).getMemberNum());
 
-        if( chatRoomList.get(position).getRoomType() == 1) {
-            String FriendId="";
-            String ProfileImageUpdateTime="none";
-            if(ChatRoomMemberList.get(0)[0].equals(userId)){
+        if (chatRoomList.get(position).getRoomType() == 1) {
+            String FriendId = "";
+            String ProfileImageUpdateTime = "none";
+            if (ChatRoomMemberList.get(0)[0].equals(userId)) {
                 FriendId = ChatRoomMemberList.get(1)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
-            }else{
+            } else {
                 FriendId = ChatRoomMemberList.get(0)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
             }
-//            if(ChatRoomMemberList.size()>0){
-//                FriendId = ChatRoomMemberList.get(0)[0];
-//                ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
-//            }
+
 
             Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
                     .error(R.drawable.default_profile_image)
                     .signature(new ObjectKey(ProfileImageUpdateTime))
                     .into(viewHolder.profileImage);
-        }else {
+        } else {
             viewHolder.profileImage.setImageResource(R.drawable.group_icon);
         }
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
         convertView.setTag(R.id.friendId, chatRoomList.get(position).getFriendId());
-        Log.d("확인CRLA",chatRoomList.get(position).getFriendId()+"#");
+        Log.d("확인CRLA", chatRoomList.get(position).getFriendId() + "#");
         convertView.setTag(R.id.roomName, chatRoomList.get(position).getRoomName());
-
 
 
         return convertView;
@@ -177,15 +188,15 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position ;
+        return position;
     }
 
     @Override
     public Object getItem(int position) {
-        return chatRoomList.get(position) ;
+        return chatRoomList.get(position);
     }
 
-    public void ChangeList(ArrayList<ChatRoomItem> ListData){
+    public void ChangeList(ArrayList<ChatRoomItem> ListData) {
         this.chatRoomList = ListData;
     }
 
