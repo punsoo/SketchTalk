@@ -172,8 +172,11 @@ public class ChatRoomListAdapter extends BaseAdapter {
                     .error(R.drawable.default_profile_image)
                     .signature(new ObjectKey(ProfileImageUpdateTime))
                     .into(viewHolder.profileImage);
+
+            viewHolder.memberNum.setVisibility(View.INVISIBLE);
         } else {
             viewHolder.profileImage.setImageResource(R.drawable.group_icon);
+            viewHolder.memberNum.setVisibility(View.VISIBLE);
         }
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
