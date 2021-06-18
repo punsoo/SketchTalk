@@ -69,7 +69,7 @@ android:layout_height="70dp"   >
 
 
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="12:56"
         android:id="@+id/chatRoomDate"
@@ -79,21 +79,24 @@ android:layout_height="70dp"   >
         android:layout_gravity="center"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="15dp"/>
 
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="3"
+        android:padding="2dp"
+        android:text="300"
+        android:lines="1"
         android:id="@+id/unReadMessageNum"
         android:textSize="14sp"
-        android:textColor="#0000FF"
+        android:textColor="#FFFFFF"
         android:textAlignment="center"
+        android:background="@drawable/unreadnum"
         android:layout_gravity="center"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"/>
 
 </RelativeLayout>
