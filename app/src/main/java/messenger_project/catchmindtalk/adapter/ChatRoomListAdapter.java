@@ -45,7 +45,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         this.userId = myId;
         this.sdfNow = new SimpleDateFormat("HH:mm");
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
-        db = new MyDatabaseOpenHelper(mContext,"catchTalk",null,1);
+        db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
     }
 
     public void setChatRoomList(ArrayList<ChatRoomItem> ListData) {

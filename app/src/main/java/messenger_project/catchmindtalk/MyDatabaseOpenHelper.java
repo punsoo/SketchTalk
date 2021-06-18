@@ -660,6 +660,23 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     }
 
 
+    public void updateFriendListFavorite(String friendId, int favorite){
+        dbWriter.beginTransaction();
+        String sql;
+
+        sql = "UPDATE friendList SET favorite='" + favorite + "' WHERE friendId='"+friendId+"'";
+        Log.d("확인cflf",sql);
+
+        try {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbWriter.endTransaction();
+        }
+
+    }
 
 
 

@@ -65,7 +65,7 @@ public class EditFriendListAdapter extends BaseAdapter {
         this.FlistViewItemList = FListData;
         this.listSize = ListData.size();
         this.FlistSize = FListData.size();
-        this.db = new MyDatabaseOpenHelper(mContext,"catchMind",null,1);
+        this.db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
         this.mPref = mContext.getSharedPreferences("login",MODE_PRIVATE);
         this.myId = this.mPref.getString("userId","아이디없음");
         this.favoriteList = favoriteData;
@@ -188,13 +188,13 @@ public class EditFriendListAdapter extends BaseAdapter {
                 ft.start();
                 sizeReset();
                 FIndexReset();
-                //db.addfavorite(userId);
+                db.updateFriendListFavorite(userId,1);
                 notifyDataSetChanged();
 
             }else{
 
                 FlistViewItemList.remove(index);
-                //db.removefavorite(userId);
+                db.updateFriendListFavorite(userId,0);
                 favoriteList.remove(userId);
                 sizeReset();
                 FIndexReset();

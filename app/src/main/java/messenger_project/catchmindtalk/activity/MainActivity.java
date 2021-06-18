@@ -244,6 +244,10 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     };
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     public interface FragmentCommunicator {
 
