@@ -40,6 +40,7 @@ import messenger_project.sketchtalk.adapter.TabPagerAdapter;
 import messenger_project.sketchtalk.fragment.ChatRoomListFragment;
 import messenger_project.sketchtalk.fragment.FriendListFragment;
 import messenger_project.sketchtalk.fragment.SettingFragment;
+import messenger_project.sketchtalk.main.ActivityCommunicator;
 import messenger_project.sketchtalk.main.FragmentCommunicator;
 
 public class MainActivity extends AppCompatActivity implements FriendListFragment.sendToActivity{
@@ -63,13 +64,17 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
     public int RoomId;
     public String FriendId;
 
+    ActivityCommunicator activityCommunicator;
+
     public NetworkChangeReceiver mNCR;
+    BroadcastReceiver NetworkChangeUpdater;
+
 
     public static final int MakeGroupActivity = 5409;
     public static final int EditChatRoom = 5828;
     public static final int changeRoomList = 1458;
 
-    BroadcastReceiver NetworkChangeUpdater;
+
 
 
     @Override
@@ -163,11 +168,14 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
                 if(msg.what == changeRoomList){
                     fragmentCommunicator.changeRoomList();
+                    activityCommunicator.notifyDataSetChanged();
                 }
 
 
             }
         };
+
+        activityCommunicator = ActivityCommunicator.getInstance();
 
         Intent serviceIntent = new Intent(getApplicationContext(), ChatService.class);
         serviceIntent.putExtra("FromLogin",false);

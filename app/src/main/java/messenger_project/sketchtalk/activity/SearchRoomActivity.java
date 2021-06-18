@@ -23,10 +23,12 @@ import messenger_project.sketchtalk.Item.ChatRoomItem;
 import messenger_project.sketchtalk.MyDatabaseOpenHelper;
 import messenger_project.sketchtalk.R;
 import messenger_project.sketchtalk.adapter.SearchRoomAdapter;
+import messenger_project.sketchtalk.main.ActivityCommunicator;
 
 
-public class SearchRoomActivity extends AppCompatActivity {
+public class SearchRoomActivity extends AppCompatActivity implements ActivityCommunicator.MainAcitivityListener {
 
+    String myId;
 
     ListView roomList;
     ImageView backBtn;
@@ -52,8 +54,10 @@ public class SearchRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_room);
 
+        ActivityCommunicator.getInstance().setListener(this);
+
         mPref = getSharedPreferences("login", MODE_PRIVATE);
-        String myId = mPref.getString("userId", "닉없음");
+        myId = mPref.getString("userId", "닉없음");
 
         backBtn = (ImageView) findViewById(R.id.search_room_back);
         editText = (EditText) findViewById(R.id.search_room_editText);
@@ -103,24 +107,7 @@ public class SearchRoomActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                String editContent = editText.getText().toString();
-                searchRoomAdapter.clearList();
-
-                for (int i = 0; i < allList.size(); i++) {
-
-                    Vector<String[]> ChatRoomMemberList = allList.get(i).getChatRoomMemberList();
-                    boolean isContained = false;
-                    for (int j = 0; j < ChatRoomMemberList.size(); j++) {
-                        if(ChatRoomMemberList.get(j)[1].contains(editContent)){
-                            isContained = true;
-                            break;
-                        }
-                    }
-                    if(isContained) {
-                        searchRoomAdapter.addCRItem(allList.get(i));
-                    }
-
-                }
+                query();
             }
 
 
@@ -158,4 +145,47 @@ public class SearchRoomActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityCommunicator.getInstance().setOffListener();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        allList.clear();
+        Cursor CRC = db.getChatRoomListJoinOnMessageList(myId);
+        while (CRC.moveToNext()) {
+
+            int UnreadNum = db.getChatRoomUnReadNum(myId, CRC.getInt(0), CRC.getString(1), CRC.getLong(2));
+            Vector<String[]> ChatRoomMemberList = db.getChatRoomMemberList(CRC.getInt(0), CRC.getString(1));
+
+            ChatRoomItem addItem = new ChatRoomItem(CRC.getInt(0), CRC.getString(1), CRC.getLong(2), CRC.getString(3), CRC.getInt(4), CRC.getString(10), CRC.getLong(11), CRC.getInt(12), ChatRoomMemberList, UnreadNum);
+            allList.add(addItem);
+
+        }
+        query();
+        searchRoomAdapter.notifyDataSetChanged();
+    }
+
+    public void query() {
+        String editContent = editText.getText().toString();
+        searchRoomAdapter.clearList();
+
+        for (int i = 0; i < allList.size(); i++) {
+
+            Vector<String[]> ChatRoomMemberList = allList.get(i).getChatRoomMemberList();
+            boolean isContained = false;
+            for (int j = 0; j < ChatRoomMemberList.size(); j++) {
+                if(ChatRoomMemberList.get(j)[1].contains(editContent)){
+                    isContained = true;
+                    break;
+                }
+            }
+            if(isContained) {
+                searchRoomAdapter.addCRItem(allList.get(i));
+            }
+
+        }
+    }
 }
