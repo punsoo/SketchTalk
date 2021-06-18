@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/sketch_talk_base">
 
 
 
@@ -15,8 +16,8 @@
 
 
         <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:src="@drawable/back_image"
@@ -27,15 +28,17 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
+            android:singleLine = "true"
+            android:lines = "1"
             android:id="@+id/search_room_editText"
             android:hint="채팅방 검색"/>
 
 
         <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:src="@drawable/search_icon"

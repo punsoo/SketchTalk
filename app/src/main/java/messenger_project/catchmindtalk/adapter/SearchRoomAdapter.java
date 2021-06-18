@@ -179,7 +179,6 @@ public class SearchRoomAdapter extends BaseAdapter {
         viewHolder.chatRoomDate.setText(lastMsgTime);
         viewHolder.memberNum.setText("" + searchRoomList.get(position).getMemberNum());
 
-        Log.d("프로토스",position+"@"+searchRoomList.get(position).getRoomType());
         if (searchRoomList.get(position).getRoomType() == 1) {
             String FriendId = "";
             String ProfileImageUpdateTime = "none";
@@ -196,8 +195,11 @@ public class SearchRoomAdapter extends BaseAdapter {
                     .error(R.drawable.default_profile_image)
                     .signature(new ObjectKey(ProfileImageUpdateTime))
                     .into(viewHolder.profileImage);
+
+            viewHolder.memberNum.setVisibility(View.INVISIBLE);
         } else {
             viewHolder.profileImage.setImageResource(R.drawable.group_icon);
+            viewHolder.memberNum.setVisibility(View.VISIBLE);
         }
 
         convertView.setTag(R.id.roomId, searchRoomList.get(position).getRoomId());
