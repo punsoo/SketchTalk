@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
     public static final int MakeGroupActivity = 5409;
     public static final int EditChatRoom = 5828;
-    public static final int notifyRecvData = 7509;
     public static final int changeRoomList = 1458;
 
     BroadcastReceiver NetworkChangeUpdater;
@@ -161,10 +160,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             @Override
             public void handleMessage(Message msg){
 
-                if(msg.what == notifyRecvData) {
-                    fragmentCommunicator.notifyRecvData();
-                }else if(msg.what == changeRoomList){
-                    Log.d("확인5","55555");
+                if(msg.what == changeRoomList){
                     fragmentCommunicator.changeRoomList();
                 }
 
@@ -224,21 +220,11 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
 
     private CallbackMain mCallback = new CallbackMain() {
-
-        public void recvData() {
-
-            Message message= Message.obtain();
-            message.what = notifyRecvData;
-            handler.sendMessage(message);
-
-        }
-
         public void changeRoomList(){
 
             Message message= Message.obtain();
             message.what = changeRoomList;
             handler.sendMessage(message);
-
         }
 
     };

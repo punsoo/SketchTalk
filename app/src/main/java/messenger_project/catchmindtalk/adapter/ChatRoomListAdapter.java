@@ -112,7 +112,7 @@ public class ChatRoomListAdapter extends BaseAdapter {
         lastMessageTime = chatRoomList.get(position).getLastMessageTime();
         lastReadTime = chatRoomList.get(position).getLastReadTime();
         unReadMessageNum = chatRoomList.get(position).getUnreadNum();
-        
+
         if(lastMessageTime == 0) {
             lastMsgTime = "";
         }else{
@@ -178,7 +178,6 @@ public class ChatRoomListAdapter extends BaseAdapter {
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
         convertView.setTag(R.id.friendId, chatRoomList.get(position).getFriendId());
-        Log.d("확인CRLA", chatRoomList.get(position).getFriendId() + "#");
         convertView.setTag(R.id.roomName, chatRoomList.get(position).getRoomName());
 
 

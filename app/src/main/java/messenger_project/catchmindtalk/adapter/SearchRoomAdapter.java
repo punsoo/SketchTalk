@@ -32,35 +32,37 @@ import messenger_project.catchmindtalk.viewholder.ChatRoomViewHolder;
 public class SearchRoomAdapter extends BaseAdapter {
 
 
-    public ArrayList<ChatRoomItem> SearchRoomList = new ArrayList<>() ;
+    public ArrayList<ChatRoomItem> searchRoomList = new ArrayList<>();
     public Context mContext;
-    public LayoutInflater inflater ;
+    public LayoutInflater inflater;
     public MyDatabaseOpenHelper db;
     public String userId;
-    public SimpleDateFormat sdfNow ;
-    public String ServerURL ;
+    public SimpleDateFormat sdfTime;
+    public SimpleDateFormat sdfDate;
+    public String ServerURL;
 
 
     public SearchRoomAdapter(Context context, ArrayList<ChatRoomItem> searchRoomList, String myId) {
 
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.SearchRoomList = searchRoomList;
-        db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
+        this.searchRoomList = searchRoomList;
+        db = new MyDatabaseOpenHelper(mContext, "catchMindTalk", null, 1);
         this.userId = myId;
-        this.sdfNow = new SimpleDateFormat("HH:mm");
+        this.sdfTime = new SimpleDateFormat("HH:mm");
+        this.sdfDate = new SimpleDateFormat("yyyy.MM.dd");
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
 
     }
 
 
-    public void clearList(){
-        this.SearchRoomList = new ArrayList<>();
+    public void clearList() {
+        this.searchRoomList = new ArrayList<>();
     }
 
 
-    public void addCRItem(ChatRoomItem addItem){
-        this.SearchRoomList.add(addItem);
+    public void addCRItem(ChatRoomItem addItem) {
+        this.searchRoomList.add(addItem);
     }
 
 
@@ -79,10 +81,9 @@ public class SearchRoomAdapter extends BaseAdapter {
     @Override
     public int getCount() {
 
-        return SearchRoomList.size();
+        return searchRoomList.size();
 
     }
-
 
 
     @Override
@@ -105,7 +106,7 @@ public class SearchRoomAdapter extends BaseAdapter {
 
             convertView.setTag(viewHolder);
 
-        }else{
+        } else {
             viewHolder = (ChatRoomViewHolder) convertView.getTag();
         }
 
@@ -114,79 +115,94 @@ public class SearchRoomAdapter extends BaseAdapter {
         long lastMessageTime = 0;
         long lastReadTime = 0;
         int unReadMessageNum = 0;
-        Date lastMsgTime;
-        String lastMsgtime;
+        Date lastMsgDateFormat;
+        String lastMsgTime;
+        String lastMsgDate;
+        Date nowDateFormat;
+        String nowDate;
 
-
-
-        if(SearchRoomList.get(position).getLastMessageType() == 1 ) {
-            if(!TextUtils.isEmpty( SearchRoomList.get(position).getLastMessageContent() )){
-                lastMessageContent = SearchRoomList.get(position).getLastMessageContent();
-            }else {
+        if (searchRoomList.get(position).getLastMessageType() == 1 || searchRoomList.get(position).getLastMessageType() == 2) {
+            if (!TextUtils.isEmpty(searchRoomList.get(position).getLastMessageContent())) {
+                lastMessageContent = searchRoomList.get(position).getLastMessageContent();
+            } else {
                 lastMessageContent = "";
             }
-        }else if(SearchRoomList.get(position).getLastMessageType() == 2) {
+        } else if (searchRoomList.get(position).getLastMessageType() == 51 || searchRoomList.get(position).getLastMessageType() == 52) {
             lastMessageContent = "<사진>";
         }
 
 
-            lastMessageTime = SearchRoomList.get(position).getLastMessageTime();
-            lastReadTime = SearchRoomList.get(position).getLastReadTime();
-            unReadMessageNum = SearchRoomList.get(position).getUnreadNum();
-            lastMsgTime = new Date(lastMessageTime);
-            lastMsgtime = this.sdfNow.format(lastMsgTime);
+        lastMessageTime = searchRoomList.get(position).getLastMessageTime();
+        lastReadTime = searchRoomList.get(position).getLastReadTime();
+        unReadMessageNum = searchRoomList.get(position).getUnreadNum();
 
-        Vector<String []> ChatRoomMemberList = SearchRoomList.get(position).getChatRoomMemberList();
-
-
-
-        if(unReadMessageNum==0){
-            viewHolder.unReadMessageNum.setVisibility(View.INVISIBLE);
-        }else{
-            viewHolder.unReadMessageNum.setVisibility(View.VISIBLE);
-            viewHolder.unReadMessageNum.setText(unReadMessageNum+"");
+        if (lastMessageTime == 0) {
+            lastMsgTime = "";
+        } else {
+            lastMsgDateFormat = new Date(lastMessageTime);
+            nowDateFormat = new Date(System.currentTimeMillis());
+            lastMsgDate = sdfDate.format(lastMsgDateFormat);
+            nowDate = sdfDate.format(nowDateFormat);
+            if (lastMsgDate.equals(nowDate)) {
+                lastMsgTime = sdfTime.format(lastMsgDateFormat);
+            } else {
+                lastMsgTime = lastMsgDate;
+            }
         }
 
-        String RoomName = SearchRoomList.get(position).getRoomName();
 
-        if(RoomName == null || RoomName.equals("")){
-            RoomName = "";
-            for(int i=0;i<ChatRoomMemberList.size();i++){
-                if(!ChatRoomMemberList.get(i)[0].equals(userId)) {
-                    if(!RoomName.equals("")) {
-                        RoomName += ", " + ChatRoomMemberList.get(i)[1];
-                    }
+        Vector<String[]> ChatRoomMemberList = searchRoomList.get(position).getChatRoomMemberList();
+
+
+        if (unReadMessageNum == 0) {
+            viewHolder.unReadMessageNum.setVisibility(View.INVISIBLE);
+        } else {
+            viewHolder.unReadMessageNum.setVisibility(View.VISIBLE);
+            viewHolder.unReadMessageNum.setText(unReadMessageNum + "");
+        }
+
+        String RoomName = searchRoomList.get(position).getRoomName();
+
+        if (RoomName == null || RoomName.equals("")) {
+            for (int i = 0; i < ChatRoomMemberList.size(); i++) {
+                if (i == 0) {
+                    RoomName = ChatRoomMemberList.get(0)[1];
+                } else {
+                    RoomName += ", " + ChatRoomMemberList.get(i)[1];
                 }
             }
+
         }
 
         viewHolder.chatRoomName.setText(RoomName);
-        viewHolder.chatRoomContent.setText(SearchRoomList.get(position).getLastMessageContent());
-        viewHolder.chatRoomDate.setText(lastMsgtime);
-        viewHolder.memberNum.setText("" + SearchRoomList.get(position).getMemberNum());
+        viewHolder.chatRoomContent.setText(lastMessageContent);
+        viewHolder.chatRoomDate.setText(lastMsgTime);
+        viewHolder.memberNum.setText("" + searchRoomList.get(position).getMemberNum());
 
-        if( SearchRoomList.get(position).getRoomType() == 1) {
-            String FriendId;
-            String ProfileImageUpdateTime;
-            if(ChatRoomMemberList.get(0)[0].equals(userId)){
-                 FriendId = ChatRoomMemberList.get(1)[0];
-                 ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
-            }else{
-                 FriendId = ChatRoomMemberList.get(0)[0];
-                 ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
+        Log.d("프로토스",position+"@"+searchRoomList.get(position).getRoomType());
+        if (searchRoomList.get(position).getRoomType() == 1) {
+            String FriendId = "";
+            String ProfileImageUpdateTime = "none";
+            if (ChatRoomMemberList.get(0)[0].equals(userId)) {
+                FriendId = ChatRoomMemberList.get(1)[0];
+                ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
+            } else {
+                FriendId = ChatRoomMemberList.get(0)[0];
+                ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
             }
 
-             Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
-                  .error(R.drawable.default_profile_image)
-                  .signature(new ObjectKey(ProfileImageUpdateTime))
-                  .into(viewHolder.profileImage);
-        }else {
-             viewHolder.profileImage.setImageResource(R.drawable.group_icon);
+
+            Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
+                    .error(R.drawable.default_profile_image)
+                    .signature(new ObjectKey(ProfileImageUpdateTime))
+                    .into(viewHolder.profileImage);
+        } else {
+            viewHolder.profileImage.setImageResource(R.drawable.group_icon);
         }
 
-        convertView.setTag(R.id.roomId, SearchRoomList.get(position).getRoomId());
-        convertView.setTag(R.id.roomName, SearchRoomList.get(position).getRoomName());
-
+        convertView.setTag(R.id.roomId, searchRoomList.get(position).getRoomId());
+        convertView.setTag(R.id.friendId, searchRoomList.get(position).getFriendId());
+        convertView.setTag(R.id.roomName, searchRoomList.get(position).getRoomName());
 
 
         return convertView;
@@ -194,18 +210,16 @@ public class SearchRoomAdapter extends BaseAdapter {
     }
 
 
-
     @Override
     public long getItemId(int position) {
-        return position ;
+        return position;
     }
 
 
     @Override
     public Object getItem(int position) {
-        return SearchRoomList.get(position) ;
+        return searchRoomList.get(position);
     }
-
 
 
 }

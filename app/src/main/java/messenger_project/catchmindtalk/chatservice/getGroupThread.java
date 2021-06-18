@@ -82,7 +82,6 @@ public class getGroupThread extends Thread {
             db.insertChatRoomList(sRoomId,"group",0,"",2);
             if(mBoundState.boundCheckMain == true){
                 mCallbackMain.changeRoomList();
-                mCallbackMain.recvData();
             }
 
 

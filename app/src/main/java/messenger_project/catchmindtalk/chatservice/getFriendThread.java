@@ -84,7 +84,6 @@ public class getFriendThread extends Thread {
 
                 if(mBoundState.boundCheckMain == true){
                     mCallbackMain.changeRoomList();
-                    mCallbackMain.recvData();
                 }
 
 
