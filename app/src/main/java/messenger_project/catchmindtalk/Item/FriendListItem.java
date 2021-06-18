@@ -2,6 +2,8 @@ package messenger_project.catchmindtalk.Item;
 
 import android.util.Log;
 
+import java.util.Objects;
+
 public class FriendListItem {
 
     public String profileImageUpdateTime ;
@@ -46,5 +48,16 @@ public class FriendListItem {
         return this.profileMessage ;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FriendListItem that = (FriendListItem) o;
+        return userId.equals(that.userId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
 }

@@ -43,9 +43,10 @@ public class EditFriendListAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
 
     public String ServerURL;
-    public ArrayList<FriendListItem> listViewItemList = new ArrayList<>() ;
-    public ArrayList<FriendListItem> FlistViewItemList = new ArrayList<>() ;
-    public ArrayList<String> favoriteList = new ArrayList<String>();
+    public ArrayList<FriendListItem> listData = new ArrayList<>() ;
+    public ArrayList<FriendListItem> FlistData = new ArrayList<>() ;
+    public ArrayList<FriendListItem> allListData = new ArrayList<>() ;
+    public ArrayList<FriendListItem> allFlistData = new ArrayList<>() ;
     public Context mContext;
     public LayoutInflater inflater ;
     public int FlistSize;
@@ -54,35 +55,26 @@ public class EditFriendListAdapter extends BaseAdapter {
     public MyDatabaseOpenHelper db;
     public SharedPreferences mPref;
     String myId;
-    HashMap<String, Integer> map = new HashMap<String, Integer>();
 
 
     // ListViewAdapter의 생성자
-    public EditFriendListAdapter(Context context,ArrayList<FriendListItem> FListData,ArrayList<FriendListItem> ListData ,ArrayList<String> favoriteData) {
+    public EditFriendListAdapter(Context context,ArrayList<FriendListItem> allFListData,ArrayList<FriendListItem> allListData, ArrayList<FriendListItem> FListData,ArrayList<FriendListItem> ListData) {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.listViewItemList = ListData;
-        this.FlistViewItemList = FListData;
+        this.listData = ListData;
+        this.allFlistData = allFListData;
+        this.allListData = allListData;
+        this.FlistData = FListData;
         this.listSize = ListData.size();
         this.FlistSize = FListData.size();
         this.db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
         this.mPref = mContext.getSharedPreferences("login",MODE_PRIVATE);
         this.myId = this.mPref.getString("userId","아이디없음");
-        this.favoriteList = favoriteData;
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
-        FIndexReset();
 
     }
 
-    public void FIndexReset(){
 
-        map = new HashMap<String,Integer>();
-
-        for(int i=0;i<this.FlistSize;i++){
-            map.put(FlistViewItemList.get(i).getId(),i);
-        }
-
-    }
 
     final View.OnClickListener deleteListener = new View.OnClickListener() {
 
@@ -92,7 +84,7 @@ public class EditFriendListAdapter extends BaseAdapter {
             tmp_view = v;
             String userId = (String) tmp_view.getTag(R.id.userId);
             String nickname = (String) tmp_view.getTag(R.id.nickname);
-
+            final FriendListItem friendListItem = (FriendListItem) tmp_view.getTag(R.id.friendListItem);
 
             AlertDialog.Builder alt_bld = new AlertDialog.Builder(mContext);
             alt_bld.setCancelable(true);
@@ -110,15 +102,15 @@ public class EditFriendListAdapter extends BaseAdapter {
 
 
                     String userId = (String) tmp_view.getTag(R.id.userId);
-                    int index = (int)tmp_view.getTag(R.id.index);
-                    listViewItemList.remove(index);
-                    db.deleteFriend(userId);
-                    if(map.containsKey(userId)) {
-                        int tmpIndex = (int) map.get(userId);
-                        FlistViewItemList.remove(tmpIndex);
+                    listData.remove(friendListItem);
+                    allListData.remove(friendListItem);
+                    if(allFlistData.contains(friendListItem)){
+                        allFlistData.remove(friendListItem);
+                        FlistData.remove(friendListItem);
                     }
+
+                    db.deleteFriend(userId);
                     sizeReset();
-                    FIndexReset();
                     DeleteThread dt = new DeleteThread(myId,userId);
                     dt.start();
                     notifyDataSetChanged();
@@ -150,12 +142,11 @@ public class EditFriendListAdapter extends BaseAdapter {
             String userId = (String) tmp_view.getTag(R.id.userId);
             String nickname = (String) tmp_view.getTag(R.id.nickname);
             String mode = (String) tmp_view.getTag(R.id.favoriteMode);
-            int index = (int) tmp_view.getTag(R.id.index);
+            FriendListItem friendListItem = (FriendListItem) tmp_view.getTag(R.id.friendListItem);
 
             if(mode.equals("add")){
 
-                if (favoriteList.contains(userId)) {
-
+                if (allFlistData.contains(friendListItem)) {
 
                     AlertDialog.Builder alt_bld = new AlertDialog.Builder(mContext);
                     alt_bld.setCancelable(true);
@@ -181,23 +172,20 @@ public class EditFriendListAdapter extends BaseAdapter {
 
                 }
 
-                FriendListItem addItem = (FriendListItem) tmp_view.getTag(R.id.favoriteItem);
-                FlistViewItemList.add(addItem);
-                favoriteList.add(userId);
+                allFlistData.add(friendListItem);
+                FlistData.add(friendListItem);
                 favoriteThread ft = new favoriteThread(myId,userId,1);
                 ft.start();
                 sizeReset();
-                FIndexReset();
                 db.updateFriendListFavorite(userId,1);
                 notifyDataSetChanged();
 
             }else{
 
-                FlistViewItemList.remove(index);
+                allFlistData.remove(friendListItem);
+                FlistData.remove(friendListItem);
                 db.updateFriendListFavorite(userId,0);
-                favoriteList.remove(userId);
                 sizeReset();
-                FIndexReset();
                 favoriteThread bt = new favoriteThread(myId,userId,0);
                 bt.start();
                 notifyDataSetChanged();
@@ -211,17 +199,21 @@ public class EditFriendListAdapter extends BaseAdapter {
 
 
 
-    public void setListViewItemList(ArrayList<FriendListItem> ListData) {
-        this.listViewItemList = ListData;
+    public void clearList() {
+        listData.clear();
+        FlistData.clear();
     }
 
-    public void setFListViewItemList(ArrayList<FriendListItem> FListData) {
-        this.FlistViewItemList = FListData;
+    public void addItem(FriendListItem friendListItem) {
+        listData.add(friendListItem);
+    }
+    public void addFItem(FriendListItem friendListItem) {
+        FlistData.add(friendListItem);
     }
 
     public void sizeReset(){
-        this.listSize = listViewItemList.size();
-        this.FlistSize = FlistViewItemList.size();
+        this.listSize = listData.size();
+        this.FlistSize = FlistData.size();
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -287,12 +279,12 @@ public class EditFriendListAdapter extends BaseAdapter {
 
             } else if (position < (1 + FlistSize)) {
 
-                viewHolder.nickname.setText(FlistViewItemList.get(position - 1).getNickname());
+                viewHolder.nickname.setText(FlistData.get(position - 1).getNickname());
                 viewHolder.section.setVisibility(View.GONE);
                 viewHolder.profile_container.setVisibility(View.VISIBLE);
-                friendId = FlistViewItemList.get(position-1).getId();
-                nickname = FlistViewItemList.get(position-1).getNickname();
-                profileImageUpdateTime = FlistViewItemList.get(position-1).getProfileImageUpdateTime();
+                friendId = FlistData.get(position-1).getId();
+                nickname = FlistData.get(position-1).getNickname();
+                profileImageUpdateTime = FlistData.get(position-1).getProfileImageUpdateTime();
                 if(profileImageUpdateTime.equals("none")){
                     viewHolder.icon.setImageResource(R.drawable.default_profile_image);
                 }else {
@@ -306,7 +298,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"remove");
                 viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
                 viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
-                viewHolder.favoriteBtn.setTag(R.id.index,position-1);
+                viewHolder.favoriteBtn.setTag(R.id.friendListItem,FlistData.get(position-1));
                 viewHolder.favoriteBtn.setText("즐겨찾기 해제");
 
 
@@ -316,12 +308,12 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.profile_container.setVisibility(View.GONE);
 
             } else {
-                viewHolder.nickname.setText(listViewItemList.get(position - 2 - FlistSize).getNickname());
+                viewHolder.nickname.setText(listData.get(position - 2 - FlistSize).getNickname());
                 viewHolder.section.setVisibility(View.GONE);
                 viewHolder.profile_container.setVisibility(View.VISIBLE);
-                friendId = listViewItemList.get(position-2-FlistSize).getId();
-                nickname = listViewItemList.get(position-2-FlistSize).getNickname();
-                profileImageUpdateTime = listViewItemList.get(position-2-FlistSize).getProfileImageUpdateTime();
+                friendId = listData.get(position-2-FlistSize).getId();
+                nickname = listData.get(position-2-FlistSize).getNickname();
+                profileImageUpdateTime = listData.get(position-2-FlistSize).getProfileImageUpdateTime();
                 if(profileImageUpdateTime.equals("none")){
                     viewHolder.icon.setImageResource(R.drawable.default_profile_image);
                 }else {
@@ -333,13 +325,11 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.deleteBtn.setVisibility(View.VISIBLE);
                 viewHolder.deleteBtn.setTag(R.id.userId,friendId);
                 viewHolder.deleteBtn.setTag(R.id.nickname,nickname);
-                viewHolder.deleteBtn.setTag(R.id.index,position-2-FlistSize);
 
-                viewHolder.favoriteBtn.setTag(R.id.favoriteItem,listViewItemList.get(position-2-FlistSize));
+                viewHolder.favoriteBtn.setTag(R.id.friendListItem,listData.get(position-2-FlistSize));
                 viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"add");
                 viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
                 viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
-                viewHolder.favoriteBtn.setTag(R.id.index,position-2-FlistSize);
                 viewHolder.favoriteBtn.setText("즐겨찾기 등록");
 
             }
@@ -353,12 +343,12 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.profile_container.setVisibility(View.GONE);
 
             } else {
-                viewHolder.nickname.setText(listViewItemList.get(position - 1).getNickname());
+                viewHolder.nickname.setText(listData.get(position - 1).getNickname());
                 viewHolder.section.setVisibility(View.GONE);
                 viewHolder.profile_container.setVisibility(View.VISIBLE);
-                friendId = listViewItemList.get(position-1).getId();
-                nickname = listViewItemList.get(position-1).getNickname();
-                profileImageUpdateTime = listViewItemList.get(position-1).getProfileImageUpdateTime();
+                friendId = listData.get(position-1).getId();
+                nickname = listData.get(position-1).getNickname();
+                profileImageUpdateTime = listData.get(position-1).getProfileImageUpdateTime();
 
                 if(profileImageUpdateTime.equals("none")){
                     viewHolder.icon.setImageResource(R.drawable.default_profile_image);
@@ -372,13 +362,12 @@ public class EditFriendListAdapter extends BaseAdapter {
                 viewHolder.deleteBtn.setVisibility(View.VISIBLE);
                 viewHolder.deleteBtn.setTag(R.id.userId,friendId);
                 viewHolder.deleteBtn.setTag(R.id.nickname,nickname);
-                viewHolder.deleteBtn.setTag(R.id.index,position-1);
+                viewHolder.deleteBtn.setTag(R.id.friendListItem,listData.get(position-1));
 
-                viewHolder.favoriteBtn.setTag(R.id.favoriteItem,listViewItemList.get(position-1));
+                viewHolder.favoriteBtn.setTag(R.id.friendListItem,listData.get(position-1));
                 viewHolder.favoriteBtn.setTag(R.id.favoriteMode,"add");
                 viewHolder.favoriteBtn.setTag(R.id.userId,friendId);
                 viewHolder.favoriteBtn.setTag(R.id.nickname,nickname);
-                viewHolder.favoriteBtn.setTag(R.id.index,position-1);
                 viewHolder.favoriteBtn.setText("즐겨찾기 등록");
 
             }
@@ -405,7 +394,7 @@ public class EditFriendListAdapter extends BaseAdapter {
     // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
     @Override
     public Object getItem(int position) {
-        return listViewItemList.get(position) ;
+        return listData.get(position) ;
     }
 
     public class DeleteThread extends Thread {
@@ -537,7 +526,7 @@ public class EditFriendListAdapter extends BaseAdapter {
 //        item.setName(name);
 //        item.setMessage(message);
 //
-//        listViewItemList.add(item);
+//        listData.add(item);
 //    }
 }
 
