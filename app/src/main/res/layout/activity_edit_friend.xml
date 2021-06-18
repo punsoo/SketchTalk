@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/sketch_talk_base"
-    tools:context="messenger_project.catchmindtalk.activity.MainActivity">
+    tools:context="messenger_project.sketchtalk.activity.MainActivity">
 
     <!--Custom Toolbar-->
     <androidx.appcompat.widget.Toolbar
