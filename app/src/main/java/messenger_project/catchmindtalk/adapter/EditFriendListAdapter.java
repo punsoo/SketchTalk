@@ -112,7 +112,7 @@ public class EditFriendListAdapter extends BaseAdapter {
                     String userId = (String) tmp_view.getTag(R.id.userId);
                     int index = (int)tmp_view.getTag(R.id.index);
                     listViewItemList.remove(index);
-                   //db.deleteByUserId(userId);
+                    db.deleteFriend(userId);
                     if(map.containsKey(userId)) {
                         int tmpIndex = (int) map.get(userId);
                         FlistViewItemList.remove(tmpIndex);
@@ -428,7 +428,7 @@ public class EditFriendListAdapter extends BaseAdapter {
             String param = "userId=" + sUserId + "&friendId=" + sFriendId + "";
             try {
                 /* 서버연결 */
-                URL url = new URL("http://vnschat.vps.phps.kr/deleteFriend.php");
+                URL url = new URL(ServerURL + "/deleteFriend.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");
@@ -453,7 +453,6 @@ public class EditFriendListAdapter extends BaseAdapter {
                     buff.append(line + "\n");
                 }
                 data = buff.toString().trim();
-                Log.d("삭제스레드결과",data.toString());
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();

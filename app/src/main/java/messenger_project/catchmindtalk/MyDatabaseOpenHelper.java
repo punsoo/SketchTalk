@@ -679,6 +679,18 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
     }
 
 
+    public void deleteFriend(String friendId) {
+        dbWriter.beginTransaction();
+        String sql = "DELETE FROM friendList WHERE friendId = '" + friendId + "'";
 
+        try {
+            dbWriter.execSQL(sql);
+            dbWriter.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbWriter.endTransaction();
+        }
+    }
 }
 
