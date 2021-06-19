@@ -81,7 +81,7 @@ public class getInviteFriendThread extends Thread {
 
             Log.d("db.ICFDM",userId+"###"+sFriendId);
 
-            db.insertChatMessageList(userId,sRoomId,userId,sMsgContent,sTime,5);
+            db.insertChatMessageList("",sRoomId,"",sMsgContent,sTime,5);
 
             if(mBoundState.boundCheckChatRoom) {
                 if(mBoundState.boundedRoomId == sRoomId) {

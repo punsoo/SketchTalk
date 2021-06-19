@@ -43,6 +43,8 @@ public class MakeGroupActivity extends AppCompatActivity {
     public SharedPreferences mPref;
     public SharedPreferences.Editor editor;
     public boolean FCR;
+    public int roomId;
+    public String friendId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,16 +88,21 @@ public class MakeGroupActivity extends AppCompatActivity {
 
         Intent GI = getIntent();
         FCR = GI.getBooleanExtra("FCR",false);
+        roomId = GI.getIntExtra("roomId", 0);
+        friendId = GI.getStringExtra("friendId");
         if(FCR){
-            try {
+            if(roomId == 0){
+                alreadyList.add(friendId);
+            }else {
+                try {
+                    JSONArray jarray = new JSONArray(friendId);
+                    for (int i = 0; i < jarray.length(); i++) {
+                        alreadyList.add(jarray.get(i).toString());
+                    }
 
-                JSONArray jarray = new JSONArray(GI.getStringExtra("friendId"));
-                for(int i=0; i < jarray.length() ; i++) {
-                    alreadyList.add(jarray.get(i).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-            }catch (JSONException e){
-                e.printStackTrace();
             }
         }
 
@@ -145,6 +152,10 @@ public class MakeGroupActivity extends AppCompatActivity {
             finish(); // close this activity and return to preview activity (if there is any)
         }else if(id == R.id.invite_check_button){
 
+            if(inviteList.size() == 0) {
+                return false;
+            }
+
             JSONArray jsonArray = new JSONArray();
             String msgContent = myNickname + "님이 ";
             String nickname ="";
@@ -156,7 +167,7 @@ public class MakeGroupActivity extends AppCompatActivity {
             for (int i=0; i < inviteNicknameList.size();i++){
                 if(i != 0){
                     msgContent = msgContent +",";
-                    nickname = nickname + ",";
+                    nickname = nickname + ", ";
                 }
                 msgContent = msgContent + inviteNicknameList.get(i) + "님";
                 nickname = nickname + inviteNicknameList.get(i);
@@ -168,6 +179,7 @@ public class MakeGroupActivity extends AppCompatActivity {
             intent.putExtra("inviteId",jsonArray.toString());
             intent.putExtra("nickname",nickname);
             intent.putExtra("msgContent",msgContent);
+            intent.putExtra("inviteNum", inviteList.size());
 
             Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+msgContent);
             setResult(RESULT_OK, intent);

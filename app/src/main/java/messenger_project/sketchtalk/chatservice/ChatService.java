@@ -293,7 +293,7 @@ public class ChatService extends Service {
         st.start();
 
 
-        db.insertChatMessageList(userId, roomId, userId, msgContent, time, 5);
+        db.insertChatMessageList("", roomId, "", msgContent, time, 5);
         mCallbackChatRoom.sendInviteMark(msgContent,time,true);
 
 

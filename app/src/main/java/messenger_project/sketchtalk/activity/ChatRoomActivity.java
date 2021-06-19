@@ -75,8 +75,7 @@ import messenger_project.sketchtalk.adapter.MemberListAdapter;
 import messenger_project.sketchtalk.fragment.DrawRoomFragment;
 import messenger_project.sketchtalk.fragment.MessageRoomFragment;
 
-public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToActivity, NavigationView.OnNavigationItemSelectedListener{
-
+public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToActivity, NavigationView.OnNavigationItemSelectedListener {
 
 
     //    private ViewPager viewPager;
@@ -106,8 +105,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public SharedPreferences.Editor editor;
     public MyDatabaseOpenHelper db;
 
-    public HashMap<String,String> NickHash = new HashMap<>();
-    public HashMap<String,String> ProfileIUTHash = new HashMap<>();
+    public HashMap<String, String> NickHash = new HashMap<>();
+    public HashMap<String, String> ProfileIUTHash = new HashMap<>();
     BroadcastReceiver NetworkChangeUpdater;
     public ImageButton plusBtn;
     public ImageButton drawModeBtn;
@@ -130,13 +129,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public static final int SetTitle = 5913;
 
 
-
     MemberListAdapter memberListAdapter;
     ArrayList<MemberListItem> memberListItemList;
 
     NavigationView navigationView;
 
-    String upLoadServerUri ;
+    String upLoadServerUri;
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private Uri mImageCaptureUri;
@@ -148,11 +146,11 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatroom_nav);
 
-        upLoadServerUri = getResources().getString(R.string.ServerUrl)+"/SendImage.php";
+        upLoadServerUri = getResources().getString(R.string.ServerUrl) + "/SendImage.php";
         Intent serviceIntent = new Intent(this, ChatService.class);
         getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
-        sendcontent = (EditText)findViewById(R.id.messageContent);
+        sendcontent = (EditText) findViewById(R.id.messageContent);
 
         // Adding Toolbar to the activity
         toolbar = (Toolbar) findViewById(R.id.toolbarChatRoom);
@@ -169,17 +167,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
 //        actionBar.setDisplayShowTitleEnabled(false);
 
-        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        db = new MyDatabaseOpenHelper(this,"catchMindTalk",null,1);
-        mPref = getSharedPreferences("login",MODE_PRIVATE);
+        db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
+        mPref = getSharedPreferences("login", MODE_PRIVATE);
         editor = mPref.edit();
 
 
-        myUserId = mPref.getString("userId","아이디없음");
-        myNickname = mPref.getString("nickname","닉없음");
-        myProfileMessage = mPref.getString("profileMessage","");
-        myProfileImageUpdateTime = mPref.getString("profileImageUpdateTime","");
+        myUserId = mPref.getString("userId", "아이디없음");
+        myNickname = mPref.getString("nickname", "닉없음");
+        myProfileMessage = mPref.getString("profileMessage", "");
+        myProfileImageUpdateTime = mPref.getString("profileImageUpdateTime", "");
 
 
         Intent GI = getIntent();
@@ -187,8 +185,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         friendId = GI.getStringExtra("friendId");
         friendNickname = GI.getStringExtra("nickname");
 
-        Log.d("확인chatRoom",friendId+"#"+friendNickname);
-        roomId = GI.getIntExtra("roomId",0);
+        Log.d("확인chatRoom", friendId + "#" + friendNickname);
+        roomId = GI.getIntExtra("roomId", 0);
         roomName = GI.getStringExtra("roomName");
 //        if(friendId.equals("noti")){
 //            getFriendId(no);
@@ -219,9 +217,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         df = new DrawRoomFragment();
         fragmentCommunicator = (FragmentCommunicator) mf;
         drawCommunicator = (DrawCommunicator) df;
-        ChatRoomPagerAdapter pagerAdapter = new ChatRoomPagerAdapter(getSupportFragmentManager(),mf,df,mPref,roomId,friendId);
+        ChatRoomPagerAdapter pagerAdapter = new ChatRoomPagerAdapter(getSupportFragmentManager(), mf, df, mPref, roomId, friendId);
 
-        Log.d("chatRoomActivity",myUserId +"###"+friendId);
+        Log.d("chatRoomActivity", myUserId + "###" + friendId);
 
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -233,14 +231,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             @Override
             public void onPageSelected(int position) {
 
-                if(position == 0){
+                if (position == 0) {
                     ChatRoomViewPager.DrawMode = false;
                     drawModeBtn.setVisibility(View.GONE);
                     plusBtn.setVisibility(View.VISIBLE);
                     drawChatBtn.setVisibility(View.GONE);
                     sendMsgBtn.setVisibility(View.VISIBLE);
 
-                }else if(position == 1){
+                } else if (position == 1) {
                     ChatRoomViewPager.DrawMode = false;
                     plusBtn.setVisibility(View.GONE);
                     drawModeBtn.setVisibility(View.VISIBLE);
@@ -257,65 +255,62 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         });
 
 
-
-
-
-        handler = new Handler(){
+        handler = new Handler() {
             @Override
-            public void handleMessage(Message msg){
+            public void handleMessage(Message msg) {
 
 
-                if(msg.what == 1) {
+                if (msg.what == 1) {
 
                     String friendId = msg.getData().getString("friendId");
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
                     fragmentCommunicator.passData(friendId, NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 1);
-                    Log.d("확인pass",NickHash.get(friendId)+"#");
+                    Log.d("확인pass", NickHash.get(friendId) + "#");
 
-                }else if(msg.what ==2){
+                } else if (msg.what == 2) {
                     String friendId = msg.getData().getString("friendId");
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData(friendId,NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 2);
-                }else if(msg.what ==4){
+                    fragmentCommunicator.passData(friendId, NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 2);
+                } else if (msg.what == 4) {
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", msgContent, time, 4);
-                }else if(msg.what ==5){
+                    fragmentCommunicator.passData("", "", "", msgContent, time, 4);
+                } else if (msg.what == 5) {
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData("내아아이디","내닉네임","내프로필", msgContent, time, 5);
-                }else if(msg.what==UpdateRead){
+                    fragmentCommunicator.passData("", "", "", msgContent, time, 5);
+                } else if (msg.what == UpdateRead) {
                     fragmentCommunicator.alertChange();
-                }else if(msg.what==10){
+                } else if (msg.what == 10) {
                     String path = msg.getData().getString("path");
                     drawCommunicator.receivePath(path);
-                }else if(msg.what==11){
+                } else if (msg.what == 11) {
                     drawCommunicator.receiveClear();
-                }else if(msg.what==88){
+                } else if (msg.what == 88) {
 
                     String friendId = msg.getData().getString("friendId");
                     String msgContent = msg.getData().getString("msgContent");
                     String nickname;
                     nickname = NickHash.get(friendId);
-                    drawCommunicator.drawChat(nickname,msgContent);
-                }else if(msg.what==51){
+                    drawCommunicator.drawChat(nickname, msgContent);
+                } else if (msg.what == 51) {
 
                     String msgContent = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
                     fragmentCommunicator.passData(friendId, NickHash.get(friendId), ProfileIUTHash.get(friendId), msgContent, time, 51);
 
-                }else if(msg.what==52){
+                } else if (msg.what == 52) {
 
                     String friendId = msg.getData().getString("friendId");
                     String content = msg.getData().getString("msgContent");
                     long time = msg.getData().getLong("time");
-                    fragmentCommunicator.passData(friendId,NickHash.get(friendId), ProfileIUTHash.get(friendId), content, time, 52);
+                    fragmentCommunicator.passData(friendId, NickHash.get(friendId), ProfileIUTHash.get(friendId), content, time, 52);
 
-                }else if(msg.what == 365){
+                } else if (msg.what == 365) {
                     fragmentCommunicator.bottomSelect();
-                }else if(msg.what == SetTitle){
+                } else if (msg.what == SetTitle) {
                     memberListAdapter.notifyDataSetChanged();
                     String title = msg.getData().getString("title");
                     getSupportActionBar().setTitle(title);
@@ -324,8 +319,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
             }
         };
-
-
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -339,9 +332,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         ListView lv = (ListView) findViewById(R.id.memberList);
 
 
-
         memberListItemList = new ArrayList<>();
-        memberListAdapter = new MemberListAdapter(this,memberListItemList);
+        memberListAdapter = new MemberListAdapter(this, memberListItemList);
         Reset();
 
         lv.setAdapter(memberListAdapter);
@@ -349,11 +341,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("아이템",""+position);
+                Log.d("아이템", "" + position);
             }
         });
-
-
 
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -373,7 +363,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 //            alarmActive.setBackgroundResource(R.drawable.alarm_active_icon);
 //        }
 
-        Message message= Message.obtain();
+        Message message = Message.obtain();
         message.what = 365;
         handler.sendMessage(message);
 
@@ -385,14 +375,13 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_ChatRoom(mCallback); //콜백 등록
-            Log.d("어니부기챗룸",mCallback.toString());
             mService.mBoundState.boundCheckChatRoom = true;
             mService.mBoundState.boundStart = true;
             mService.mBoundState.boundedRoomId = roomId;
             mService.mBoundState.boundedFriendId = friendId;
             long now = System.currentTimeMillis();
-            long TimeDiff = mPref.getLong("TimeDiff",0);
-            now = now +TimeDiff;
+            long TimeDiff = mPref.getLong("TimeDiff", 0);
+            now = now + TimeDiff;
             mService.sendRead(roomId, friendId, now);
 
         }
@@ -407,18 +396,18 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     protected void onStart() {
         super.onStart();
         long now = System.currentTimeMillis();
-        long TimeDiff = mPref.getLong("TimeDiff",0);
-        now = now +TimeDiff;
+        long TimeDiff = mPref.getLong("TimeDiff", 0);
+        now = now + TimeDiff;
 
-        db.updateChatRoomLastReadTime(roomId,friendId,now);
-        if(mService != null) {
-            Log.d("확인onStart","mService");
+        db.updateChatRoomLastReadTime(roomId, friendId, now);
+        if (mService != null) {
+            Log.d("확인onStart", "mService");
             mService.mBoundState.boundStart = true;
 
             mService.sendRead(roomId, friendId, now);
         }
-        if(mService == null){
-            Log.d("확인onStart","mServiceNull");
+        if (mService == null) {
+            Log.d("확인onStart", "mServiceNull");
         }
         fragmentCommunicator.alertChange();
     }
@@ -431,16 +420,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-    public void activeAlarm(View v){
+    public void activeAlarm(View v) {
 
-        if(mPref.getBoolean(alarmKey,true)){
-            editor.putBoolean(alarmKey,false);
+        if (mPref.getBoolean(alarmKey, true)) {
+            editor.putBoolean(alarmKey, false);
             editor.commit();
             alarmActive.setBackgroundResource(R.drawable.alarm_disable_icon);
 
-        }else{
+        } else {
 
-            editor.putBoolean(alarmKey,true);
+            editor.putBoolean(alarmKey, true);
             editor.commit();
             alarmActive.setBackgroundResource(R.drawable.alarm_active_icon);
         }
@@ -451,45 +440,43 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         @Override
         public void onClick(View v) {
 
-
-            Intent intentMakeGroup = new Intent(getApplicationContext(),MakeGroupActivity.class);
-            intentMakeGroup.putExtra("FCR",true);
-            intentMakeGroup.putExtra("friendId",friendId);
-            startActivityForResult(intentMakeGroup,MakeGroupActivity);
-
+            Intent intentMakeGroup = new Intent(getApplicationContext(), MakeGroupActivity.class);
+            intentMakeGroup.putExtra("FCR", true);
+            intentMakeGroup.putExtra("friendId", friendId);
+            intentMakeGroup.putExtra("roomId", roomId);
+            startActivityForResult(intentMakeGroup, MakeGroupActivity);
 
         }
     };
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == MakeGroupActivity) {
 
-            if(requestCode == MakeGroupActivity){
                 long now = System.currentTimeMillis();
-                long TimeDiff = mPref.getLong("TimeDiff",0);
-                now = now +TimeDiff;
+                long TimeDiff = mPref.getLong("TimeDiff", 0);
+                now = now + TimeDiff;
                 String msgContent = data.getExtras().getString("msgContent");
                 String inviteId = data.getExtras().getString("inviteId");
 
-                mService.sendInvite(roomId,friendId,msgContent,now,inviteId);
+                mService.sendInvite(roomId, friendId, msgContent, now, inviteId);
 
-            }else if(requestCode == PICK_FROM_CAMERA){
+            } else if (requestCode == PICK_FROM_CAMERA) {
 
                 try {
 
 
                     String imgpath = data.getExtras().getString("CustomPath");
 
-                    if(imgpath.equals("none")) {
-                        Toast.makeText(this,"사진촬영 실패",Toast.LENGTH_SHORT).show();
+                    if (imgpath.equals("none")) {
+                        Toast.makeText(this, "사진촬영 실패", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    Log.d("이미지경로",imgpath);
+                    Log.d("이미지경로", imgpath);
 
 
                     ImageSendThread ist = new ImageSendThread(imgpath);
@@ -500,16 +487,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     SetBottomThread sbt = new SetBottomThread();
                     sbt.start();
 
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
 
-            }else if(requestCode == PICK_FROM_ALBUM ){
+            } else if (requestCode == PICK_FROM_ALBUM) {
 
                 try {
 
-                    Log.d("이미지경로",getPath(data.getData()));
+                    Log.d("이미지경로", getPath(data.getData()));
 
                     ImageSendThread ist = new ImageSendThread(getPath(data.getData()));
 
@@ -521,33 +508,31 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     sbt.start();
 
 
-
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-            }else if(requestCode == DeleteImage){
+            } else if (requestCode == DeleteImage) {
 
 
                 int position = data.getExtras().getInt("position");
                 boolean preMsgDelete = data.getExtras().getBoolean("preMsgDelete");
-                fragmentCommunicator.deleteMessage(position,preMsgDelete);
+                fragmentCommunicator.deleteMessage(position, preMsgDelete);
 
 
-
-            }else if(requestCode == DeleteMessage){
+            } else if (requestCode == DeleteMessage) {
 
 
                 delPosition = data.getExtras().getInt("position");
                 String type = data.getExtras().getString("type");
                 preMsgDelete = data.getExtras().getBoolean("preMsgDelete");
-                if(type.equals("del")) {
+                if (type.equals("del")) {
 
                     DialogInterface.OnClickListener deleteListener = new DialogInterface.OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            fragmentCommunicator.deleteMessage(delPosition,preMsgDelete);
+                            fragmentCommunicator.deleteMessage(delPosition, preMsgDelete);
                         }
 
                     };
@@ -580,12 +565,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     cancelBtn.setTextColor(Color.BLACK);
 
 
-                }else if(type.equals("copy")){
+                } else if (type.equals("copy")) {
 
 
                     String subType = data.getExtras().getString("subType");
 
-                    if(subType.equals("text")) {
+                    if (subType.equals("text")) {
 
                         String content = data.getExtras().getString("content");
 
@@ -595,13 +580,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     }
 
 
-                }else if(type.equals("share")){
-
+                } else if (type.equals("share")) {
 
 
                     String subType = data.getExtras().getString("subType");
 
-                    if(subType.equals("text")) {
+                    if (subType.equals("text")) {
 
                         String content = data.getExtras().getString("content");
 
@@ -611,7 +595,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                         sendIntent.setType("text/plain");
                         startActivity(sendIntent);
 
-                    }else if(subType.equals("image")){
+                    } else if (subType.equals("image")) {
 
 //                        String content = data.getExtras().getString("content");
 //
@@ -627,7 +611,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             }
 
         }
-
 
 
     }
@@ -646,14 +629,11 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.drawer_menu, menu);
         return true;
     }
-
 
 
     @Override
@@ -665,7 +645,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     protected void onShowKeyboard(int keyboardHeight) {
         // do things when keyboard is shown
 //        Toast.makeText(this,"show",Toast.LENGTH_SHORT).show();
-        Log.d("키보드","show"+keyboardHeight);
+        Log.d("키보드", "show" + keyboardHeight);
         drawCommunicator.resizeSketchBook();
     }
 
@@ -673,12 +653,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     protected void onHideKeyboard() {
         // do things when keyboard is hidden
 //        Toast.makeText(this,"hide",Toast.LENGTH_SHORT).show();
-        Log.d("키보드","hide");
+        Log.d("키보드", "hide");
         drawCommunicator.resizeSketchBook();
     }
 
 
-    public void UpdateNetwork(String type){
+    public void UpdateNetwork(String type) {
 //        if(type.equals("wifi")) {
 //            Intent serviceIntent = new Intent(this, ChatService.class);
 //            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
@@ -690,20 +670,20 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 //        }
     }
 
-    public void Reset(){
+    public void Reset() {
 
         memberListAdapter.clearList();
-        MemberListItem myItem = new MemberListItem(myUserId,myNickname,myProfileMessage,myProfileImageUpdateTime);
+        MemberListItem myItem = new MemberListItem(myUserId, myNickname, myProfileMessage, myProfileImageUpdateTime);
         memberListAdapter.addMemberItem(myItem);
 
         NickHash = new HashMap<>();
         ProfileIUTHash = new HashMap<>();
-        Vector<String[]> chatRoomMemberList = db.getChatRoomMemberList(roomId,friendId);
-        String setRoomName ="";
-        if(chatRoomMemberList.size()>0) {
-            for(int i=0;i<chatRoomMemberList.size();i++) {
+        Vector<String[]> chatRoomMemberList = db.getChatRoomMemberList(roomId, friendId);
+        String setRoomName = "";
+        if (chatRoomMemberList.size() > 0) {
+            for (int i = 0; i < chatRoomMemberList.size(); i++) {
 
-                MemberListItem addItem = new MemberListItem(chatRoomMemberList.get(i)[0],chatRoomMemberList.get(i)[1],chatRoomMemberList.get(i)[2],chatRoomMemberList.get(i)[3]);
+                MemberListItem addItem = new MemberListItem(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1], chatRoomMemberList.get(i)[2], chatRoomMemberList.get(i)[3]);
                 memberListAdapter.addMemberItem(addItem);
 
                 if (i == 0) {
@@ -712,18 +692,18 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     setRoomName += ", " + chatRoomMemberList.get(i)[1];
                 }
 
-                NickHash.put(chatRoomMemberList.get(i)[0],chatRoomMemberList.get(i)[1]);
-                ProfileIUTHash.put(chatRoomMemberList.get(i)[0],chatRoomMemberList.get(i)[1]);
+                NickHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
+                ProfileIUTHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
             }
 
-        }else{
+        } else {
             setRoomName = friendNickname;
         }
 
-        if(roomId > 0){
+        if (roomId > 0) {
 
             JSONArray jarray = new JSONArray();
-            for(int i=0;i<chatRoomMemberList.size();i++) {
+            for (int i = 0; i < chatRoomMemberList.size(); i++) {
                 jarray.put(chatRoomMemberList.get(i)[0]);
 
             }
@@ -732,17 +712,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         String title;
 
-        if(roomName == null || roomName.equals("")) {
+        if (roomName == null || roomName.equals("")) {
             title = setRoomName;
-        }else{
+        } else {
             title = setRoomName;
         }
 
-        Message message= Message.obtain();
+        Message message = Message.obtain();
         message.what = SetTitle;
 
         Bundle bundle = new Bundle();
-        bundle.putString("title",title);
+        bundle.putString("title", title);
 
         message.setData(bundle);
 
@@ -751,13 +731,16 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
     public interface FragmentCommunicator {
 
-        void passData(String friendId, String nickname, String profileIUT, String msgContent, long time,int type);
+        void passData(String friendId, String nickname, String profileIUT, String msgContent, long time, int type);
+
         void alertChange();
+
         void changeRoomId(int sRoomId);
-        void deleteMessage(int position,boolean preMsgDelete);
+
+        void deleteMessage(int position, boolean preMsgDelete);
+
         void bottomSelect();
 
     }
@@ -765,57 +748,62 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public interface DrawCommunicator {
 
         void receivePath(String PATH);
+
         void resizeSketchBook();
+
         void MinusWidth();
+
         void PlusWidth();
+
         void receiveClear();
-        void drawChat(String Nickname,String Content);
+
+        void drawChat(String Nickname, String Content);
 
     }
 
 
-
     private CallbackChatRoom mCallback = new CallbackChatRoom() {
 
-        public void recvData(String friendId,String msgContent,long time,int msgType) {
+        public void recvData(String friendId, String msgContent, long time, int msgType) {
 
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = msgType;
             Bundle bundle = new Bundle();
-            bundle.putString("friendId",friendId);
-            bundle.putString("msgContent",msgContent);
-            bundle.putLong("time",time);
+            bundle.putString("friendId", friendId);
+            bundle.putString("msgContent", msgContent);
+            bundle.putLong("time", time);
             message.setData(bundle);
             handler.sendMessage(message);
 
         }
 
-        public void recvUpdate(){
-            Message message= Message.obtain();
-            message.what =2020;
+        public void recvUpdate() {
+            Message message = Message.obtain();
+            message.what = 2020;
             handler.sendMessage(message);
         }
-        public void changeRoomId(int passRoomId){
-                roomId = passRoomId;
-                fragmentCommunicator.changeRoomId(passRoomId);
+
+        public void changeRoomId(int passRoomId) {
+            roomId = passRoomId;
+            fragmentCommunicator.changeRoomId(passRoomId);
         }
 
-        public void sendMessageMark(String friendId, String msgContent,long time, int msgType){
+        public void sendMessageMark(String friendId, String msgContent, long time, int msgType) {
 
             int handleMsgType;
-            if(msgType == 1){
-                handleMsgType =2;
-            }else{
-                handleMsgType =52;
+            if (msgType == 1) {
+                handleMsgType = 2;
+            } else {
+                handleMsgType = 52;
             }
 
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = handleMsgType;
 
             Bundle bundle = new Bundle();
-            bundle.putString("friendId",friendId);
-            bundle.putString("msgContent",msgContent);
-            bundle.putLong("time",time);
+            bundle.putString("friendId", friendId);
+            bundle.putString("msgContent", msgContent);
+            bundle.putLong("time", time);
 
 
             message.setData(bundle);
@@ -823,17 +811,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             handler.sendMessage(message);
         }
 
-        public void sendInviteMark(String msgContent,long time,boolean resetMemberList){
-            if(resetMemberList) {
+        public void sendInviteMark(String msgContent, long time, boolean resetMemberList) {
+            if (resetMemberList) {
                 Reset();
             }
 
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = 5;
 
             Bundle bundle = new Bundle();
-            bundle.putString("msgContent",msgContent);
-            bundle.putLong("time",time);
+            bundle.putString("msgContent", msgContent);
+            bundle.putLong("time", time);
 
             message.setData(bundle);
 
@@ -843,12 +831,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         @Override
         public void sendExitMark(String sFriendId, String msgContent, long time) {
             Reset();
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = 4;
 
             Bundle bundle = new Bundle();
-            bundle.putString("msgContent",msgContent);
-            bundle.putLong("time",time);
+            bundle.putString("msgContent", msgContent);
+            bundle.putLong("time", time);
 
             message.setData(bundle);
 
@@ -857,24 +845,24 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
 
         @Override
-        public void sendImageMark(String friendId, String content, long time ,int kind) {
+        public void sendImageMark(String friendId, String content, long time, int kind) {
 
         }
 
-        public void reset(){
+        public void reset() {
             Reset();
         }
 
-        public String getFriendId(){
+        public String getFriendId() {
             return friendId;
         }
 
-        public void receivePath(String PATH){
-            Message message= Message.obtain();
+        public void receivePath(String PATH) {
+            Message message = Message.obtain();
             message.what = 10;
 
             Bundle bundle = new Bundle();
-            bundle.putString("path",PATH);
+            bundle.putString("path", PATH);
 
             message.setData(bundle);
 
@@ -883,7 +871,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         @Override
         public void receiveClear() {
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = 11;
 
             handler.sendMessage(message);
@@ -891,12 +879,12 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         @Override
         public void receiveDrawChat(String friendId, String msgContent) {
-            Message message= Message.obtain();
+            Message message = Message.obtain();
             message.what = 88;
 
             Bundle bundle = new Bundle();
-            bundle.putString("msgContent",msgContent);
-            bundle.putString("friendId",friendId);
+            bundle.putString("msgContent", msgContent);
+            bundle.putString("friendId", friendId);
 
             message.setData(bundle);
 
@@ -905,52 +893,51 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     };
 
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if(mService.mBoundState.boundCheckChatRoom){
+        if (mService.mBoundState.boundCheckChatRoom) {
             getApplicationContext().unbindService(mConnection);
         }
         mService.mBoundState.boundCheckChatRoom = false;
         mService.mBoundState.boundStart = false;
         mService.mBoundState.boundedRoomId = -1;
-        mService.mBoundState.boundedFriendId ="";
+        mService.mBoundState.boundedFriendId = "";
         unregisterReceiver(NetworkChangeUpdater);
         ChatRoomViewPager.DrawMode = false;
     }
 
     @Override
-    public void sendPath(String PATH){
+    public void sendPath(String PATH) {
         long now = System.currentTimeMillis();
-        long TimeDiff = mPref.getLong("TimeDiff",0);
-        now = now +TimeDiff;
-        mService.sendPATH(roomId,friendId,PATH,now);
+        long TimeDiff = mPref.getLong("TimeDiff", 0);
+        now = now + TimeDiff;
+        mService.sendPATH(roomId, friendId, PATH, now);
     }
 
     @Override
     public void sendClear() {
         long now = System.currentTimeMillis();
-        long TimeDiff = mPref.getLong("TimeDiff",0);
-        now = now +TimeDiff;
-        mService.sendClear(roomId,friendId,"justClear",now);
+        long TimeDiff = mPref.getLong("TimeDiff", 0);
+        now = now + TimeDiff;
+        mService.sendClear(roomId, friendId, "justClear", now);
     }
 
-    public void sendMessage(View v){
+    public void sendMessage(View v) {
 
 
         long now = System.currentTimeMillis();
-        long TimeDiff = mPref.getLong("TimeDiff",0);
-        now = now +TimeDiff;
+        long TimeDiff = mPref.getLong("TimeDiff", 0);
+        now = now + TimeDiff;
 
         String et = sendcontent.getText().toString();
-        if(et.equals("")){
+        if (et.equals("")) {
             return;
         }
         sendcontent.setText("");
-        Log.d("sendMessage,db.insert",myUserId+"####"+friendId+"####"+et);
-        mService.sendMessage(roomId,friendId,et,now,1);
+        Log.d("sendMessage,db.insert", myUserId + "####" + friendId + "####" + et);
+        mService.sendMessage(roomId, friendId, et, now, 1);
 
     }
 
@@ -963,15 +950,15 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
-            if(drawer.isDrawerOpen(navigationView)){
+            if (drawer.isDrawerOpen(navigationView)) {
                 drawer.closeDrawer(navigationView);
-            }else {
+            } else {
                 finish(); // close this activity and return to preview activity (if there is any)
             }
-        }else if(item.getItemId() == R.id.drawer_menu_icon){
-            if(drawer.isDrawerOpen(navigationView)){
+        } else if (item.getItemId() == R.id.drawer_menu_icon) {
+            if (drawer.isDrawerOpen(navigationView)) {
                 drawer.closeDrawer(navigationView);
-            }else {
+            } else {
                 drawer.openDrawer(navigationView);
             }
         }
@@ -979,20 +966,20 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         return super.onOptionsItemSelected(item);
     }
 
-    public void ImageSendBtn(View v){
-        DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener(){
+    public void ImageSendBtn(View v) {
+        DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which){
+            public void onClick(DialogInterface dialog, int which) {
                 doTakePhotoAction();
             }
 
         };
 
-        DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener(){
+        DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which){
+            public void onClick(DialogInterface dialog, int which) {
                 doTakeAlbumAction();
 
             }
@@ -1000,15 +987,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         };
 
 
-        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
 
-            @Override public void onClick(DialogInterface dialog, int which){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
 
         };
-
-
 
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -1028,17 +1014,17 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         negbtn.setTextColor(Color.BLACK);
     }
 
-    public void DrawModeBtn(View v){
-        if(ChatRoomViewPager.DrawMode){
+    public void DrawModeBtn(View v) {
+        if (ChatRoomViewPager.DrawMode) {
             drawModeBtn.setBackgroundResource(R.drawable.draw_inactive);
             ChatRoomViewPager.DrawMode = false;
             sendcontent.setEnabled(true);
             sendcontent.setClickable(true);
             sendcontent.setHint(R.string.enterMessage);
-        }else{
+        } else {
             drawModeBtn.setBackgroundResource(R.drawable.draw_active);
             ChatRoomViewPager.DrawMode = true;
-            inputMethodManager.hideSoftInputFromWindow(sendcontent.getWindowToken(),0);
+            inputMethodManager.hideSoftInputFromWindow(sendcontent.getWindowToken(), 0);
             sendcontent.setEnabled(false);
             sendcontent.setClickable(false);
             sendcontent.setHint(R.string.unableEnterMessage);
@@ -1046,46 +1032,45 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-    public void minusWidth(View v){
+    public void minusWidth(View v) {
         drawCommunicator.MinusWidth();
     }
 
-    public void plusWidth(View v){
+    public void plusWidth(View v) {
         drawCommunicator.PlusWidth();
     }
 
 
-    public void drawChat(View v){
+    public void drawChat(View v) {
         String et = sendcontent.getText().toString();
-        if(et.equals("")){
+        if (et.equals("")) {
             return;
         }
-        drawCommunicator.drawChat(myNickname,et);
+        drawCommunicator.drawChat(myNickname, et);
         sendcontent.setText("");
-        mService.sendDrawChat(roomId,friendId,et,0);
+        mService.sendDrawChat(roomId, friendId, et, 0);
     }
 
-    public void exitRoom(View v){
+    public void exitRoom(View v) {
 
-        DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
+        DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which){
+            public void onClick(DialogInterface dialog, int which) {
                 exitRoom();
             }
 
         };
 
 
-        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
 
-            @Override public void onClick(DialogInterface dialog, int which){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
 
         };
-
-
 
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -1104,7 +1089,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     }
 
-    public void exitRoom(){
+    public void exitRoom() {
 
         db.deleteChatRoomList(roomId, friendId);
         db.deleteChatRoomMemberList(roomId, friendId);
@@ -1112,8 +1097,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
         String msgContent = myNickname + "님이 나갔습니다";
         long now = System.currentTimeMillis();
-        long TimeDiff = mPref.getLong("TimeDiff",0);
-        now = now +TimeDiff;
+        long TimeDiff = mPref.getLong("TimeDiff", 0);
+        now = now + TimeDiff;
 
         mService.sendExit(roomId, friendId, msgContent, now);
 
@@ -1122,7 +1107,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     }
 
-    public void getFriendId(int roomId){
+    public void getFriendId(int roomId) {
 //        Cursor cursor = db.getChatFriendListByNo(no);
 //        JSONArray idArray = new JSONArray();
 //
@@ -1134,11 +1119,9 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
-
     public int uploadFile(String sourceFileUri) {
 
-        Log.d("이미지업로드시작CRA",sourceFileUri);
+        Log.d("이미지업로드시작CRA", sourceFileUri);
         String fileName = sourceFileUri;
 
         HttpURLConnection conn = null;
@@ -1151,27 +1134,26 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         int maxBufferSize = 1 * 1024 * 1024;
 //        File sourceFile = new File(sourceFileUri);
 
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tmp.png";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tmp.png";
 
-        Bitmap b= BitmapFactory.decodeFile(sourceFileUri);
+        Bitmap b = BitmapFactory.decodeFile(sourceFileUri);
 
-        Log.d("이미지크기",b.getWidth()+"###"+b.getHeight());
+        Log.d("이미지크기", b.getWidth() + "###" + b.getHeight());
 
-        float height = 400 * (float)b.getHeight() /  (float)b.getWidth();
+        float height = 400 * (float) b.getHeight() / (float) b.getWidth();
 
-        Bitmap out = Bitmap.createScaledBitmap(b, 400, (int)height, false);
+        Bitmap out = Bitmap.createScaledBitmap(b, 400, (int) height, false);
 
 
         File sourceFile = new File(path);
         FileOutputStream fOut;
 
 
-
         try {
 
-            Log.d("이미지새파일경로1",sourceFile.getAbsolutePath());
+            Log.d("이미지새파일경로1", sourceFile.getAbsolutePath());
             fOut = new FileOutputStream(sourceFile);
-            Log.d("이미지새파일경로2",sourceFile.getAbsolutePath());
+            Log.d("이미지새파일경로2", sourceFile.getAbsolutePath());
             out.compress(Bitmap.CompressFormat.PNG, 100, fOut);
 
         } catch (Exception e) {
@@ -1179,15 +1161,14 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
 
 
-
         if (!sourceFile.isFile()) {
 
-            Log.d("이미지","경로에없음");
+            Log.d("이미지", "경로에없음");
 //            dialog.dismiss();
 
             return 0;
 
-        }else{
+        } else {
 
             int serverResponseCode = 123;
 
@@ -1212,8 +1193,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
                 long now = System.currentTimeMillis();
-                long TimeDiff = mPref.getLong("TimeDiff",0);
-                now = now +TimeDiff;
+                long TimeDiff = mPref.getLong("TimeDiff", 0);
+                now = now + TimeDiff;
                 String imageName = myUserId + "_" + now + ".png";
 
 
@@ -1265,16 +1246,15 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
                 String line = null;
                 StringBuffer buff = new StringBuffer();
-                while ( ( line = in.readLine() ) != null )
-                {
+                while ((line = in.readLine()) != null) {
                     buff.append(line + "\n");
                 }
                 String data = buff.toString().trim();
-                Log.d("이미지성공실패",data);
+                Log.d("이미지성공실패", data);
 
-                if(data.equals("성공")){
-                    Log.d("메세지마크1",imageName+"");
-                    mService.sendMessage(roomId,friendId,imageName,now,51);
+                if (data.equals("성공")) {
+                    Log.d("메세지마크1", imageName + "");
+                    mService.sendMessage(roomId, friendId, imageName, now, 51);
                 }
 
 
@@ -1282,7 +1262,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
                 ex.printStackTrace();
-
 
 
                 Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
@@ -1301,13 +1280,11 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
-
     public class ImageSendThread extends Thread {
 
         public String filePath;
 
-        public ImageSendThread (String uri){
+        public ImageSendThread(String uri) {
             this.filePath = uri;
         }
 
@@ -1322,25 +1299,25 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-    public void doTakePhotoAction(){
+    public void doTakePhotoAction() {
 
-        Intent intent = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         startActivityForResult(intent, PICK_FROM_CAMERA);
 
     }
 
-    public void doTakeAlbumAction(){
+    public void doTakeAlbumAction() {
 
-        Intent intent = new Intent (Intent.ACTION_PICK);
-        intent.setType ("image/*");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
         startActivityForResult(intent, PICK_FROM_ALBUM);
 
     }
 
     public String getPath(Uri uri) {
 
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
@@ -1349,12 +1326,10 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     }
 
 
-
-
     public class SetBottomThread extends Thread {
 
 
-        public SetBottomThread (){
+        public SetBottomThread() {
 
         }
 
@@ -1365,13 +1340,13 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
                 Thread.sleep(700);
 
-                Message message= Message.obtain();
+                Message message = Message.obtain();
                 message.what = 365;
 
                 handler.sendMessage(message);
 
 
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
@@ -1379,7 +1354,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
 
     }
-
 
 
 //    public class ImageShareThread extends Thread {
