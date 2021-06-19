@@ -3,6 +3,7 @@ package messenger_project.sketchtalk.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,18 @@ public class EditChatRoomAdapter extends BaseAdapter {
         }
 
 
+    }
+
+    public boolean isAllFalse(){
+        Iterator<String> iterator = isChecked.keySet().iterator();
+
+        while(iterator.hasNext()){
+            String key = iterator.next();
+            if (isChecked.get(key)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String exitCheckedRoom(){

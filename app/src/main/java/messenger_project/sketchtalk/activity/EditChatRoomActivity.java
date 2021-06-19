@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -141,8 +142,9 @@ public class EditChatRoomActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish(); // close this activity and return to preview activity (if there is any)
         }else if(id == R.id.exit_room_btn){
-
-
+            if(editChatRoomAdapter.isAllFalse()){
+                return false;
+            }
             DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
 
                 @Override
@@ -169,7 +171,7 @@ public class EditChatRoomActivity extends AppCompatActivity {
 
 
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage("채팅방에서 나가기를 하면 대화 내용 및 채팅목록에서 모두 삭제됩니다.\n채팅방에서 나가시겠습니까?")
+                    .setMessage("채팅방에서 나가기를 하면 대화 내용 및 채팅목록에서 모두 삭제됩니다.\n선택한 채팅방에서 나가시겠습니까?")
                     .setPositiveButton("확인", exitListener)
                     .setNegativeButton("취소", cancelListener)
                     .create();
@@ -197,7 +199,6 @@ public class EditChatRoomActivity extends AppCompatActivity {
         return true;
 
     }
-
 
 
 }
