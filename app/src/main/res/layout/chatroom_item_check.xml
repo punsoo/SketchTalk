@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/chatRoomImage_Check"
+        android:id="@+id/chatRoomImageCheck"
         android:src="@drawable/default_profile_image"
         android:layout_alignParentStart="true"
         android:adjustViewBounds="true"
@@ -15,31 +15,55 @@
         android:layout_marginStart="10dp"
         android:layout_centerVertical="true"/>
 
-
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name"
-        android:id="@+id/chatRoomName_Check"
-        android:textSize="22sp"
-        android:textColor="#000000"
-        android:gravity="center_vertical"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/chatRoomImage"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="15dp"/>
+        android:layout_toEndOf="@+id/chatRoomImageCheck"
+        android:layout_toStartOf="@+id/check_icon"
+        android:gravity="left">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:singleLine = "true"
+            android:lines = "1"
+            android:id="@+id/chatRoomNameCheck"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="15dp"
+            android:layout_toStartOf="@id/chatRoomMemberNumCheck"
+            />
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="123"
+            android:id="@+id/chatRoomMemberNumCheck"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="2dp"
+            android:layout_alignBottom="@+id/chatRoomNameCheck"
+            android:background="@color/colorPopup"
+            android:layout_alignParentEnd="true"
+            />
+    </RelativeLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Message"
-        android:id="@+id/chatRoomContent_Check"
+        android:id="@+id/chatRoomContentCheck"
         android:textSize="15sp"
         android:textColor="#666666"
         android:layout_gravity="center_vertical"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/chatRoomImage_Check"
+        android:layout_toEndOf="@+id/chatRoomImageCheck"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="15dp"/>
 
@@ -49,6 +73,7 @@
     <ImageView
         android:layout_width="38dp"
         android:layout_height="38dp"
+        android:padding="5dp"
         android:id="@+id/check_icon"
         android:src="@drawable/check_icon_inact"
         android:adjustViewBounds="true"

@@ -1,14 +1,17 @@
 package messenger_project.sketchtalk.activity;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -18,6 +21,7 @@ import java.util.Vector;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import messenger_project.sketchtalk.Item.ChatRoomItem;
@@ -39,6 +43,7 @@ public class EditChatRoomActivity extends AppCompatActivity {
     public SharedPreferences.Editor editor;
 
     public String myId;
+    String roomSet;
 
     public Toolbar toolbar;
 
@@ -80,7 +85,7 @@ public class EditChatRoomActivity extends AppCompatActivity {
             if(CRC.getInt(0) == 0){
                 IsChecked.put(CRC.getString(1),false);
             }else{
-                IsChecked.put(CRC.getString(0)+"",false);
+                IsChecked.put(CRC.getInt(0)+"",false);
             }
 
         }
@@ -94,7 +99,7 @@ public class EditChatRoomActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String userId = (String)view.getTag(R.id.userId);
+                String userId = (String)view.getTag(R.id.friendId);
                 int roomId = (int)view.getTag(R.id.roomId);
                 if(roomId==0) {
                     editChatRoomAdapter.changeIsChecked(userId);
@@ -137,15 +142,46 @@ public class EditChatRoomActivity extends AppCompatActivity {
             finish(); // close this activity and return to preview activity (if there is any)
         }else if(id == R.id.exit_room_btn){
 
-            Intent exitIntent = new Intent();
 
-            String roomSet = editChatRoomAdapter.exitCheckedRoom();
+            DialogInterface.OnClickListener exitListener = new DialogInterface.OnClickListener(){
 
-            exitIntent.putExtra("roomSet",roomSet);
+                @Override
+                public void onClick(DialogInterface dialog, int which){
+                    Intent exitIntent = new Intent();
+                    roomSet = editChatRoomAdapter.exitCheckedRoom();
+                    exitIntent.putExtra("roomSet",roomSet);
+                    setResult(RESULT_OK,exitIntent);
+                    finish();
+                }
 
-            setResult(RESULT_OK,exitIntent);
+            };
 
-            finish();
+
+            DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
+
+                @Override public void onClick(DialogInterface dialog, int which){
+                    dialog.dismiss();
+                }
+
+            };
+
+
+
+
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setMessage("채팅방에서 나가기를 하면 대화 내용 및 채팅목록에서 모두 삭제됩니다.\n채팅방에서 나가시겠습니까?")
+                    .setPositiveButton("확인", exitListener)
+                    .setNegativeButton("취소", cancelListener)
+                    .create();
+
+            dialog.show();
+
+            Button exitBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            exitBtn.setTextColor(Color.BLACK);
+
+            Button cancelBtn = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+            cancelBtn.setTextColor(Color.BLACK);
+
         }
 
         return super.onOptionsItemSelected(item);

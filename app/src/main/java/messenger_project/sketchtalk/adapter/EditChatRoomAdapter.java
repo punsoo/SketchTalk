@@ -38,7 +38,6 @@ public class EditChatRoomAdapter extends BaseAdapter {
     public String userId;
     public String ServerURL;
     HashMap<String, Boolean> isChecked = new HashMap<>();
-    public SimpleDateFormat sdfNow ;
 
     // ListViewAdapter의 생성자
     public EditChatRoomAdapter(Context context,ArrayList<ChatRoomItem> ListData,String myId , HashMap<String, Boolean> IsChecked ) {
@@ -47,7 +46,6 @@ public class EditChatRoomAdapter extends BaseAdapter {
         this.chatRoomList = ListData;
         this.userId = myId;
         this.isChecked = IsChecked;
-        this.sdfNow = new SimpleDateFormat("HH:mm");
         this.ServerURL = context.getResources().getString(R.string.ServerUrl);
         db = new MyDatabaseOpenHelper(mContext,"catchMindTalk",null,1);
 
@@ -156,10 +154,11 @@ public class EditChatRoomAdapter extends BaseAdapter {
             convertView = this.inflater.inflate(R.layout.chatroom_item_check, parent, false);
 
             viewHolder = new ChatRoomViewHolder();
-            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomName_Check);
-            viewHolder.chatRoomContent = (TextView) convertView.findViewById(R.id.chatRoomContent_Check);
-            viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.chatRoomImage_Check);
+            viewHolder.chatRoomName = (TextView) convertView.findViewById(R.id.chatRoomNameCheck);
+            viewHolder.chatRoomContent = (TextView) convertView.findViewById(R.id.chatRoomContentCheck);
+            viewHolder.profileImage = (ImageView) convertView.findViewById(R.id.chatRoomImageCheck);
             viewHolder.check = (ImageView) convertView.findViewById(R.id.check_icon);
+            viewHolder.memberNum = (TextView) convertView.findViewById(R.id.chatRoomMemberNumCheck);
 
             convertView.setTag(viewHolder);
 
@@ -169,82 +168,77 @@ public class EditChatRoomAdapter extends BaseAdapter {
 
 
         String lastMessageContent = "";
-        long lastMessageTime = 0;
-        long lastReadTime = 0;
-        Date lastMsgTime;
-        String lastMsgtime;
 
-
-
-        if(chatRoomList.get(position).getLastMessageType() == 1 ) {
-            if(!TextUtils.isEmpty( chatRoomList.get(position).getLastMessageContent() )){
+        if (chatRoomList.get(position).getLastMessageType() == 1 || chatRoomList.get(position).getLastMessageType() == 2) {
+            if (!TextUtils.isEmpty(chatRoomList.get(position).getLastMessageContent())) {
                 lastMessageContent = chatRoomList.get(position).getLastMessageContent();
-            }else {
+            } else {
                 lastMessageContent = "";
             }
-        }else if(chatRoomList.get(position).getLastMessageType() == 2) {
+        } else if (chatRoomList.get(position).getLastMessageType() == 51 || chatRoomList.get(position).getLastMessageType() == 52) {
             lastMessageContent = "<사진>";
         }
 
 
-        lastMessageTime = chatRoomList.get(position).getLastMessageTime();
-        lastReadTime = chatRoomList.get(position).getLastReadTime();
-        lastMsgTime = new Date(lastMessageTime);
-        lastMsgtime = this.sdfNow.format(lastMsgTime);
 
-        Vector<String []> ChatRoomMemberList = chatRoomList.get(position).getChatRoomMemberList();
+        Vector<String[]> ChatRoomMemberList = chatRoomList.get(position).getChatRoomMemberList();
 
 
         String RoomName = chatRoomList.get(position).getRoomName();
 
-        if(RoomName == null || RoomName.equals("")){
-            for(int i=0;i<ChatRoomMemberList.size();i++){
-                if(i==0) {
+        if (RoomName == null || RoomName.equals("")) {
+            for (int i = 0; i < ChatRoomMemberList.size(); i++) {
+                if (i == 0) {
                     RoomName = ChatRoomMemberList.get(0)[1];
-                }else {
+                } else {
                     RoomName += ", " + ChatRoomMemberList.get(i)[1];
                 }
             }
+
         }
 
         viewHolder.chatRoomName.setText(RoomName);
-        viewHolder.chatRoomContent.setText(chatRoomList.get(position).getLastMessageContent());
+        viewHolder.chatRoomContent.setText(lastMessageContent);
+        viewHolder.memberNum.setText("" + chatRoomList.get(position).getMemberNum());
 
-        if( chatRoomList.get(position).getRoomType() == 1) {
-            String FriendId;
-            String ProfileImageUpdateTime;
-            if(ChatRoomMemberList.get(0)[0].equals(userId)){
+        if (chatRoomList.get(position).getRoomType() == 1) {
+            String FriendId = "";
+            String ProfileImageUpdateTime = "none";
+            if (ChatRoomMemberList.get(0)[0].equals(userId)) {
                 FriendId = ChatRoomMemberList.get(1)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(1)[3];
-            }else{
+            } else {
                 FriendId = ChatRoomMemberList.get(0)[0];
                 ProfileImageUpdateTime = ChatRoomMemberList.get(0)[3];
             }
+
 
             Glide.with(mContext).load(ServerURL + "/profile_image/" + FriendId + ".png")
                     .error(R.drawable.default_profile_image)
                     .signature(new ObjectKey(ProfileImageUpdateTime))
                     .into(viewHolder.profileImage);
+
+            viewHolder.memberNum.setVisibility(View.INVISIBLE);
+
             if(isChecked.get(chatRoomList.get(position).getFriendId())){
                 viewHolder.check.setImageResource(R.drawable.check_icon);
             }else{
                 viewHolder.check.setImageResource(R.drawable.check_icon_inact);
             }
-
-        }else {
+        } else {
             viewHolder.profileImage.setImageResource(R.drawable.group_icon);
+            viewHolder.memberNum.setVisibility(View.VISIBLE);
+
             if(isChecked.get(chatRoomList.get(position).getRoomId()+"")){
                 viewHolder.check.setImageResource(R.drawable.check_icon);
             }else{
                 viewHolder.check.setImageResource(R.drawable.check_icon_inact);
             }
-
         }
 
         convertView.setTag(R.id.roomId, chatRoomList.get(position).getRoomId());
         convertView.setTag(R.id.friendId, chatRoomList.get(position).getFriendId());
         convertView.setTag(R.id.roomName, chatRoomList.get(position).getRoomName());
-
 
 
         return convertView;
