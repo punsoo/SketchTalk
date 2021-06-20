@@ -462,7 +462,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 String msgContent = data.getExtras().getString("msgContent");
                 String inviteId = data.getExtras().getString("inviteId");
 
-                mService.sendInvite(roomId, friendId, msgContent, now, inviteId);
+                mService.sendInvite(roomId, friendId, now, inviteId);
 
             } else if (requestCode == PICK_FROM_CAMERA) {
 
@@ -1092,7 +1092,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
     public void exitRoom() {
 
         db.deleteChatRoomList(roomId, friendId);
-        db.deleteChatRoomMemberList(roomId, friendId);
+        db.deleteChatRoomMemberList(roomId, friendId, true);
         db.deleteChatMessageList(myUserId, roomId, friendId);
 
         String msgContent = myNickname + "님이 나갔습니다";

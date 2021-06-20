@@ -23,10 +23,11 @@ public class getInviteFriendThread extends Thread {
     long sTime;
     MyDatabaseOpenHelper db;
     boundState mBoundState;
+    CallbackMain mCallbackMain;
     CallbackChatRoom mCallbackChatRoom;
 
 
-    public getInviteFriendThread(String serverURL, String userId, int sRoomId, String sFriendId, String sMsgContent, long sTime, MyDatabaseOpenHelper db, boundState mBoundState, CallbackChatRoom mCallbackChatRoom) {
+    public getInviteFriendThread(String serverURL, String userId, int sRoomId, String sFriendId, String sMsgContent, long sTime, MyDatabaseOpenHelper db, boundState mBoundState, CallbackMain mCallbackMain, CallbackChatRoom mCallbackChatRoom) {
         this.serverURL = serverURL;
         this.userId = userId;
         this.sRoomId = sRoomId;
@@ -36,6 +37,7 @@ public class getInviteFriendThread extends Thread {
         this.db = db;
         this.mBoundState = mBoundState;
         this.mCallbackChatRoom = mCallbackChatRoom;
+        this.mCallbackMain = mCallbackMain;
     }
 
     @Override
@@ -87,6 +89,9 @@ public class getInviteFriendThread extends Thread {
                 if(mBoundState.boundedRoomId == sRoomId) {
                     mCallbackChatRoom.sendInviteMark(sMsgContent,sTime,true);
                 }
+            }
+            if(mBoundState.boundCheckMain) {
+                mCallbackMain.changeRoomList();
             }
 
 

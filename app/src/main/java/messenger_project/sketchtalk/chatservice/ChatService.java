@@ -167,14 +167,17 @@ public class ChatService extends Service {
                         }
                     }
                     if(!db.haveChatRoom(roomId,friendId)) {
-                        db.insertChatRoomMemberListMultipleByJoin(roomId,friendId);
-                        db.insertChatRoomList(roomId, "group", time,"",2);
 
-                        if (mBoundState.boundCheckChatRoom) {
-                            mCallbackChatRoom.reset();
-                            mCallbackChatRoom.recvUpdate();
-                            mCallbackChatRoom.changeRoomId(roomId);
-                        }
+                        db.insertChatRoomList(roomId, "group", time,"",2);
+//                        db.insertChatMessageList("", roomId, "", inviteMsg, time - 1, 5);
+//                        if (mBoundState.boundCheckChatRoom) {
+//                            mCallbackChatRoom.reset();
+//                            mCallbackChatRoom.recvUpdate();
+//                            mCallbackChatRoom.changeRoomId(roomId);
+//                            mCallbackChatRoom.sendInviteMark(inviteMsg,time - 1,true);
+//                        }
+                        sendInvite(roomId,friendId,time - 1, friendId);
+                        Log.d("프로토스",friendId);
 
                         if(mBoundState.boundCheckMain == true){
                             mCallbackMain.changeRoomList();
@@ -267,7 +270,7 @@ public class ChatService extends Service {
 
     }
 
-    public void sendInvite(int roomId, String friendId, String msgContent, long time, String inviteId ){
+    public void sendInvite(int roomId, String friendId, long time, String inviteId ){
 
 
         if(roomId < 0){
@@ -275,14 +278,14 @@ public class ChatService extends Service {
         }
 
 
-        db.insertChatRoomMemberListMultipleByJoin(roomId,inviteId);
+        String inviteMsg = db.insertChatRoomMemberListMultipleByJoin(roomId,inviteId);
 
-
+        Log.d("프로토스저그",inviteMsg);
         JSONObject jobject = new JSONObject();
 
 
         try {
-            jobject.put("msgContent", msgContent);
+            jobject.put("msgContent", inviteMsg);
             jobject.put("inviteId", inviteId);
         }catch (JSONException e){
             e.printStackTrace();
@@ -293,8 +296,8 @@ public class ChatService extends Service {
         st.start();
 
 
-        db.insertChatMessageList("", roomId, "", msgContent, time, 5);
-        mCallbackChatRoom.sendInviteMark(msgContent,time,true);
+        db.insertChatMessageList("", roomId, "", inviteMsg, time, 5);
+        mCallbackChatRoom.sendInviteMark(inviteMsg,time,true);
 
 
     }

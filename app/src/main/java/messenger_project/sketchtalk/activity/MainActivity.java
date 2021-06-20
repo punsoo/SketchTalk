@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
         db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
-
         tabPosition = 0;
 
         // Initializing the TabLayout
@@ -383,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
             Log.d("확인ExitThread", now + "#" + msgContent + "#" + roomIdExit + "#" + friendIdExit);
             db.deleteChatRoomList(roomIdExit, friendIdExit);
-            db.deleteChatRoomMemberList(roomIdExit, friendIdExit);
+            db.deleteChatRoomMemberList(roomIdExit, friendIdExit, true);
             db.deleteChatMessageList(myUserId, roomIdExit, friendIdExit);
 
             mService.sendExit(roomIdExit, friendIdExit, msgContent, now);

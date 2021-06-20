@@ -119,20 +119,26 @@ public class ReceiveMessageThread extends Thread {
 
         } else if (sMsgType == 4) {
 
-            db.deleteChatRoomMemberList(sRoomId, sFriendId);
+            db.deleteChatRoomMemberList(sRoomId, sFriendId, false);
             db.insertChatMessageList(userId, sRoomId, sFriendId, sMsgContent, sTime, sMsgType);
             if (mBoundState.boundCheckChatRoom) {
                 if (mBoundState.boundedRoomId == sRoomId) {
                     mCallbackChatRoom.sendExitMark(sFriendId, sMsgContent, sTime);
                 }
             }
+            if (mBoundState.boundCheckMain) {
+                mCallbackMain.changeRoomList();
+            }
         } else if (sMsgType == 5) {
+            Log.d("프로토스테란",sFriendId);
             if (db.haveChatRoom(sRoomId, sFriendId)) {
+
                 try {
                     JSONObject jobject = new JSONObject(sMsgContent);
                     String inviteId = jobject.getString("inviteId");
                     String realContent = jobject.getString("msgContent");
-                    getInviteFriendThread gift = new getInviteFriendThread(serverURL,userId, sRoomId, inviteId, realContent, sTime,db,mBoundState,mCallbackChatRoom);
+                    Log.d("프로토스테란1",sFriendId + "@" +inviteId + realContent);
+                    getInviteFriendThread gift = new getInviteFriendThread(serverURL,userId, sRoomId, inviteId, realContent, sTime,db,mBoundState, mCallbackMain, mCallbackChatRoom);
                     gift.start();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -142,12 +148,15 @@ public class ReceiveMessageThread extends Thread {
                     JSONObject jobject = new JSONObject(sMsgContent);
                     String inviteId = jobject.getString("inviteId");
                     String realContent = jobject.getString("msgContent");
+                    Log.d("프로토스테란2",sFriendId + "@" +inviteId + realContent + "@" + sRoomId);
                     getInviteGroupThread gigt = new getInviteGroupThread(serverURL, userId, sRoomId, sFriendId, realContent, sTime, db, mBoundState, mCallbackMain);
                     gigt.start();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+
+
         } else if (sMsgType == 10) {
             if (mBoundState.boundCheckChatRoom) {
                 if (sRoomId == 0) {

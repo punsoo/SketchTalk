@@ -14,6 +14,8 @@ import org.json.JSONObject;
 
 import java.util.Vector;
 
+import messenger_project.sketchtalk.Item.ChatRoomItem;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class MyDatabaseOpenHelper extends SQLiteOpenHelper
@@ -201,7 +203,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         String userId = mPref.getString("userId", myId);
 
 
-        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM ( SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId <> 0 GROUP BY roomId UNION SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId = 0 GROUP BY roomId, friendId ) AS cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
+        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM ( SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId <> 0 AND messageType <> 5 GROUP BY roomId UNION SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId = 0 GROUP BY roomId, friendId ) AS cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
         // roomId friendId lastReadTime(chatRoom) roomName roomType cm1roomId cm1friendId maxTime roomId friendId messageContent messageTime messageType
         Cursor cursor = dbReader.rawQuery(sql,null);
 
@@ -350,7 +352,9 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
-    public void insertChatRoomMemberListMultipleByJoin(int roomId, String friendId) {
+    public String insertChatRoomMemberListMultipleByJoin(int roomId, String friendId) {
+        String inviteMsg = mPref.getString("nickname","닉네임");
+        inviteMsg += "님이 ";
         try {
             JSONArray jarray = new JSONArray(friendId);
 
@@ -360,33 +364,33 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
             }
             Cursor cursor = dbReader.rawQuery(sql, null);
 
-            Log.d("여기가 안되네1","#"+sql);
 
             String sql_2 = "INSERT INTO chatRoomMemberList VALUES ";
 
             cursor.moveToNext();
 
             sql_2 = sql_2 + "('" + roomId + "','" + cursor.getString(0) + "','" + cursor.getString(1) + "','" + cursor.getString(2) + "','" + cursor.getString(3) + "','0')";
+            inviteMsg += cursor.getString(1) + "님";
             while (cursor.moveToNext()) {
                 sql_2 = sql_2 + ",('" + roomId + "','" + cursor.getString(0) + "','" + cursor.getString(1) + "','" + cursor.getString(2) + "','" + cursor.getString(3) + "','0')";
+                inviteMsg += ", " + cursor.getString(1) + "님";
             }
-            Log.d("여기가 안되네2","#"+sql_2);
+            inviteMsg += "을 초대했습니다.";
             try {
                 dbWriter.beginTransaction();
                 dbWriter.execSQL(sql_2);
-                Log.d("여기가 안되네3","#"+sql_2);
                 dbWriter.setTransactionSuccessful();
             } catch (Exception e) {
-                Log.d("여기가 안되네4","#"+sql_2);
                 e.printStackTrace();
             } finally {
                 dbWriter.endTransaction();
+                return inviteMsg;
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        return inviteMsg;
     }
 
 
@@ -463,14 +467,18 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     }
 
-    public void deleteChatRoomMemberList(int roomId, String friendId) {
+    public void deleteChatRoomMemberList(int roomId, String friendId, boolean isAll) {
 
         dbWriter.beginTransaction();
         String sql;
         if(roomId==0){
             sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId ='" + friendId + "'";
         }else {
-            sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "'";
+            if(isAll) {
+                sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "'";
+            }else {
+                sql = "DELETE FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId ='" + friendId + "'";
+            }
         }
 
         try {
@@ -691,6 +699,28 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
         } finally {
             dbWriter.endTransaction();
         }
+    }
+
+    public void test(String myId){
+        Log.d("db.getCRLJOML",myId);
+        String userId = mPref.getString("userId", myId);
+
+
+        String sql = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM ( SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId <> 0 AND messageType <> 5 GROUP BY roomId UNION SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId = 0 GROUP BY roomId, friendId ) AS cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
+        // roomId friendId lastReadTime(chatRoom) roomName roomType cm1roomId cm1friendId maxTime roomId friendId messageContent messageTime messageType
+        Cursor cursor = dbReader.rawQuery(sql,null);
+
+        while(cursor.moveToNext()) {
+            Log.d("히드라",cursor.getInt(0)+"@"+cursor.getString(1)+"@"+cursor.getLong(2) +"@"+cursor.getString(3)+"@"+cursor.getInt(4) +"@"+cursor.getString(10)+"@"+cursor.getLong(11) +"@"+cursor.getInt(12));
+        }
+
+        String sql2 = "SELECT * FROM chatRoomList AS cr LEFT JOIN (SELECT * FROM ( SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId <> 0 GROUP BY roomId UNION SELECT roomId AS cm1roomId, friendId AS cm1friendId, MAX(messageTime) AS maxTime FROM chatMessageList_"+userId+" WHERE roomId = 0 GROUP BY roomId, friendId ) AS cm1 INNER JOIN chatMessageList_"+userId+" cm2 ON cm1.cm1roomId = cm2.roomId AND cm1.cm1friendId = cm2.friendId AND cm1.maxTime = cm2.messageTime )AS cm ON CASE WHEN cr.roomId IN (0) THEN (cm.friendId = cr.friendId AND cm.roomId = cr.roomId) ELSE (cm.roomId = cr.roomId) END ORDER BY maxTime DESC";
+        // roomId friendId lastReadTime(chatRoom) roomName roomType cm1roomId cm1friendId maxTime roomId friendId messageContent messageTime messageType
+        Cursor cursor2 = dbReader.rawQuery(sql2,null);
+        while(cursor2.moveToNext()) {
+            Log.d("히드라2",cursor2.getInt(0)+"@"+cursor2.getString(1)+"@"+cursor2.getLong(2) +"@"+cursor2.getString(3)+"@"+cursor2.getInt(4) +"@"+cursor2.getString(10)+"@"+cursor2.getLong(11) +"@"+cursor2.getInt(12));
+        }
+
     }
 }
 
