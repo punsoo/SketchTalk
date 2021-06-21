@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
@@ -182,6 +183,7 @@ public class MakeGroupActivity extends AppCompatActivity {
                 jsonArray.put(inviteList.get(i));
             }
 
+            Collections.sort(inviteNicknameList);
             for (int i=0; i < inviteNicknameList.size();i++){
                 if(i != 0){
                     nickname = nickname + ", ";
