@@ -497,7 +497,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
 
 //        String sql_del="DROP TABLE IF EXISTS chatMessageList_"+mPref.getString("userId",myId)+";";
-        String sql = "CREATE TABLE IF NOT EXISTS chatMessageList_"+mPref.getString("userId",myId)+"(roomId INTEGER NOT NULL,friendId TEXT NOT NULL, messageContent TEXT,messageTime INTEGER,messageType INTEGER)";
+        String sql = "CREATE TABLE IF NOT EXISTS chatMessageList_"+myId+"(roomId INTEGER NOT NULL,friendId TEXT NOT NULL, messageContent TEXT,messageTime INTEGER,messageType INTEGER)";
         try {
 //            dbWriter.execSQL(sql_del);
             dbWriter.execSQL(sql);

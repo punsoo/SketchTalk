@@ -94,6 +94,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ServerURL = getResources().getString(R.string.ServerUrl);
+        upLoadServerUri = ServerURL + "/ImageUpload.php";
         profileTitleView = (TextView)findViewById(R.id.ProfileTitle);
         profileMessageView = (TextView)findViewById(R.id.ProfileMessage);
         profileImageView = (ImageView)findViewById(R.id.ProfileImage);
