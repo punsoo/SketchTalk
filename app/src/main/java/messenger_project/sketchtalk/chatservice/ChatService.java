@@ -169,15 +169,15 @@ public class ChatService extends Service {
                     if(!db.haveChatRoom(roomId,friendId)) {
 
                         db.insertChatRoomList(roomId, "group", time,"",2);
-//                        db.insertChatMessageList("", roomId, "", inviteMsg, time - 1, 5);
-//                        if (mBoundState.boundCheckChatRoom) {
-//                            mCallbackChatRoom.reset();
-//                            mCallbackChatRoom.recvUpdate();
-//                            mCallbackChatRoom.changeRoomId(roomId);
-//                            mCallbackChatRoom.sendInviteMark(inviteMsg,time - 1,true);
-//                        }
+
                         sendInvite(roomId,friendId,time - 1, friendId);
-                        Log.d("프로토스",friendId);
+                        Log.d("프로1",roomId + friendId);
+                        if (mBoundState.boundCheckChatRoom) {
+                            Log.d("프로2",roomId + friendId);
+                            mCallbackChatRoom.reset();
+                            mCallbackChatRoom.recvUpdate();
+                            mCallbackChatRoom.changeRoomId(roomId);
+                        }
 
                         if(mBoundState.boundCheckMain == true){
                             mCallbackMain.changeRoomList();

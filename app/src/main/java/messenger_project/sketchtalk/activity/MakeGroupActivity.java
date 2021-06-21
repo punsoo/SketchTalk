@@ -40,11 +40,12 @@ public class MakeGroupActivity extends AppCompatActivity {
     ArrayList<String> inviteNicknameList = new ArrayList<>();
     String myId;
     String myNickname;
-    public SharedPreferences mPref;
-    public SharedPreferences.Editor editor;
-    public boolean FCR;
-    public int roomId;
-    public String friendId;
+    SharedPreferences mPref;
+    SharedPreferences.Editor editor;
+    boolean FCR;
+    int roomId;
+    String friendId;
+    String nickname;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,8 +63,8 @@ public class MakeGroupActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mPref = getSharedPreferences("login",MODE_PRIVATE);
-        myId = mPref.getString("userId","닉없음");
-        myNickname = mPref.getString("nickname", "누구세요");
+        myId = mPref.getString("userId","나의아이디");
+        myNickname = mPref.getString("nickname", "나의닉네임");
         editor = mPref.edit();
 
         final ArrayList<FriendListItem> ListData = new ArrayList<>();
@@ -90,6 +91,7 @@ public class MakeGroupActivity extends AppCompatActivity {
         FCR = GI.getBooleanExtra("FCR",false);
         roomId = GI.getIntExtra("roomId", 0);
         friendId = GI.getStringExtra("friendId");
+        nickname = GI.getStringExtra("nickname");
         if(FCR){
             if(roomId == 0){
                 alreadyList.add(friendId);
@@ -156,8 +158,24 @@ public class MakeGroupActivity extends AppCompatActivity {
                 return false;
             }
 
+            if( (!FCR) && inviteList.size() == 1) {
+                Intent intent = new Intent();
+                intent.putExtra("roomId",0);
+                intent.putExtra("inviteId",inviteList.get(0));
+                intent.putExtra("inviteNum", inviteList.size());
+                intent.putExtra("nickname",inviteNicknameList.get(0));
+
+                setResult(RESULT_OK, intent);
+                finish();
+                return true;
+            }
+
+            if(roomId == 0) {
+                inviteList.add(friendId);
+                inviteNicknameList.add(nickname);
+            }
+
             JSONArray jsonArray = new JSONArray();
-            String msgContent = myNickname + "님이 ";
             String nickname ="";
 
             for (int i=0; i < inviteList.size(); i++) {
@@ -166,22 +184,18 @@ public class MakeGroupActivity extends AppCompatActivity {
 
             for (int i=0; i < inviteNicknameList.size();i++){
                 if(i != 0){
-                    msgContent = msgContent +",";
                     nickname = nickname + ", ";
                 }
-                msgContent = msgContent + inviteNicknameList.get(i) + "님";
                 nickname = nickname + inviteNicknameList.get(i);
             }
-            msgContent = msgContent + "을 초대했습니다";
 
             Intent intent = new Intent();
             intent.putExtra("roomId",db.getMinRoomId());
             intent.putExtra("inviteId",jsonArray.toString());
             intent.putExtra("nickname",nickname);
-            intent.putExtra("msgContent",msgContent);
             intent.putExtra("inviteNum", inviteList.size());
 
-            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString()+"#"+msgContent);
+            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString());
             setResult(RESULT_OK, intent);
             finish();
 

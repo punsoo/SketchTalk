@@ -23,6 +23,7 @@ import messenger_project.sketchtalk.R;
 import messenger_project.sketchtalk.activity.MainActivity;
 import messenger_project.sketchtalk.activity.ProfileActivity;
 import messenger_project.sketchtalk.adapter.FriendListAdapter;
+import messenger_project.sketchtalk.main.SendToActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -144,13 +145,11 @@ public class FriendListFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
 
-        Log.d("태프원",resultCode+"");
 
         if(resultCode == RESULT_OK) {
-//            Toast.makeText(getContext(), requestCode + "###" + resultCode, Toast.LENGTH_SHORT).show();
             String friendId = data.getExtras().getString("friendId");
             String nickname = data.getExtras().getString("nickname");
-            STA.sendToActivity(friendId,nickname);
+            STA.sendToActivity(friendId,nickname, 0);
         }
 
 //        if(resultCode == sendVideoCall){
@@ -164,11 +163,8 @@ public class FriendListFragment extends Fragment {
 
 
 
-    public interface sendToActivity {
-        void sendToActivity(String friendId, String nickname);
-    }
 
-    sendToActivity STA;
+    SendToActivity STA;
 
 
 
@@ -177,7 +173,7 @@ public class FriendListFragment extends Fragment {
         super.onAttach(context);
         MainActivity MA = (MainActivity) context;
         try {
-            STA = (sendToActivity) MA;
+            STA = (SendToActivity) MA;
         } catch (ClassCastException e) {
             throw new ClassCastException(MA.toString() + " must implement onSomeEventListener");
         }

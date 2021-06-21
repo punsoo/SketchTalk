@@ -345,7 +345,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             }
         });
 
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -375,10 +374,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_ChatRoom(mCallback); //콜백 등록
-            mService.mBoundState.boundCheckChatRoom = true;
-            mService.mBoundState.boundStart = true;
-            mService.mBoundState.boundedRoomId = roomId;
-            mService.mBoundState.boundedFriendId = friendId;
+            updateBoundState();
             long now = System.currentTimeMillis();
             long TimeDiff = mPref.getLong("TimeDiff", 0);
             now = now + TimeDiff;
@@ -392,6 +388,15 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         }
     };
 
+    public void updateBoundState() {
+        if(!mService.mBoundState.boundCheckChatRoom) {
+            mService.mBoundState.boundCheckChatRoom = true;
+            mService.mBoundState.boundStart = true;
+            mService.mBoundState.boundedRoomId = roomId;
+            mService.mBoundState.boundedFriendId = friendId;
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -403,11 +408,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         if (mService != null) {
             Log.d("확인onStart", "mService");
             mService.mBoundState.boundStart = true;
-
             mService.sendRead(roomId, friendId, now);
-        }
-        if (mService == null) {
-            Log.d("확인onStart", "mServiceNull");
+            updateBoundState();
         }
         fragmentCommunicator.alertChange();
     }
@@ -444,6 +446,8 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             intentMakeGroup.putExtra("FCR", true);
             intentMakeGroup.putExtra("friendId", friendId);
             intentMakeGroup.putExtra("roomId", roomId);
+            intentMakeGroup.putExtra("nickname", NickHash.get(friendId));
+            Log.d("데이터확인닉",friendId + NickHash.get(friendId));
             startActivityForResult(intentMakeGroup, MakeGroupActivity);
 
         }
@@ -456,12 +460,24 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
         if (resultCode == RESULT_OK) {
             if (requestCode == MakeGroupActivity) {
 
+                if(roomId == 0) {
+                    int roomId = data.getExtras().getInt("roomId");
+                    String friendId = data.getExtras().getString("inviteId");
+                    String nickname = data.getExtras().getString("nickname");
+                    Log.d("데이터확인",roomId+friendId+nickname);
+                    Intent restartIntent = new Intent();
+                    restartIntent.putExtra("friendId", friendId);
+                    restartIntent.putExtra("nickname", nickname);
+                    restartIntent.putExtra("roomId", roomId);
+                    setResult(RESULT_OK, restartIntent);
+                    finish();
+                    return;
+                }
+
                 long now = System.currentTimeMillis();
                 long TimeDiff = mPref.getLong("TimeDiff", 0);
                 now = now + TimeDiff;
-                String msgContent = data.getExtras().getString("msgContent");
                 String inviteId = data.getExtras().getString("inviteId");
-
                 mService.sendInvite(roomId, friendId, now, inviteId);
 
             } else if (requestCode == PICK_FROM_CAMERA) {
@@ -694,6 +710,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
                 NickHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
                 ProfileIUTHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
+                Log.d("저그테란",chatRoomMemberList.size() +"@"+chatRoomMemberList.get(i)[0]+"@"+chatRoomMemberList.get(i)[1] +"@"+chatRoomMemberList.get(i)[2]);
             }
 
         } else {
@@ -926,7 +943,7 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
     public void sendMessage(View v) {
 
-
+        updateBoundState();
         long now = System.currentTimeMillis();
         long TimeDiff = mPref.getLong("TimeDiff", 0);
         now = now + TimeDiff;

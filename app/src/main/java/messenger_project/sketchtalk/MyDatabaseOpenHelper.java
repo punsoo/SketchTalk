@@ -444,9 +444,9 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
         String sql ;
         if(roomId == 0) {
-            sql = "SELECT friendId, nickname, profileMessage, profileImageUpdateTime FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId = '" + friendId + "'";
+            sql = "SELECT friendId, nickname, profileMessage, profileImageUpdateTime FROM chatRoomMemberList WHERE roomId = '" + roomId + "' AND friendId = '" + friendId + "' ORDER BY nickname";
         }else{
-            sql = "SELECT friendId, nickname, profileMessage, profileImageUpdateTime FROM chatRoomMemberList WHERE roomId = '" + roomId + "'";
+            sql = "SELECT friendId, nickname, profileMessage, profileImageUpdateTime FROM chatRoomMemberList WHERE roomId = '" + roomId + "' ORDER BY nickname";
         }
         Cursor cursor = dbReader.rawQuery(sql,null);
 

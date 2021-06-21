@@ -4,6 +4,7 @@ package messenger_project.sketchtalk.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import messenger_project.sketchtalk.Item.ChatRoomItem;
 import messenger_project.sketchtalk.MyDatabaseOpenHelper;
@@ -23,6 +25,8 @@ import messenger_project.sketchtalk.activity.ChatRoomActivity;
 import messenger_project.sketchtalk.activity.MainActivity;
 import messenger_project.sketchtalk.adapter.ChatRoomListAdapter;
 import messenger_project.sketchtalk.main.FragmentCommunicator;
+
+import static android.app.Activity.RESULT_OK;
 
 public class ChatRoomListFragment extends Fragment implements FragmentCommunicator {
 
@@ -34,6 +38,8 @@ public class ChatRoomListFragment extends Fragment implements FragmentCommunicat
     String myNickname;
 
     MainActivity mainActivity;
+
+    public static final int ChatRoomActivity = 8375;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,14 +97,12 @@ public class ChatRoomListFragment extends Fragment implements FragmentCommunicat
                 String friendId = (String) view.getTag(R.id.friendId);
                 String roomName = (String) view.getTag(R.id.roomName);
 
-
-
                 Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
                 intent.putExtra("roomId",roomId);
                 intent.putExtra("friendId",friendId);
                 intent.putExtra("roomName",roomName);
 
-                startActivity(intent);
+                startActivityForResult(intent, ChatRoomActivity);
 
             }
         });
@@ -172,20 +176,25 @@ public class ChatRoomListFragment extends Fragment implements FragmentCommunicat
         }
     }
 
-    @Override
-    public void startChatRoomActivity(int roomId, String friendId,String nickname) {
-
-        Intent intent = new Intent(getActivity().getApplicationContext(), ChatRoomActivity.class);
-        intent.putExtra("friendId",friendId);
-        intent.putExtra("nickname",nickname);
-        intent.putExtra("roomId",roomId);
-        startActivity(intent);
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         changeRoomList();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == ChatRoomActivity){
+            if(resultCode == RESULT_OK) {
+                String friendId = data.getExtras().getString("friendId");
+                String nickname = data.getExtras().getString("nickname");
+                int roomId = data.getExtras().getInt("roomId");
+                Log.d("리자몽ChatRoomFragment",friendId+nickname+roomId);
+                mainActivity.sendToActivity(friendId,nickname,roomId);
+            }
+        }
     }
 }
 

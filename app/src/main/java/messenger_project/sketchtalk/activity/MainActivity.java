@@ -42,8 +42,9 @@ import messenger_project.sketchtalk.fragment.FriendListFragment;
 import messenger_project.sketchtalk.fragment.SettingFragment;
 import messenger_project.sketchtalk.main.ActivityCommunicator;
 import messenger_project.sketchtalk.main.FragmentCommunicator;
+import messenger_project.sketchtalk.main.SendToActivity;
 
-public class MainActivity extends AppCompatActivity implements FriendListFragment.sendToActivity{
+public class MainActivity extends AppCompatActivity implements SendToActivity {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
 
     public static final int MakeGroupActivity = 5409;
-    public static final int EditChatRoom = 5828;
+    public static final int EditChatRoomActivity = 5828;
+    public static final int ChatRoomActivity = 8375;
     public static final int changeRoomList = 1458;
 
 
@@ -236,14 +238,14 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
 
     @Override
-    public void sendToActivity(String friendId,String nickname) {
+    public void sendToActivity(String friendId,String nickname,int roomId) {
+        Log.d("리자몽Main",friendId+nickname+roomId);
         viewPager.setCurrentItem(1);
-//        fragmentCommunicator.startChatRoomActivity(0,friendId,nickname);
         Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
         intent.putExtra("friendId",friendId);
         intent.putExtra("nickname",nickname);
-        intent.putExtra("roomId",0);
-        startActivity(intent);
+        intent.putExtra("roomId",roomId);
+        startActivityForResult(intent, ChatRoomActivity);
 
     }
 
@@ -344,13 +346,14 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
 
                 Intent intentMakeGroup = new Intent(this,MakeGroupActivity.class);
                 intentMakeGroup.putExtra("FCR",false);
+                intentMakeGroup.putExtra("roomId",-1);
                 startActivityForResult(intentMakeGroup,MakeGroupActivity);
                 break;
 
             case R.id.edit_chatroom:
 
                 Intent intentEdit = new Intent(this,EditChatRoomActivity.class);
-                startActivityForResult(intentEdit,EditChatRoom);
+                startActivityForResult(intentEdit, EditChatRoomActivity);
                 break;
         }
 
@@ -398,16 +401,14 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
             if(resultCode == RESULT_OK){
                 int roomId = data.getExtras().getInt("roomId");
                 String friendId = data.getExtras().getString("inviteId");
-                Log.d("Main.onactresult",friendId);
                 String nickname = data.getExtras().getString("nickname");
-//                fragmentCommunicator.startChatRoomActivity(roomId,friendId,nickname);
                 Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                 intent.putExtra("friendId",friendId);
                 intent.putExtra("nickname",nickname);
                 intent.putExtra("roomId",roomId);
-                startActivity(intent);
+                startActivityForResult(intent, ChatRoomActivity);
             }
-        }else if(requestCode == EditChatRoom){
+        }else if(requestCode == EditChatRoomActivity){
             if(resultCode == RESULT_OK){
                 try {
                     String roomSet = data.getExtras().getString("roomSet");
@@ -437,7 +438,19 @@ public class MainActivity extends AppCompatActivity implements FriendListFragmen
                     e.printStackTrace();
                 }
             }
+        }else if(requestCode == ChatRoomActivity) {
+            if(resultCode == RESULT_OK){
+                String friendId = data.getExtras().getString("inviteId");
+                String nickname = data.getExtras().getString("nickname");
+                int roomId = data.getExtras().getInt("roomId");
+                Log.d("값확인", friendId+nickname+roomId);
+                Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
+                intent.putExtra("friendId",friendId);
+                intent.putExtra("nickname",nickname);
+                intent.putExtra("roomId",roomId);
+                startActivityForResult(intent, ChatRoomActivity);
 
+            }
         }
     }
 
