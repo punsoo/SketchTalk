@@ -34,7 +34,7 @@ public class ChatRoomItem {
         this.LastMessageTime = lastMessageTime;
         this.LastMessageType = lastMessageType;
         this.ChatRoomMemberList = chatRoomMemberList;
-        this.MemberNum = chatRoomMemberList.size();
+        this.MemberNum = chatRoomMemberList.size()+1;
         this.UnreadNum = unreadNum;
 
 

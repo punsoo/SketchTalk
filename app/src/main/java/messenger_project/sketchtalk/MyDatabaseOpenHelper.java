@@ -81,7 +81,7 @@ public class MyDatabaseOpenHelper extends SQLiteOpenHelper
 
     public Cursor getFriendList(){
 
-        String sql = "SELECT * FROM friendList";
+        String sql = "SELECT * FROM friendList ORDER BY nickname";
         Cursor cursor = dbReader.rawQuery(sql,null);
 
         return cursor;

@@ -64,7 +64,7 @@ public class MessageRoomFragment extends Fragment implements ChatRoomActivity.Fr
             }
             String msgId = cursor.getString(1);
             int msgType = cursor.getInt(4);
-            if(msgType == 1 || msgType == 51) {
+            if(msgType == 2 || msgType == 52) {
                 msgId = userId;
             }
             ChatMessageItem addItem = new ChatMessageItem(msgType,msgId,cursor.getString(7),cursor.getString(9),cursor.getString(2),msgTime,time,day);

@@ -34,7 +34,7 @@ public class MemberListAdapter extends BaseAdapter {
         this.mContext = context;
         this.inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.MemberListItemList = MemberList;
-        this.ServerURL = context.getResources().getString(R.string.ServerUrl);
+        this.ServerURL = context.getResources().getString(R.string.ServerUrl) + "/profile_image/";
 
     }
 
