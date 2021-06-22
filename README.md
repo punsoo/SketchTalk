@@ -5,8 +5,8 @@
 
 
 ## [회원가입 화면]
-<img width="25%" src="https://user-images.githubusercontent.com/68231412/122880830-68557f00-d375-11eb-856a-2badb4378bc0.png"/>
-<img width="25%" src="https://user-images.githubusercontent.com/68231412/122882630-5a086280-d377-11eb-8fff-9f5c91e70fde.png"/>
+<img width="25%" src="https://user-images.githubusercontent.com/68231412/122880830-68557f00-d375-11eb-856a-2badb4378bc0.png"/> <img width="25%" src="https://user-images.githubusercontent.com/68231412/122882630-5a086280-d377-11eb-8fff-9f5c91e70fde.png"/>
+
 
 실시간으로 비밀번호 양식 체크 가능
 
