@@ -65,8 +65,6 @@ public class FriendListFragment extends Fragment {
             if(cursor.getInt(4) == 1){
                 FListData.add(addItem);
             }
-
-            Log.d("커서", cursor.getString(0)+"#####"+cursor.getString(1) + "" +cursor.getString(2));
         }
 
 
@@ -125,11 +123,8 @@ public class FriendListFragment extends Fragment {
         while(cursor.moveToNext()) {
 
             FriendListItem addItem = new FriendListItem(cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getInt(4),cursor.getInt(5),cursor.getInt(6));
-            Log.d("프프",cursor.getString(0)+""+cursor.getString(1));
             ListData.add(addItem);
-            Log.d("프프외부",cursor.getInt(4)+"");
             if(cursor.getInt(4) == 1){
-                Log.d("프프내부",cursor.getInt(4)+"");
                 FListData.add(addItem);
             }
 

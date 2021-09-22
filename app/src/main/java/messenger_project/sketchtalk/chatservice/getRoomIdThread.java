@@ -65,7 +65,6 @@ public class getRoomIdThread extends Thread {
                 buff.append(line + "\n");
             }
             data = buff.toString().trim();
-            Log.d("위치확인3",sRoomId+"#"+sFriendId+"#"+sTime);
             Log.d("getRoomIdThread.data",data);
             this.sRoomId = Integer.parseInt(data);
 

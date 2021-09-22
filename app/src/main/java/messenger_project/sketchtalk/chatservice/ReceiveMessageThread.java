@@ -130,14 +130,12 @@ public class ReceiveMessageThread extends Thread {
                 mCallbackMain.changeRoomList();
             }
         } else if (sMsgType == 5) {
-            Log.d("프로토스테란",sFriendId);
             if (db.haveChatRoom(sRoomId, sFriendId)) {
 
                 try {
                     JSONObject jobject = new JSONObject(sMsgContent);
                     String inviteId = jobject.getString("inviteId");
                     String realContent = jobject.getString("msgContent");
-                    Log.d("프로토스테란1",sFriendId + "@" +inviteId + realContent);
                     getInviteFriendThread gift = new getInviteFriendThread(serverURL,userId, sRoomId, inviteId, realContent, sTime,db,mBoundState, mCallbackMain, mCallbackChatRoom);
                     gift.start();
                 } catch (JSONException e) {
@@ -148,7 +146,6 @@ public class ReceiveMessageThread extends Thread {
                     JSONObject jobject = new JSONObject(sMsgContent);
                     String inviteId = jobject.getString("inviteId");
                     String realContent = jobject.getString("msgContent");
-                    Log.d("프로토스테란2",sFriendId + "@" +inviteId + realContent + "@" + sRoomId);
                     getInviteGroupThread gigt = new getInviteGroupThread(serverURL, userId, sRoomId, sFriendId, realContent, sTime, db, mBoundState, mCallbackMain);
                     gigt.start();
                 } catch (JSONException e) {

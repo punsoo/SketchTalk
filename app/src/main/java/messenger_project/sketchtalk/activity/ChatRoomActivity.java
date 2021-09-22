@@ -447,7 +447,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
             intentMakeGroup.putExtra("friendId", friendId);
             intentMakeGroup.putExtra("roomId", roomId);
             intentMakeGroup.putExtra("nickname", NickHash.get(friendId));
-            Log.d("데이터확인닉",friendId + NickHash.get(friendId));
             startActivityForResult(intentMakeGroup, MakeGroupActivity);
 
         }
@@ -464,7 +463,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                     int roomId = data.getExtras().getInt("roomId");
                     String friendId = data.getExtras().getString("inviteId");
                     String nickname = data.getExtras().getString("nickname");
-                    Log.d("데이터확인",roomId+friendId+nickname);
                     Intent restartIntent = new Intent();
                     restartIntent.putExtra("friendId", friendId);
                     restartIntent.putExtra("nickname", nickname);
@@ -710,7 +708,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
 
                 NickHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
                 ProfileIUTHash.put(chatRoomMemberList.get(i)[0], chatRoomMemberList.get(i)[1]);
-                Log.d("저그테란",chatRoomMemberList.size() +"@"+chatRoomMemberList.get(i)[0]+"@"+chatRoomMemberList.get(i)[1] +"@"+chatRoomMemberList.get(i)[2]);
             }
 
         } else {
@@ -1270,7 +1267,6 @@ public class ChatRoomActivity extends BaseActivity implements DrawLine.sendToAct
                 Log.d("이미지성공실패", data);
 
                 if (data.equals("성공")) {
-                    Log.d("메세지마크1", imageName + "");
                     mService.sendMessage(roomId, friendId, imageName, now, 51);
                 }
 

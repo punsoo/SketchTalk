@@ -51,8 +51,6 @@ public class ChatService extends Service {
         public void onCreate() {
 
             super.onCreate();
-
-            Log.d("확인ChatServiceOnCreate","크리에이트");
             ServerAddress = getResources().getString(R.string.ServerAddress);
             ServerURL = getResources().getString(R.string.ServerUrl);
             Port = Integer.valueOf(getResources().getString(R.string.Port));
@@ -71,7 +69,6 @@ public class ChatService extends Service {
                     }else if(msg.what == ConnectThread){
                         ConnectThread ct = new ConnectThread();
                         ct.start();
-                        Log.d("잃고난뒤4로 재연결","4로재연결");
                     }
 
                 }
@@ -90,8 +87,6 @@ public class ChatService extends Service {
             mPref = getSharedPreferences("login", MODE_PRIVATE);
             editor = mPref.edit();
             userId = mPref.getString("userId", "아이디없음");
-
-            Log.d("ChatServiceOnStart", userId);
 
             if (socket == null) {
 
@@ -115,8 +110,6 @@ public class ChatService extends Service {
             super.onDestroy();
             editor.putBoolean("Service",false);
             editor.commit();
-
-            Log.d("ChatServiceOnDestroy","디스트로이");
         }
 
         public class ChatServiceBinder extends Binder {
@@ -155,7 +148,6 @@ public class ChatService extends Service {
 
             if(roomId < 0 ){
                 try {
-                    Log.d("위치확인",roomId+"#"+friendId+"#"+msgContent+"#"+time);
                     getRoomIdThread grt = new getRoomIdThread(ServerURL,userId,roomId,friendId,time);
                     grt.start();
                     grt.join();
@@ -171,9 +163,7 @@ public class ChatService extends Service {
                         db.insertChatRoomList(roomId, "group", time,"",2);
 
                         sendInvite(roomId,friendId,time - 1, friendId);
-                        Log.d("프로1",roomId + friendId);
                         if (mBoundState.boundCheckChatRoom) {
-                            Log.d("프로2",roomId + friendId);
                             mCallbackChatRoom.reset();
                             mCallbackChatRoom.recvUpdate();
                             mCallbackChatRoom.changeRoomId(roomId);
@@ -225,14 +215,12 @@ public class ChatService extends Service {
 
             if(st.isSuccess()){
 
-                Log.d("st.isSucess",roomId+"#"+friendId+"#"+msgContent+"#"+time+"#"+dbMsgType);
                 if(roomId==0) {
                     db.insertChatMessageList(userId, roomId, friendId, msgContent, time, dbMsgType);
                 }else{
                     db.insertChatMessageList(userId, roomId, userId, msgContent, time, dbMsgType);
                 }
 
-                Log.d("메세지마크2",msgContent+"");
                 mCallbackChatRoom.sendMessageMark(friendId,msgContent,time,msgType);
 
             }else{
@@ -249,7 +237,6 @@ public class ChatService extends Service {
 
 
     public void sendRead(int roomId, String friendId, long time){
-        Log.d("확인sendRead",roomId+"#"+friendId+"#"+time);
         if (roomId < 0){
             return;
         }
@@ -280,7 +267,6 @@ public class ChatService extends Service {
 
         String inviteMsg = db.insertChatRoomMemberListMultipleByJoin(roomId,inviteId);
 
-        Log.d("프로토스저그",inviteMsg);
         JSONObject jobject = new JSONObject();
 
 
@@ -378,7 +364,6 @@ public class ChatService extends Service {
             while(true) {
 
                 if(!userId.equals(checkId)){
-                    Log.d("ChatServiceCheckId","checkId: "+checkId+", userId: "+userId);
                     if(socket != null) {
                         try {
                             socket.close();
@@ -391,9 +376,6 @@ public class ChatService extends Service {
                     break;
                 }
                 try {
-
-                    Log.d("ChatServiceReceive",userId +"####"+response);
-
                     try {
                         response = input.readUTF();
                     }catch (EOFException e){
@@ -463,8 +445,6 @@ public class ChatService extends Service {
         public ConnectThread(){
             this.serverAddress = ServerAddress;
             this.port = Port;
-
-            Log.d("ServiceConnectThread생성자",this.serverAddress+"##"+this.port+"##"+userId);
         }
 
         @Override
@@ -514,7 +494,6 @@ public class ChatService extends Service {
                 long now = System.currentTimeMillis();
                 editor.putLong("TimeDiff",ServerTime - now);
                 editor.commit();
-                Log.d("타임디프",(ServerTime-now)+"");
 
                 Message message= Message.obtain();
                 message.what = PostConnect;

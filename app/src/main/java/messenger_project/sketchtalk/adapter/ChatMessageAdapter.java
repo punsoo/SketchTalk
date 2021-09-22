@@ -101,7 +101,6 @@ public class ChatMessageAdapter extends BaseAdapter {
         String preDay = "";
         String nextDay ="";
 
-        Log.d("호출",position+"#"+friendId+"#"+chatMessageList.get(position).getMsgContent()+"#"+chatMessageList.get(position).getType());
         if (position != getCount() - 1) {
             nextId = chatMessageList.get(position + 1).getUserId();
             nextTime = chatMessageList.get(position + 1).getTime();

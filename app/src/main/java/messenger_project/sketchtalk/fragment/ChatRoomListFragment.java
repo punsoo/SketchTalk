@@ -191,7 +191,6 @@ public class ChatRoomListFragment extends Fragment implements FragmentCommunicat
                 String friendId = data.getExtras().getString("friendId");
                 String nickname = data.getExtras().getString("nickname");
                 int roomId = data.getExtras().getInt("roomId");
-                Log.d("리자몽ChatRoomFragment",friendId+nickname+roomId);
                 mainActivity.sendToActivity(friendId,nickname,roomId);
             }
         }

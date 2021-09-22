@@ -153,7 +153,6 @@ public class DrawRoomFragment extends Fragment implements ChatRoomActivity.DrawC
                 width  = sketchBook.getWidth();
                 height = sketchBook.getHeight();
                 sketchBook.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                Log.d("체크사이즈OAC",width+"###"+height);
                 if(sketchBook != null) //그리기 뷰가 보여질 레이아웃이 있으면...
                 {
 

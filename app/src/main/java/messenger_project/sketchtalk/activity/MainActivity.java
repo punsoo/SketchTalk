@@ -182,20 +182,12 @@ public class MainActivity extends AppCompatActivity implements SendToActivity {
         serviceIntent.putExtra("FromLogin",false);
         getApplicationContext().bindService(serviceIntent, mConnection, this.BIND_AUTO_CREATE);
 
-        String test = null;
-        if(test == null) {
-            Log.d("치킨","지코바");
-        }else{
-            Log.d("치킨","오태식");
-        }
-
     }
 
 
     private ServiceConnection mConnection = new ServiceConnection() {
         // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("확인Main","혹시");
             ChatService.ChatServiceBinder binder = (ChatService.ChatServiceBinder) service;
             mService = binder.getService(); //서비스 받아옴
             mService.registerCallback_Main(mCallback); //콜백 등록
@@ -239,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements SendToActivity {
 
     @Override
     public void sendToActivity(String friendId,String nickname,int roomId) {
-        Log.d("리자몽Main",friendId+nickname+roomId);
         viewPager.setCurrentItem(1);
         Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
         intent.putExtra("friendId",friendId);
@@ -443,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements SendToActivity {
                 String friendId = data.getExtras().getString("inviteId");
                 String nickname = data.getExtras().getString("nickname");
                 int roomId = data.getExtras().getInt("roomId");
-                Log.d("값확인", friendId+nickname+roomId);
                 Intent intent = new Intent(getApplicationContext(), ChatRoomActivity.class);
                 intent.putExtra("friendId",friendId);
                 intent.putExtra("nickname",nickname);

@@ -163,22 +163,18 @@ public class LoginActivity extends AppCompatActivity {
             String param = "userId=" + sUserId + "&password=" + sPassword + "";
             try {
                 /* 서버연결 */
-                Log.d("전전",sUserId + sPassword);
                 URL url = new URL(ServerURL+"/login.php");
-                Log.d("후후",sUserId + sPassword + "#"+ServerURL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn.setRequestMethod("POST");
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
                 conn.connect();
-                Log.d("후후1",sUserId + sPassword);
                 /* 안드로이드 -> 서버 파라메터값 전달 */
                 OutputStream outs = conn.getOutputStream();
                 outs.write(param.getBytes("UTF-8"));
                 outs.flush();
                 outs.close();
-                Log.d("후후2",sUserId + sPassword);
 
                 /* 서버 -> 안드로이드 파라메터값 전달 */
 //                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
@@ -203,7 +199,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
                 data = buff.toString().trim();
-                Log.d("힘들다",data);
                 int maxLogSize = 1000;
                 for(int i = 0; i <= data.length() / maxLogSize; i++) {
                     int start = i * maxLogSize;
@@ -241,9 +236,6 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this,"일치하는 아이디가 없습니다",Toast.LENGTH_SHORT).show();
         }else{
             try {
-
-                Log.d("여기0",data);
-
                 db = new MyDatabaseOpenHelper(this, "catchMindTalk", null, 1);
 
                 db.clearFriendList();
@@ -291,8 +283,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
 
-                Log.d("여기2","여기2");
-
                 for(int i=0;i<chatRoomListArray.length();i++) {
 
                     JSONObject jobject = new JSONObject(chatRoomListArray.get(i).toString());
@@ -302,8 +292,6 @@ public class LoginActivity extends AppCompatActivity {
                     long lastReadTime = (long) jobject.getLong("lastReadTime");
                     String roomName = (String) jobject.getString("roomName");
                     int roomType = (int) jobject.getInt("roomType");
-                    Log.d("chatRoomListArray", roomId+"");
-
                     db.insertChatRoomList(roomId,friendId,lastReadTime,roomName,roomType);
 
                 }
@@ -325,8 +313,6 @@ public class LoginActivity extends AppCompatActivity {
                     db.insertChatRoomMemberList(roomId,friendId,nickname,profileMessage,profileImageUpdateTime,lastReadTime);
 
                 }
-
-                Log.d("여기3","여기3");
 
                 editor.putBoolean("autoLogin",true);
                 editor.putString("autoLoginId",sUserId);

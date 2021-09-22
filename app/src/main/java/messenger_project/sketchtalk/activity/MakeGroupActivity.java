@@ -197,7 +197,6 @@ public class MakeGroupActivity extends AppCompatActivity {
             intent.putExtra("nickname",nickname);
             intent.putExtra("inviteNum", inviteList.size());
 
-            Log.d("뭘까MakeGroupActivity",db.getMinRoomId()+"#"+jsonArray.toString());
             setResult(RESULT_OK, intent);
             finish();
 
