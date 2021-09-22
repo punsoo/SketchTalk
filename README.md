@@ -3,10 +3,10 @@
 카카오톡과 같은 메신저 어플에 캐치마인드 게임에서 볼 수 있는 낙서(그림) 공유 기능을 더한 어플입니다.
 
 
-기간: 2017-06 ~ 2017-11
-최소 SDK버전: 21 (Lollipop - Android 5.0)
-개발 툴: Android Studio, Intellij, SQLyog
-사용 언어 및 기술: Java, PHP, AWS EC2, AWS RDS(MariaDB), Apache
+기간: 2017-06 ~ 2017-11  
+최소 SDK버전: 21 (Lollipop - Android 5.0)  
+개발 툴: Android Studio, Intellij, SQLyog  
+사용 언어 및 기술: Java, PHP, AWS EC2, AWS RDS(MariaDB), Apache  
 라이브러리: Glide, Picasso
 
 <br/>
